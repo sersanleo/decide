@@ -25,44 +25,53 @@
             [[ alertMsg ]]
         </b-alert>
 
-        <div class="voting">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+        <div class="conteiner">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="voting">
+                        <h1>[[ voting.name ]]</h1>
+                        <p class="lead">[[voting.desc]]</p>
+                        <!-- Register -->
+                        <b-form @submit="onSubmitLogin" v-if="signup">
+                            <b-form-group label="{% trans "Username" %}" label-for="username">
+                                <b-form-input
+                                    id="username"
+                                    type="text"
+                                    v-model="form.username"
+                                    autocomplete="username"
+                                    required />
+                            </b-form-group>
+                            <b-form-group label="{% trans "Password" %}" label-for="password">
+                                <b-form-input
+                                    id="password"
+                                    type="password"
+                                    autocomplete="current-password"
+                                    v-model="form.password"
+                                    required />
+                            </b-form-group>
+                            <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
+                        </b-form>
 
-            <!-- Register -->
-            <b-form @submit="onSubmitLogin" v-if="signup">
-                <b-form-group label="{% trans "Username" %}" label-for="username">
-                    <b-form-input
-                        id="username"
-                        type="text"
-                        v-model="form.username"
-                        autocomplete="username"
-                        required />
-                </b-form-group>
-                <b-form-group label="{% trans "Password" %}" label-for="password">
-                    <b-form-input
-                        id="password"
-                        type="password"
-                        autocomplete="current-password"
-                        v-model="form.password"
-                        required />
-                </b-form-group>
-                <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
-            </b-form>
-
-            <!-- Voting -->
-            <div v-if="!signup">
-                <h2>[[ voting.question.desc ]]</h2>
-                <b-form-group v-for="opt in voting.question.options" :key="opt.number">
-                    <b-form-radio v-model="selected"
-                                  :id="'q' + opt.number"
-                                  name="question"
-                                  :value="opt.number">
-                        [[ opt.option ]]
-                    </b-form-radio>
-                </b-form-group>
-                <b-button type="button" variant="primary" v-on:click="decideSend">
-                    {% trans "Vote" %}
-                </b-button>
+                        <!-- Voting -->
+                        <div v-if="!signup">
+                            <h2>[[ voting.question.desc ]]</h2>
+                            <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+                                <b-form-radio v-model="selected"
+                                            :id="'q' + opt.number"
+                                            name="question"
+                                            button
+                                            button-variant="success"
+                                            size="lg"
+                                            :value="opt.number">
+                                    [[ opt.option ]]
+                                </b-form-radio>
+                            </b-form-group>
+                            <b-button block type="button" variant="primary" v-on:click="decideSend">
+                                {% trans "Vote" %}
+                            </b-button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
