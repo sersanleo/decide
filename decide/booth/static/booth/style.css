@@ -2,6 +2,23 @@
     margin-top: 20px;
     /* margin-left: 40px; */
 }
+
+.choice-question {
+    width: 100%;
+}
+
+.choice-question label {
+    width: 100%;
+}
+
+.choice-question label.active {
+    background-color: #03ad03!important;
+} 
+
+.row.voting-row {
+    margin: 24px 0px;
+}
+
 /*
 .form-group .bv-no-focus-ring .custom-control input[type="radio"] {
     opacity: 0;

@@ -12,12 +12,12 @@
 {% block content %}
     <div id="app-booth">
         <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
+        <b-navbar type="dark" variant="primary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
                 <b-navbar-nav class="ml-auto" v-if="!signup">
-                    <b-nav-item href="#" v-on:click="decideLogout">
-                        {% trans "logout" %}
-                    </b-nav-item>
+                    <b-button variant="danger" href="#" v-on:click="decideLogout">
+                        {% trans "Logout" %}
+                    </b-button>
                 </b-navbar-nav>
         </b-navbar>
 
@@ -25,51 +25,62 @@
             [[ alertMsg ]]
         </b-alert>
 
-        <div class="conteiner">
-            <div class="row">
+        <div class="container-fluid">
+            <div class="row voting-row">
+                <div class="col-md-8 offset-md-2">
+                    <h1 class="text-center">[[ voting.name ]]</h1>
+                    <p class="text-center lead">[[voting.desc]]</p>
+                </div>
+            </div>
+            <!-- Register -->
+            <b-form @submit="onSubmitLogin" v-if="signup">
                 <div class="col-md-6 offset-md-3">
-                    <div class="voting">
-                        <h1>[[ voting.name ]]</h1>
-                        <p class="lead">[[voting.desc]]</p>
-                        <!-- Register -->
-                        <b-form @submit="onSubmitLogin" v-if="signup">
-                            <b-form-group label="{% trans "Username" %}" label-for="username">
-                                <b-form-input
-                                    id="username"
-                                    type="text"
-                                    v-model="form.username"
-                                    autocomplete="username"
-                                    required />
-                            </b-form-group>
-                            <b-form-group label="{% trans "Password" %}" label-for="password">
-                                <b-form-input
-                                    id="password"
-                                    type="password"
-                                    autocomplete="current-password"
-                                    v-model="form.password"
-                                    required />
-                            </b-form-group>
-                            <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
-                        </b-form>
+                    <b-form-group label="{% trans "Username" %}" label-for="username">
+                        <b-form-input
+                            id="username"
+                            type="text"
+                            v-model="form.username"
+                            autocomplete="username"
+                            required />
+                    </b-form-group>
+                    <b-form-group label="{% trans "Password" %}" label-for="password">
+                        <b-form-input
+                            id="password"
+                            type="password"
+                            autocomplete="current-password"
+                            v-model="form.password"
+                            required />
+                    </b-form-group>
+                    <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
+                </div>
+            </b-form>
 
-                        <!-- Voting -->
-                        <div v-if="!signup">
-                            <h2>[[ voting.question.desc ]]</h2>
-                            <b-form-group v-for="opt in voting.question.options" :key="opt.number">
-                                <b-form-radio v-model="selected"
-                                            :id="'q' + opt.number"
-                                            name="question"
-                                            button
-                                            button-variant="success"
-                                            size="lg"
-                                            :value="opt.number">
-                                    [[ opt.option ]]
-                                </b-form-radio>
-                            </b-form-group>
-                            <b-button block type="button" variant="primary" v-on:click="decideSend">
-                                {% trans "Vote" %}
-                            </b-button>
-                        </div>
+            <!-- Voting -->
+            <div v-if="!signup">
+                <div class="row voting-row">
+                    <div class="col-md-4 offset-md-2">
+                        <h3>[[ voting.question.desc ]]</h3>
+                        <p>La opción elegida para realizar la votación aparece resaltada en color verde. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+                            <b-form-radio v-model="selected"
+                                        :id="'q' + opt.number"
+                                        class="choice-question"
+                                        name="question"
+                                        button
+                                        size="lg"
+                                        :value="opt.number">
+                                [[ opt.option ]]
+                            </b-form-radio>
+                        </b-form-group>
+                    </div>
+                </div>
+                <div class="row voting-row">
+                    <div class="col-md-4 offset-md-4">
+                        <b-button block type="button" variant="primary" v-on:click="decideSend">
+                            {% trans "Votar" %}
+                        </b-button>
                     </div>
                 </div>
             </div>
