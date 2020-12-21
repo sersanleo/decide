@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.utils import timezone
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
@@ -6,6 +7,7 @@ from django.contrib import messages
 from .models import QuestionOption
 from .models import Question
 from .models import Voting
+from census.models import Census
 
 from .filters import StartedFilter
 
@@ -47,6 +49,13 @@ class QuestionOptionInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
 
+class VotingModel(forms.ModelForm):
+    autocenso = forms.BooleanField(required=False)
+
+    class Meta:
+        model = Voting
+        exclude = []
+
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
@@ -58,6 +67,14 @@ class VotingAdmin(admin.ModelAdmin):
     search_fields = ('name', )
 
     actions = [ start, stop, tally ]
+    form =VotingModel
+
+    def save_model(self, request, obj, form, change):
+        super(VotingAdmin, self).save_model(request, obj, form, change)
+        if form.cleaned_data.get('autocenso'):
+            user = request.user
+            Census.objects.get_or_create(voter_id=user.id, voting_id=obj.id)
+
 
 
 admin.site.register(Voting, VotingAdmin)
