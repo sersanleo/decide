@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils import timezone
+from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
 from django.contrib import messages
 
 from .models import QuestionOption
@@ -51,8 +52,9 @@ class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
     readonly_fields = ('start_date', 'end_date', 'pub_key',
                        'tally', 'postproc')
-    date_hierarchy = 'start_date'
-    list_filter = (StartedFilter,)
+    # date_hierarchy = 'start_date'
+    # list_filter = (StartedFilter,)
+    list_filter = (StartedFilter, ('start_date', DateRangeFilter), ('end_date', DateRangeFilter),)
     search_fields = ('name', )
 
     actions = [ start, stop, tally ]
