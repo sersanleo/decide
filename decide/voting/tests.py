@@ -15,6 +15,7 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 from django.db.utils import IntegrityError
+from .admin import give_message
 
 
 
@@ -104,6 +105,8 @@ class VotingTestCase(BaseTestCase):
         v.tally_votes(self.token)
 
         tally = v.tally
+        message=give_message(v)
+        self.assertIn("For voting:test voting", message)
         tally.sort()
         tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
 
@@ -118,7 +121,6 @@ class VotingTestCase(BaseTestCase):
         with self.assertRaises(Exception) as raised:
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
-
 
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
