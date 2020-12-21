@@ -45,7 +45,6 @@ def give_message(v):
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption
 
-
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
 
@@ -77,5 +76,11 @@ class VotingAdmin(admin.ModelAdmin):
 
 
 
+class QuestionWithUniqueOptionAdmin(admin.ModelAdmin):
+    list_display = ('desc', 'options')
+    inlines = [QuestionOptionInline]
+    list_filter = ('options',)
+
+
 admin.site.register(Voting, VotingAdmin)
-admin.site.register(Question, QuestionAdmin)
+admin.site.register(Question, QuestionWithUniqueOptionAdmin)
