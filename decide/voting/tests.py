@@ -14,6 +14,8 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
+from django.db.utils import IntegrityError
+
 
 
 class VotingTestCase(BaseTestCase):
@@ -46,6 +48,11 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
 
         return v
+    
+    def create_question(self):
+        q = Question(desc='test question')
+        q.save()
+        return q
 
     def create_voters(self, v):
         for i in range(100):
@@ -105,6 +112,13 @@ class VotingTestCase(BaseTestCase):
 
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
+    
+    def test_question_unique(self):
+        v = self.create_question()
+        with self.assertRaises(Exception) as raised:
+            self.create_question()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
 
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
