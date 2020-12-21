@@ -6,12 +6,14 @@ from .models import Question
 from .models import Voting
 
 from .filters import StartedFilter
+from django.contrib.auth.models import User
 
 
 def start(modeladmin, request, queryset):
     for v in queryset.all():
         v.create_pubkey()
         v.start_date = timezone.now()
+        v.started_by=str(request.user)
         v.save()
 
 
@@ -36,9 +38,10 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 class VotingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'start_date', 'end_date')
+        
+    list_display = ('name', 'start_date', 'end_date', 'started_by')
     readonly_fields = ('start_date', 'end_date', 'pub_key',
-                       'tally', 'postproc')
+                       'tally', 'postproc', 'started_by')
     date_hierarchy = 'start_date'
     list_filter = (StartedFilter,)
     search_fields = ('name', )
