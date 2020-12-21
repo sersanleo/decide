@@ -1,14 +1,17 @@
 from django.db import models
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django import forms
 
 from base import mods
 from base.models import Auth, Key
 
 
 class Question(models.Model):
+    ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"))
     desc = models.TextField()
+    option_types = models.PositiveIntegerField(choices=ANSWER_TYPES, default="1")
 
     def __str__(self):
         return self.desc
@@ -17,7 +20,7 @@ class Question(models.Model):
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
     number = models.PositiveIntegerField(blank=True, null=True)
-    option = models.TextField()
+    option = models.CharField(max_length=200)
 
     def save(self):
         if not self.number:

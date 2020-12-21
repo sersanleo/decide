@@ -29,11 +29,7 @@ def tally(ModelAdmin, request, queryset):
 
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption
-
-
-class QuestionAdmin(admin.ModelAdmin):
-    inlines = [QuestionOptionInline]
-
+    
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
@@ -46,5 +42,11 @@ class VotingAdmin(admin.ModelAdmin):
     actions = [ start, stop, tally ]
 
 
+class QuestionWithUniqueOptionAdmin(admin.ModelAdmin):
+    list_display = ('desc', 'options')
+    inlines = [QuestionOptionInline]
+    list_filter = ('options',)
+
+
 admin.site.register(Voting, VotingAdmin)
-admin.site.register(Question, QuestionAdmin)
+admin.site.register(Question, QuestionWithUniqueOptionAdmin)
