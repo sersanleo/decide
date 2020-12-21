@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.db.utils import IntegrityError
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
@@ -105,6 +106,12 @@ class VotingTestCase(BaseTestCase):
 
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
+    def test_duplicate_voting_name(self):
+        v1 = self.create_voting()
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
 
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
