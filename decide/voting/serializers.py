@@ -14,7 +14,7 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     options = QuestionOptionSerializer(many=True)
     class Meta:
         model = Question
-        fields = ('desc', 'options')
+        fields = ('desc', 'option_types', 'options')
 
 
 class VotingSerializer(serializers.HyperlinkedModelSerializer):
