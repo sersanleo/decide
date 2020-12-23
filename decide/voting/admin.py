@@ -12,6 +12,7 @@ from census.models import Census
 from .filters import StartedFilter
 from django.contrib.auth.models import User
 
+
 def start(modeladmin, request, queryset):
     for v in queryset.all():
         v.create_pubkey()
@@ -25,12 +26,14 @@ def stop(ModelAdmin, request, queryset):
         v.end_date = timezone.now()
         v.save()
 
+
 def tally(ModelAdmin, request, queryset):
     for v in queryset.filter(end_date__lt=timezone.now()):
         token = request.session.get('auth-token', '')
         v.tally_votes(token)
         respuesta=give_message(v)
         messages.info(request,respuesta)
+
 
 def give_message(v):
     mensj=""
@@ -46,9 +49,12 @@ def give_message(v):
 
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption
+    fields = ('number', 'option',)
+
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
+
 
 class VotingModel(forms.ModelForm):
     autocenso = forms.BooleanField(required=False)
@@ -63,13 +69,11 @@ class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date', 'started_by')
     readonly_fields = ('start_date', 'end_date', 'pub_key',
                        'tally', 'postproc', 'started_by')
-    # date_hierarchy = 'start_date'
-    # list_filter = (StartedFilter,)
     list_filter = (StartedFilter, ('start_date', DateRangeFilter), ('end_date', DateRangeFilter),)
     search_fields = ('name', )
 
     actions = [ start, stop, tally ]
-    form =VotingModel
+    form = VotingModel
 
     def save_model(self, request, obj, form, change):
         super(VotingAdmin, self).save_model(request, obj, form, change)
@@ -78,12 +82,11 @@ class VotingAdmin(admin.ModelAdmin):
             Census.objects.get_or_create(voter_id=user.id, voting_id=obj.id)
 
 
-
-class QuestionWithUniqueOptionAdmin(admin.ModelAdmin):
-    list_display = ('desc', 'options')
+class QuestionOptionAdmin(admin.ModelAdmin):
+    list_display = ('desc', 'option_types')
     inlines = [QuestionOptionInline]
-    list_filter = ('options',)
+    list_filter = ('option_types',)
 
 
 admin.site.register(Voting, VotingAdmin)
-admin.site.register(Question, QuestionWithUniqueOptionAdmin)
+admin.site.register(Question, QuestionOptionAdmin)
