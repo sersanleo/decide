@@ -9,7 +9,7 @@ from base.models import Auth, Key
 
 
 class Question(models.Model):
-    ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"))
+    ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"), (3,"Rank order scale"))
     option_types = models.PositiveIntegerField(choices=ANSWER_TYPES, default="1")
     desc = models.TextField(unique=True)
 
@@ -22,6 +22,7 @@ class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.CharField(max_length=200)
+    rank_order = models.PositiveIntegerField(blank=True, null=True)
 
     def save(self):
         if not self.number:
