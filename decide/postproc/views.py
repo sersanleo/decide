@@ -14,7 +14,7 @@ class PostProcView(APIView):
             });
 
         out.sort(key=lambda x: -x['postproc'])
-        return Response(out)
+        return out
 
     def post(self, request):
         """
@@ -29,10 +29,13 @@ class PostProcView(APIView):
            ]
         """
 
-        t = request.data.get('type', 'IDENTITY')
-        opts = request.data.get('options', [])
+        out = []
+        questions = request.data
 
-        if t == 'IDENTITY':
-            return self.identity(opts)
+        for q in questions:
+            t = q['type']
+            opts = q['options']
+            if t == 'IDENTITY':
+                out.append(self.identity(opts))
 
-        return Response({})
+        return Response(out)
