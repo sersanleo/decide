@@ -32,6 +32,30 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return out
 
+    def equality(self, options):
+        out = []
+        n_women = 0
+        n_men = 0
+
+        for opt in options:
+            n_women += opt['votes_women']
+            n_men += opt['votes_men']
+
+        for opt in options:
+            if n_women > n_men:
+                votes = opt['votes_men'] + opt['votes_women']*(n_men/n_women)
+            else:
+                votes = opt['votes_women'] + opt['votes_men']*(n_women/n_men)
+            
+            out.append({
+                **opt,
+                'postproc': round(votes),
+            })
+
+        out.sort(key=lambda x: -x['postproc'])
+
+        return out
+        
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
@@ -41,6 +65,16 @@ class PostProcView(APIView):
              number: int,
              votes: int,
              ...extraparams
+            }
+           ]
+        
+        * type: EQUALITY
+        * options: [
+            {
+             option: str,
+             number: int,
+             votes_men: int,
+             votes_women: int,
             }
            ]
         """
@@ -55,5 +89,7 @@ class PostProcView(APIView):
                 out.append(self.identity(opts))
             if t == 'BORDA':
                 out.append(self.borda(opts))
+            if t == 'EQUALITY':
+                out.append(self.equality(opts))
 
         return Response(out)
