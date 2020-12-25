@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import math
 
 
 class PostProcView(APIView):
@@ -55,10 +56,44 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
 
         return out
+
+    def droop(self, options, points):
+        out = []
+        e = []
+        r = []
+        total_votes = 0
+
+        for opt in options:
+            total_votes += opt['votes']
+
+        q = round(1 + total_votes/(points+1))
+
+        for opt in options:
+            ei = math.floor(opt['votes']/q)
+            e.append(ei)
+            r.append(opt['votes']-q*ei)
+
+        k = points - sum(e)
+
+        for x in range(k):
+            grtst_rest_index = r.index(max(r))
+            e[grtst_rest_index] = e[grtst_rest_index] + 1
+            r[grtst_rest_index] = -1
+
+        cont = 0
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': e[cont],
+                })
+            cont += 1
+
+        out.sort(key=lambda x: -x['postproc'])
+        return out
         
     def post(self, request):
         """
-         * type: IDENTITY | EQUALITY | WEIGHT
+         * type: IDENTITY | EQUALITY | BORDA | DROOP
          * options: [
             {
              option: str,
@@ -77,6 +112,16 @@ class PostProcView(APIView):
              votes_women: int,
             }
            ]
+
+        * type: DROOP
+        * points: int
+        * options: [
+            {
+             option: str,
+             number: int,
+             votes: int,
+            }
+           ]
         """
 
         out = []
@@ -91,5 +136,7 @@ class PostProcView(APIView):
                 out.append(self.borda(opts))
             if t == 'EQUALITY':
                 out.append(self.equality(opts))
+            if t == 'DROOP':
+                out.append(self.droop(opts, q['points']))
 
         return Response(out)
