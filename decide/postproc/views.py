@@ -53,7 +53,7 @@ class PostProcView(APIView):
             opts = q['options']
             if t == 'IDENTITY':
                 out.append(self.identity(opts))
-        if t == 'BORDA':
-            return out.append(self.borda(opts))
+            if t == 'BORDA':
+                out.append(self.borda(opts))
 
         return Response(out)
