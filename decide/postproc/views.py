@@ -56,6 +56,29 @@ class PostProcView(APIView):
 
         return out
         
+    def sainte_lague(self, options, points):
+        out = []
+        votes = []
+        points_for_opt = []
+
+        for i in range(0, len(options)):
+            votes.append(options[i]['votes'])
+            points_for_opt.append(0)
+
+        for i in range(0, points):
+            max_index = votes.index(max(votes))
+            points_for_opt[max_index] += 1
+            votes[max_index] = options[max_index]['votes'] / (2 * points_for_opt[max_index] + 1)
+
+        for i in range(0, len(options)):
+            out.append({
+                **options[i],
+                'postproc': points_for_opt[i],
+            })
+
+        out.sort(key=lambda x: -x['postproc'])
+        return out
+
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
@@ -91,5 +114,7 @@ class PostProcView(APIView):
                 out.append(self.borda(opts))
             if t == 'EQUALITY':
                 out.append(self.equality(opts))
+            if t == 'SAINTE_LAGUE':
+                out.append(self.sainte_lague(opts, q['points']))
 
         return Response(out)
