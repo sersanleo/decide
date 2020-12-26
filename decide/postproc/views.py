@@ -5,6 +5,34 @@ import math
 
 class PostProcView(APIView):
 
+    def largest_remainder(self, options, q, points):
+        out = []
+        e = []
+        r = []
+
+        for opt in options:
+            ei = math.floor(opt['votes']/q)
+            e.append(ei)
+            r.append(opt['votes']-q*ei)
+
+        k = points - sum(e)
+
+        for x in range(k):
+            grtst_rest_index = r.index(max(r))
+            e[grtst_rest_index] = e[grtst_rest_index] + 1
+            r[grtst_rest_index] = -1
+
+        cont = 0
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': e[cont],
+                })
+            cont += 1
+
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
+        return out
+
     def identity(self, options):
         out = []
 
@@ -58,9 +86,6 @@ class PostProcView(APIView):
         return out
 
     def droop(self, options, points):
-        out = []
-        e = []
-        r = []
         total_votes = 0
 
         for opt in options:
@@ -68,29 +93,8 @@ class PostProcView(APIView):
 
         q = round(1 + total_votes/(points+1))
 
-        for opt in options:
-            ei = math.floor(opt['votes']/q)
-            e.append(ei)
-            r.append(opt['votes']-q*ei)
+        return self.largest_remainder(options, q, points)
 
-        k = points - sum(e)
-
-        for x in range(k):
-            grtst_rest_index = r.index(max(r))
-            e[grtst_rest_index] = e[grtst_rest_index] + 1
-            r[grtst_rest_index] = -1
-
-        cont = 0
-        for opt in options:
-            out.append({
-                **opt,
-                'postproc': e[cont],
-                })
-            cont += 1
-
-        out.sort(key=lambda x: -x['postproc'])
-        return out
-        
     def sainte_lague(self, options, points):
         out = []
         votes = []
@@ -111,8 +115,18 @@ class PostProcView(APIView):
                 'postproc': points_for_opt[i],
             })
 
-        out.sort(key=lambda x: -x['postproc'])
+        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return out
+
+    def imperiali(self, options, points):
+        total_votes = 0
+
+        for opt in options:
+            total_votes += opt['votes']
+
+        q = round(total_votes/(points+2))
+
+        return self.largest_remainder(options, q, points)
 
     def post(self, request):
         """
@@ -163,5 +177,7 @@ class PostProcView(APIView):
                 out.append(self.sainte_lague(opts, q['points']))
             if t == 'DROOP':
                 out.append(self.droop(opts, q['points']))
+            if t == 'IMPERIALI':
+                out.append(self.imperiali(opts, q['points']))
 
         return Response(out)

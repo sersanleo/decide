@@ -182,8 +182,6 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
         
     def test_droop(self):
-        self.maxDiff = None
-
         data = [{
             'type': 'DROOP',
             'points': 21,
@@ -203,9 +201,40 @@ class PostProcTestCase(APITestCase):
             { 'option': 'Option F', 'number': 6, 'votes': 311000, 'postproc': 7 },
             { 'option': 'Option B', 'number': 2, 'votes': 184000, 'postproc': 4 },
             { 'option': 'Option C', 'number': 3, 'votes': 73000, 'postproc': 2 },
+            {'option': 'Option G', 'number': 7, 'votes': 27000, 'postproc': 0},
             { 'option': 'Option A', 'number': 1, 'votes': 12000, 'postproc': 0 },
             { 'option': 'Option D', 'number': 4, 'votes': 2000, 'postproc': 0 },
-            { 'option': 'Option G', 'number': 7, 'votes': 27000, 'postproc': 0 },
+        ]]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_imperiali(self):
+        data = [{
+            'type': 'IMPERIALI',
+            'points': 21,
+            'options': [
+                { 'option': 'Option A', 'number': 1, 'votes': 12000 },
+                { 'option': 'Option B', 'number': 2, 'votes': 184000 },
+                { 'option': 'Option C', 'number': 3, 'votes': 73000 },
+                { 'option': 'Option D', 'number': 4, 'votes': 2000 },
+                { 'option': 'Option E', 'number': 5, 'votes': 391000 },
+                { 'option': 'Option F', 'number': 6, 'votes': 311000 },
+                { 'option': 'Option G', 'number': 7, 'votes': 27000 },
+            ]
+        }]
+
+        expected_result = [[
+            { 'option': 'Option E', 'number': 5, 'votes': 391000, 'postproc': 9 },
+            { 'option': 'Option F', 'number': 6, 'votes': 311000, 'postproc': 7 },
+            { 'option': 'Option B', 'number': 2, 'votes': 184000, 'postproc': 4 },
+            { 'option': 'Option C', 'number': 3, 'votes': 73000, 'postproc': 1 },
+            {'option': 'Option G', 'number': 7, 'votes': 27000, 'postproc': 0},
+            { 'option': 'Option A', 'number': 1, 'votes': 12000, 'postproc': 0 },
+            { 'option': 'Option D', 'number': 4, 'votes': 2000, 'postproc': 0 },
         ]]
 
         response = self.client.post('/postproc/', data, format='json')
