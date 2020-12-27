@@ -35,7 +35,7 @@ class QuestionOption(models.Model):
 class Voting(models.Model):
     name = models.CharField(max_length=200, unique = True)
     desc = models.TextField(blank=True, null=True)
-    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+    question =  models.ManyToManyField(Question, related_name='voting')
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -111,7 +111,11 @@ class Voting(models.Model):
         self.votes_info_votos()
 
     def votes_info_opciones(self):
-        options = self.question.options.all()
+        options = set()
+        for q in self.question.all():
+            for o in q.options.all():
+                options.add(o)
+
 
         opts = []
         for opt in options:
@@ -120,7 +124,11 @@ class Voting(models.Model):
 
     def votes_info_votos(self):
         tally = self.tally
-        options = self.question.options.all()
+        options = set()
+        for q in self.question.all():
+            for o in q.options.all():
+                options.add(o)
+
 
         opts = []
         for opt in options:
@@ -135,7 +143,10 @@ class Voting(models.Model):
         return opts
     def do_postproc(self):
         tally = self.tally
-        options = self.question.options.all()
+        options = set()
+        for q in self.question.all():
+            for o in q.options.all():
+                options.add(o)
 
         opts = []
         for opt in options:
