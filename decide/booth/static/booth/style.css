@@ -1,4 +1,19 @@
-.voting {
-    margin-top: 20px;
-    margin-left: 40px;
+.choice-question {
+    width: 100%;
+}
+
+.choice-question label {
+    width: 100%;
+}
+
+.choice-question label.active {
+    background-color: #03ad03!important;
+} 
+
+p{
+    font-size: large;
+}
+
+label{
+    font-size: x-large;
 }
