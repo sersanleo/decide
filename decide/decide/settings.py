@@ -37,13 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'corsheaders',
     'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'gateway',
+    'rangefilter',
 ]
 
 REST_FRAMEWORK = {
@@ -178,5 +178,6 @@ if os.path.exists("config.jsonnet"):
     for k, v in config.items():
         vars()[k] = v
 
+AUTH_USER_MODEL = 'authentication.UserProfile'
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
