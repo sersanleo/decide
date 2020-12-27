@@ -104,6 +104,7 @@
             },
             beforeMount() {
                 this.init()
+                this.decideCheck()
                 ElGamal.BITS = this.keybits;
             },
             methods: {
@@ -175,6 +176,19 @@
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());
                     var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
                     return cipher;
+                },
+                decideCheck() {
+                    var data = {
+                        voting: this.voting.id,
+                        voter: this.user.id
+                    }
+                    this.postData("{% url "gateway" "booth" "/check_user_vote/" %}", data)
+                        .then(data => {
+                            alert("Puedes votar, crack")
+                        })
+                        .catch(error  => {
+                            alert("ERROR")
+                        })
                 },
                 decideSend(evt) {
                     evt.preventDefault();
