@@ -1,6 +1,6 @@
 import datetime
 import random
-from django.contrib.auth.models import User
+from authentication.models import UserProfile
 from django.utils import timezone
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -34,12 +34,12 @@ class StoreTextCase(BaseTestCase):
         super().tearDown()
 
     def gen_voting(self, pk):
-        voting = Voting(pk=pk, name='v1', question=self.question, start_date=timezone.now(),
+        voting = Voting(pk=pk, name='v' + str(pk), question=self.question, start_date=timezone.now(),
                 end_date=timezone.now() + datetime.timedelta(days=1))
         voting.save()
 
     def get_or_create_user(self, pk):
-        user, _ = User.objects.get_or_create(pk=pk)
+        user, _ = UserProfile.objects.get_or_create(pk=pk)
         user.username = 'user{}'.format(pk)
         user.set_password('qwerty')
         user.save()
