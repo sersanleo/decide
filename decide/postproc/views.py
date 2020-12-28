@@ -128,6 +128,17 @@ class PostProcView(APIView):
 
         return self.largest_remainder(options, q, points)
 
+    def hare(self, options, points):
+        total_votes = 0
+
+        for opt in options:
+            total_votes += opt['votes']
+        
+        q = round(total_votes/points)
+
+        return self.largest_remainder(options, q, points)
+        
+
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | BORDA | DROOP
@@ -179,5 +190,6 @@ class PostProcView(APIView):
                 out.append(self.droop(opts, q['points']))
             if t == 'IMPERIALI':
                 out.append(self.imperiali(opts, q['points']))
-
+            if t == 'HARE':
+                out.append(self.hare(opts, q['points']))
         return Response(out)
