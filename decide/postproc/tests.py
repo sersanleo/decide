@@ -180,6 +180,34 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    def test_hondt(self):
+        data = [{
+            'type': 'HONDT',
+            'points': 7,
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 340000},
+                {'option': 'Option 2', 'number': 2, 'votes': 280000},
+                {'option': 'Option 3', 'number': 3, 'votes': 160000},
+                {'option': 'Option 4', 'number': 4, 'votes': 60000},
+                {'option': 'Option 5', 'number': 5, 'votes': 15000},
+            ]
+        }]
+
+        expected_result = [[
+            {'option': 'Option 1', 'number': 1, 'votes': 340000, 'postproc': 3},
+            {'option': 'Option 2', 'number': 2, 'votes': 280000, 'postproc': 3},
+            {'option': 'Option 3', 'number': 3, 'votes': 160000, 'postproc': 1},
+            {'option': 'Option 4', 'number': 4, 'votes': 60000, 'postproc': 0},
+            {'option': 'Option 5', 'number': 5, 'votes': 15000, 'postproc': 0},
+
+        ]]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
         
     def test_droop(self):
         data = [{
