@@ -3,6 +3,11 @@
 
 {% block content %}
 <h1>Hellooo world</h1>
+{% for votacion in votaciones%}
+    <ul style="list-style-type:none;">
+        <a href="{% url 'votacion' votacion.id %}"><li>{{votacion.name}}</li></a>
+    </ul>    
+{% endfor %}
 {% endblock %}
 
 {% block extrabody %}
@@ -27,32 +32,13 @@
             delimiters: ['[[', ']]'],
             el: '#app-booth',
             data: {
-                keybits: {{ KEYBITS }},
                 alertShow: false,
                 alertMsg: "",
                 alertLvl: "info",
                 token: null,
                 user: null,
-                form: {
-                    username: '',
-                    password: ''
-                },
-            },
-            beforeMount() {
-                this.init()
-                ElGamal.BITS = this.keybits;
             },
             methods: {
-                init() {
-                    var cookies = document.cookie.split("; ");
-                    cookies.forEach((c) => {
-                        var cs = c.split("=");
-                        if (cs[0] == 'decide' && cs[1]) {
-                            this.token = cs[1];
-                            this.getUser();
-                        }
-                    });
-                },
                 postData(url, data) {
                     // Default options are marked with *
                     var fdata = {
@@ -83,12 +69,7 @@
                     this.token = null;
                     this.user = null;
                     document.cookie = 'decide=;';
-                    this.postData("{% url "gateway" "booth" "/logout/" %}", data);
-                },
-                decideEncrypt() {
-                    var bigmsg = BigInt.fromJSONObject(this.selected.toString());
-                    var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
-                    return cipher;
+                    this.signup = true;
                 },
                 showAlert(lvl, msg) {
                     this.alertLvl = lvl;

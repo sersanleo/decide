@@ -2,10 +2,10 @@
 {% load i18n static %}
 
 {% block content %}
-<b-form @submit="onSubmitLogin">
+<!--Login-->
+<b-form @submit="onSubmitLogin" v-if="signup">
     <div class="row pt-5">
         <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-            <h1>{{prueba}}</h1>
             <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
                 <b-form-input
                     id="username"
@@ -26,6 +26,16 @@
         </div>
     </div>
 </b-form>
+<!--info-->
+<div v-if="!signup">
+    <h1>Has entrado a la cabina de votación</h1>
+    <h2>Puedes visualizar un resumen de tus votaciones aquí:</h2>
+    <form action="{% url 'dashboard' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="user" id="user" :value="user.id">
+        <button class="btn btn-lg btn-primary" type="submit">RESUMEN</button>
+    </form>
+</div>
 {% endblock %}
 
 {% block extrabody %}
@@ -107,7 +117,6 @@
                             document.cookie = 'decide='+data.token+';';
                             this.token = data.token;
                             this.getUser();
-                            this.getDashboard();
                         })
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
@@ -122,13 +131,6 @@
                         }).catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
-                },
-                getDashboard(evt){
-                    var data = {
-                        token: this.token,
-                        voter: this.form.username,
-                    };
-                    this.postData("{% url "gateway" "booth" "/dashboard/" %}", data);
                 },
                 decideLogout(evt) {
                     evt.preventDefault();
