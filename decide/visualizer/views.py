@@ -27,16 +27,20 @@ class VisualizerView(TemplateView):
 
 def get_list_votings(request):
     filter = request.GET.get('filter')
+    busqueda = request.GET.get('nombre')
     list = None
     try:
-        if filter is None:
-            list = Voting.objects.all()
-        elif filter == 'F':
+        if filter == 'F':
             list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=False).all()
         elif filter == 'A':
             list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=True).all()
-        else:
+        elif filter == 'S':
             list = Voting.objects.filter(start_date__isnull=True, end_date__isnull=True).all()
+        else:
+            if busqueda is None:
+                list = Voting.objects.all()
+            else:
+                list = Voting.objects.filter(name__contains=busqueda).all()
     except:
         raise Http404
 
