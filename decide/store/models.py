@@ -9,6 +9,8 @@ class Vote(models.Model):
 
     a = BigBigField()
     b = BigBigField()
+    c = BigBigField()
+    d = BigBigField()
 
     voted = models.DateTimeField(auto_now=True)
 
