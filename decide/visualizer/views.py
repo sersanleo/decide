@@ -6,6 +6,8 @@ from django.http import Http404
 
 from base import mods
 
+from voting.models import Voting
+
 
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
@@ -24,11 +26,19 @@ class VisualizerView(TemplateView):
 
 
 def get_list_votings(request):
+    filter = request.GET.get('filter')
     list = None
     try:
-        list = mods.get('voting')
-        print(list)
+        if filter is None:
+            list = Voting.objects.all()
+        elif filter == 'F':
+            list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=False).all()
+        elif filter == 'A':
+            list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=True).all()
+        else:
+            list = Voting.objects.filter(start_date__isnull=True, end_date__isnull=True).all()
     except:
         raise Http404
 
     return render(request, 'visualizer/listVisualizer.html', {'votings': list})
+
