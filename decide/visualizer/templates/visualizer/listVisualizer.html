@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+
+{% block content %}
+    <div id="app-visualizer">
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+        </b-navbar>
+
+        <div class="voting container">
+            <table style="width:100%">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre de la votacion</th>
+                        <th>Estado</th>
+                        <th>Enlace</th>
+                    </tr>
+            {% for voting in votings %}
+                    <tr>
+                        <td>{{ voting.id }}</td>
+                        <td>{{ voting.name }}</td>
+                        {% if voting.start_date == None %}
+                            <td>Votacion no comenzada</td>
+                        {% elif voting.end_date == None %}
+                            <td>Votacion en curso</td>
+                        {% else %}
+                            <td>Votacion finalizada</td>
+                        {% endif %}
+                            <td><a href="{{ voting.id }}">Visualizar resultados</a> </td>
+                    </tr>
+            {% endfor %}
+            </table>
+        </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+        var voting = {{voting|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-visualizer',
+            data: {
+                voting: voting
+            }
+        })
+    </script>
+</body>
+{% endblock %}

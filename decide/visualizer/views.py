@@ -1,6 +1,7 @@
 import json
+
+from django.shortcuts import render
 from django.views.generic import TemplateView
-from django.conf import settings
 from django.http import Http404
 
 from base import mods
@@ -20,3 +21,14 @@ class VisualizerView(TemplateView):
             raise Http404
 
         return context
+
+
+def get_list_votings(request):
+    list = None
+    try:
+        list = mods.get('voting')
+        print(list)
+    except:
+        raise Http404
+
+    return render(request, 'visualizer/listVisualizer.html', {'votings': list})
