@@ -9,15 +9,29 @@
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-        <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+        {% if d_p %}
+            <link type="text/css" rel="stylesheet" href="{% static 'booth/deuteranopia_protanopia.css' %}" />
+        {% else %}
+            <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+        {% endif %}
+        
     </head>
     <body>
         <div id="app-booth">
             <!-- Navbar -->
             <b-navbar type="dark" variant="primary">
                 <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-                    <b-navbar-nav class="ml-auto" v-if="!signup">
-                        <b-button variant="danger" class="btn-white" href="#" v-on:click="decideLogout">
+                    <b-navbar-nav class="ml-auto" >
+                        <b-nav-item-dropdown text="Tipo de visualización" class="mr-5" right>
+                            <form action="{% url 'deuteranopia' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="votacion" id="votacion" value="{{votacion_id}}">
+                                <button class="btn btn-primary" type="submit">Protanopía - Deuteranopía</button>
+                            </form>
+                            
+                            <b-dropdown-item href="#">Tritanopía</b-dropdown-item>
+                        </b-nav-item-dropdown>
+                        <b-button v-if="!signup" variant="danger" class="btn-white" href="#" v-on:click="decideLogout">
                             {% trans "Logout" %}
                         </b-button>
                     </b-navbar-nav>
