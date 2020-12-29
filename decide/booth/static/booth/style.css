@@ -1,3 +1,7 @@
+.navbar-light .navbar-brand {
+    color: white!important;
+}
+
 .choice-question {
     width: 100%;
 }
@@ -7,8 +11,18 @@
 }
 
 .choice-question label.active {
-    background-color: #03ad03!important;
+    background-color: #dc3545!important;
+    border-color: #dc3545!important;
+    color: white!important;
 } 
+
+.choice-question label.active:before {
+    content:  "\2192"!important;
+}
+
+.choice-question label.active:after {
+    content:  "\2190"!important;
+}
 
 p{
     font-size: large;
