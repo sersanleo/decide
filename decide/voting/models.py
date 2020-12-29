@@ -7,11 +7,13 @@ from django import forms
 from base import mods
 from base.models import Auth, Key
 
+import sys
 
 class Question(models.Model):
     ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"), (3,"Rank order scale"))
     option_types = models.PositiveIntegerField(choices=ANSWER_TYPES, default="1")
     desc = models.TextField(unique=True)
+    points = models.PositiveIntegerField(default="1")
 
 
     def __str__(self):
@@ -67,26 +69,24 @@ class Voting(models.Model):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
-        return [[i['a'], i['b']] for i in votes]
+        return [[i['a'], i['b']] for i in votes], [[i['c'], i['d']] for i in votes]
     
     def get_info(self,token=''):
         votos=Voting.objects.get(id=self.id)
         return votos
     
-
     def tally_votes(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
 
-        votes = self.get_votes(token)
+        votes, ranked_votes = self.get_votes(token)
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
         decrypt_url = "/decrypt/{}/".format(self.id)
         auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
 
-        # first, we do the shuffle
         data = { "msgs": votes }
         response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
                 response=True)
@@ -94,7 +94,6 @@ class Voting(models.Model):
             # TODO: manage error
             pass
 
-        # then, we can decrypt that
         data = {"msgs": response.json()}
         response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
                 response=True)
@@ -104,6 +103,24 @@ class Voting(models.Model):
             pass
 
         self.tally = response.json()
+
+        if ranked_votes and len(ranked_votes[0]) != 0 and ranked_votes[0][0] != 0:
+                    
+            data = { "msgs": ranked_votes }
+            response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
+                    response=True)
+            if response.status_code != 200:
+                pass
+
+            data = {"msgs": response.json()}
+            response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
+                    response=True)
+
+            if response.status_code != 200:
+                pass
+
+            self.tally = [self.tally, response.json()]
+
         self.save()
 
         self.do_postproc()
@@ -133,21 +150,31 @@ class Voting(models.Model):
             )  
         
         return opts
+
     def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
+        points = self.question.points
 
         opts = []
         for opt in options:
-            if isinstance(tally, list):
+            if isinstance(tally, list) and len(tally) !=0 and isinstance(tally[0], list):
+                m = [i for i,x in enumerate(tally[0]) if x==opt.number] 
+                votes = [tally[1][j] for j in m]
+                
+            elif isinstance(tally, list) and len(tally) !=0:
                 votes = tally.count(opt.number)
+                
             else:
                 votes = 0
             opts.append({
                 'option': opt.option,
                 'number': opt.number,
-                'votes': votes
+                'votes': votes,
+                'points': points
             })
+
+        sys.stdout.write('KKKKKKK' + str(opts)) 
 
         data = { 'type': 'IDENTITY', 'options': opts }
         postp = mods.post('postproc', json=data)

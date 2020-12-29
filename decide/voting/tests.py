@@ -18,6 +18,7 @@ from voting.models import Voting, Question, QuestionOption
 from django.db.utils import IntegrityError
 from .admin import give_message
 
+from store.models import Vote
 
 
 class VotingTestCase(BaseTestCase):
@@ -38,8 +39,8 @@ class VotingTestCase(BaseTestCase):
     def create_voting(self):
         q = Question(desc='test question', option_types=2)
         q.save()
-        for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+        for i in range(4):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1), rank_order = i+1)
             opt.save()
         v = Voting(name='test voting', question=q)
         v.save()
@@ -50,11 +51,6 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
 
         return v
-    
-    def create_question(self):
-        q = Question(desc='test question')
-        q.save()
-        return q
 
     def create_voters(self, v):
         for i in range(100):
@@ -71,28 +67,41 @@ class VotingTestCase(BaseTestCase):
         user.save()
         return user
 
-    def store_votes(self, v):
+
+    def store_votes_unique_option(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
 
         clear = {}
-        for opt in v.question.options.all():
-            clear[opt.number] = 0
-            for i in range(random.randint(0, 5)):
-                a, b = self.encrypt_msg(opt.number, v)
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': { 'a': a, 'b': b },
-                }
-                clear[opt.number] += 1
-                user = self.get_or_create_user(voter.voter_id)
-                self.login(user=user.username)
-                voter = voters.pop()
-                mods.post('store', json=data)
+        for i in range(3):
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            
+            options = v.question.options.all()
+            count_options = len(options)
+            for j in range(1):
+                chosen_option = options[random.randint(0, count_options-1)]
+                
+                if chosen_option.number in clear:
+                    clear[chosen_option.number] += 1
+                else:
+                    clear[chosen_option.number] = 1
+
+                a, b = self.encrypt_msg(chosen_option.number, v)
+                votos.append({ 'a': a, 'b': b })
+            
+            data = {
+                'voting': v.id,
+                'voter': voter.voter_id,
+                'votes': votos,
+            }                
+
+            mods.post('store', json=data)
+            voter = voters.pop()
         return clear
 
-    def test_complete_voting(self):
+    def test_complete_unique_option_voting(self):
         v = self.create_voting()
         self.create_voters(v)
 
@@ -100,7 +109,7 @@ class VotingTestCase(BaseTestCase):
         v.start_date = timezone.now()
         v.save()
 
-        clear = self.store_votes(v)
+        clear = self.store_votes_unique_option(v)
 
         self.login()  # set token
         v.tally_votes(self.token)
@@ -116,18 +125,124 @@ class VotingTestCase(BaseTestCase):
 
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
-    
-    def test_question_unique(self):
-        v = self.create_question()
-        with self.assertRaises(Exception) as raised:
-            self.create_question()
-        self.assertEqual(IntegrityError, type(raised.exception))
 
-    def test_duplicate_voting_name(self):
-        v1 = self.create_voting()
-        with self.assertRaises(Exception) as raised:
-            v2 = self.create_voting()
-        self.assertEqual(IntegrityError, type(raised.exception))
+
+    def store_votes_multiple_option(self, v):
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
+
+        clear = {}
+        for i in range(3):
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            
+            options = v.question.options.all()
+            count_options = len(options)
+            for j in range(count_options):
+                chosen_option = options[j]
+                
+                if chosen_option.number in clear:
+                    clear[chosen_option.number] += 1
+                else:
+                    clear[chosen_option.number] = 1
+
+                a, b = self.encrypt_msg(chosen_option.number, v)
+                votos.append({ 'a': a, 'b': b })
+            
+            data = {
+                'voting': v.id,
+                'voter': voter.voter_id,
+                'votes': votos,
+            }                
+
+            mods.post('store', json=data)
+            voter = voters.pop()
+        return clear
+
+    def test_complete_multiple_option_voting(self):
+        v = self.create_voting()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes_multiple_option(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+        tally = v.tally
+        message=give_message(v)
+        self.assertIn("For voting:test voting", message)
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
+
+    def store_votes_ranked_option(self, v):
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
+
+        clear = {}
+        for i in range(3):
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            
+            options = v.question.options.all()
+            count_options = len(options)
+            for j in range(count_options):
+                chosen_option = options[j]
+                
+                if chosen_option.number in clear:
+                    clear[chosen_option.number] += 1
+                else:
+                    clear[chosen_option.number] = 1
+
+                a, b = self.encrypt_msg(chosen_option.number, v)
+                c, d = self.encrypt_msg(chosen_option.rank_order, v)
+                votos.append({ 'a': a, 'b': b, 'c': c, 'd': d })
+            
+            data = {
+                'voting': v.id,
+                'voter': voter.voter_id,
+                'votes': votos,
+            }                
+
+            mods.post('store', json=data)
+            voter = voters.pop()
+        return clear
+
+    def test_complete_ranked_option_voting(self):
+        v = self.create_voting()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes_ranked_option(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+        tally = v.tally
+        message=give_message(v)
+        self.assertIn("For voting:test voting", message)
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
 
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
@@ -154,80 +269,21 @@ class VotingTestCase(BaseTestCase):
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
 
-    def test_update_voting(self):
-        voting = self.create_voting()
 
-        data = {'action': 'start'}
-        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
-        #self.assertEqual(response.status_code, 401)
+    def create_question(self):
+        q = Question(desc='test question')
+        q.save()
+        return q
 
-        # login with user no admin
-        self.login(user='noadmin')
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 403)
+    def test_question_unique(self):
+        v = self.create_question()
+        with self.assertRaises(Exception) as raised:
+            self.create_question()
+        self.assertEqual(IntegrityError, type(raised.exception))
 
-        # login with user admin
-        self.login()
-        data = {'action': 'bad'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
+    def test_duplicate_voting_name(self):
+        v1 = self.create_voting()
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
 
-        # STATUS VOTING: not started
-        for action in ['stop', 'tally']:
-            data = {'action': action}
-            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json(), 'Voting is not started')
-
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        # STATUS VOTING: started
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting is not stopped')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-
-        # STATUS VOTING: stopped
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-
-        # STATUS VOTING: tallied
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already tallied')
