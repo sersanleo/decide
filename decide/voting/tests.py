@@ -51,6 +51,29 @@ class VotingTestCase(BaseTestCase):
         v.auths.add(a)
 
         return v
+      
+    def create_voting_multi(self):
+        q1 = Question(desc='test1 question', option_types=2)
+        q2 = Question(desc='test2 question', option_types=2)
+        q1.save()
+        q2.save()
+        for i in range(5):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt.save()
+        for i in range(5):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
 
     def create_voters(self, v):
         for i in range(100):
@@ -286,4 +309,9 @@ class VotingTestCase(BaseTestCase):
         with self.assertRaises(Exception) as raised:
             v2 = self.create_voting()
         self.assertEqual(IntegrityError, type(raised.exception))
+        
+    def test_multi_voting(self):
+        v1 = self.create_voting_multi()
+        print(v1.question)
 
+  

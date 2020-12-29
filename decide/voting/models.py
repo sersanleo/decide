@@ -7,7 +7,6 @@ from django import forms
 from base import mods
 from base.models import Auth, Key
 
-import sys
 
 class Question(models.Model):
     ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"), (3,"Rank order scale"))
@@ -37,7 +36,7 @@ class QuestionOption(models.Model):
 class Voting(models.Model):
     name = models.CharField(max_length=200, unique = True)
     desc = models.TextField(blank=True, null=True)
-    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+    question =  models.ManyToManyField(Question, related_name='voting')
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -153,8 +152,11 @@ class Voting(models.Model):
 
     def do_postproc(self):
         tally = self.tally
-        options = self.question.options.all()
+        options = set()
         points = self.question.points
+        for q in self.question.all():
+            for o in q.options.all():
+                options.add(o)
 
         opts = []
         for opt in options:
@@ -173,8 +175,6 @@ class Voting(models.Model):
                 'votes': votes,
                 'points': points
             })
-
-        sys.stdout.write('KKKKKKK' + str(opts)) 
 
         data = { 'type': 'IDENTITY', 'options': opts }
         postp = mods.post('postproc', json=data)
