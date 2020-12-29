@@ -47,6 +47,8 @@ class Voting(models.Model):
     auths = models.ManyToManyField(Auth, related_name='votings')
 
     tally = JSONField(blank=True, null=True)
+    tallyM = JSONField(blank=True, null=True)
+    tallyF = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
 
     def create_pubkey(self):
@@ -69,6 +71,18 @@ class Voting(models.Model):
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
         return [[i['a'], i['b']] for i in votes], [[i['c'], i['d']] for i in votes]
+    
+    def get_votes_masc(self, token=''):
+        # gettings votes from store
+        votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
+        # anon votes
+        return [[i['a'], i['b']] for i in votes if i['sex'] == 'M']
+
+    def get_votes_fem(self, token=''):
+        # gettings votes from store
+        votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
+        # anon votes
+        return [[i['a'], i['b']] for i in votes if i['sex'] == 'F']
     
     def get_info(self,token=''):
         votos=Voting.objects.get(id=self.id)
@@ -122,10 +136,77 @@ class Voting(models.Model):
 
         self.save()
 
-        self.do_postproc()
+        self.tally_votes_masc(token)
         self.votes_info_opciones()
         self.votes_info_votos()
 
+def tally_votes_masc(self, token=''):
+        '''
+        The tally is a shuffle and then a decrypt
+        '''
+
+        votes = self.get_votes_masc(token)
+        
+        auth = self.auths.first()
+        shuffle_url = "/shuffle/{}/".format(self.id)
+        decrypt_url = "/decrypt/{}/".format(self.id)
+        auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
+
+        # first, we do the shuffle
+        data = { "msgs": votes }
+        response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
+                response=True)
+        if response.status_code != 200:
+            # TODO: manage error
+            pass
+
+        # then, we can decrypt that
+        data = {"msgs": response.json()}
+        response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
+                response=True)
+
+        if response.status_code != 200:
+            # TODO: manage error
+            pass
+
+        self.tallyM = response.json()
+        self.save()
+
+        self.tally_votes_fem(token)
+
+    def tally_votes_fem(self, token=''):
+        '''
+        The tally is a shuffle and then a decrypt
+        '''
+
+        votes = self.get_votes_fem(token)
+        
+        auth = self.auths.first()
+        shuffle_url = "/shuffle/{}/".format(self.id)
+        decrypt_url = "/decrypt/{}/".format(self.id)
+        auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
+
+        # first, we do the shuffle
+        data = { "msgs": votes }
+        response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
+                response=True)
+        if response.status_code != 200:
+            # TODO: manage error
+            pass
+
+        # then, we can decrypt that
+        data = {"msgs": response.json()}
+        response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
+                response=True)
+
+        if response.status_code != 200:
+            # TODO: manage error
+            pass
+
+        self.tallyF = response.json()
+        self.save()
+
+        self.do_postproc()
     def votes_info_opciones(self):
         options = self.question.options.all()
 
@@ -152,6 +233,8 @@ class Voting(models.Model):
 
     def do_postproc(self):
         tally = self.tally
+        tallyM=self.tallyM
+        tallyF=self.tallyF
         options = set()
         points = self.question.points
         for q in self.question.all():
@@ -160,19 +243,22 @@ class Voting(models.Model):
 
         opts = []
         for opt in options:
+            votesM=tallyM.count(opt.number)
+            votesF=tallyF.count(opt.number)
             if isinstance(tally, list) and len(tally) !=0 and isinstance(tally[0], list):
                 m = [i for i,x in enumerate(tally[0]) if x==opt.number] 
                 votes = [tally[1][j] for j in m]
                 
             elif isinstance(tally, list) and len(tally) !=0:
-                votes = tally.count(opt.number)
-                
+                votes = tally.count(opt.number)         
             else:
                 votes = 0
             opts.append({
                 'option': opt.option,
                 'number': opt.number,
                 'votes': votes,
+                'votes_masc': votesM,
+                'votes_fem': votesF,
                 'points': points
             })
 
