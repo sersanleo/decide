@@ -20,6 +20,7 @@ class StoreView(generics.ListAPIView):
     def get(self, request):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
+        
         return super().get(request)
 
     def post(self, request):
@@ -41,15 +42,16 @@ class StoreView(generics.ListAPIView):
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
         uid = request.data.get('voter')
-        vote = request.data.get('vote')
+        votes = request.data.get('votes')           
 
-        if not vid or not uid or not vote:
+        if not vid or not uid or not votes:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
         # validating voter
         token = request.auth.key
         voter = mods.post('authentication', entry_point='/getuser/', json={'token': token})
         voter_id = voter.get('id', None)
+
         if not voter_id or voter_id != uid:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -58,15 +60,21 @@ class StoreView(generics.ListAPIView):
         if perms.status_code == 401:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
-        a = vote.get("a")
-        b = vote.get("b")
+        for i in votes:
+            a = i.get("a")
+            b = i.get("b")
+            c = i.get("c")
+            d = i.get("d")
 
-        defs = { "a": a, "b": b }
-        v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,
-                                          defaults=defs)
-        v.a = a
-        v.b = b
+            defs = { "a": a, "b": b, "c": c, "d": d }
 
-        v.save()
+            v = Vote(voting_id=vid, voter_id=uid)
+            
+            v.a = a
+            v.b = b
+            v.c = c
+            v.d = d
+
+            v.save()
 
         return  Response({})
