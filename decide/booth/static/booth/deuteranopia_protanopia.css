@@ -35,6 +35,8 @@ body {
 
 .submit-dalt {
     font-size: larger;
+    border-color: whitesmoke!important;
+    margin: unset!important;
 }
 
 .alert {

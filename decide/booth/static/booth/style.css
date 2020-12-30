@@ -5,7 +5,7 @@
 }
 
 .dropdown-toggle {
-    color: black!important;
+    color: white!important;
     font-size: larger;
 }
 
@@ -29,6 +29,8 @@
 
 .submit-dalt {
     font-size: larger;
+    border-color: whitesmoke!important;
+    margin: unset!important;
 }
 
 
