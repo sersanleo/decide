@@ -12,18 +12,18 @@ class UserCreateForm(UserCreationForm):
 
     class Meta:
         model = UserProfile
-        fields = ('username', 'sex')
+        fields = ('username', 'sex', 'style')
 
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
     add_form = UserCreateForm
 
-    list_display = ('username', 'email' 'sex', 'is_admin')
+    list_display = ('username', 'email' 'sex', 'style', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'sex')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'sex', 'style')}),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         }),
@@ -32,13 +32,13 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'sex', 'password1', 'password2'),
+            'fields': ('username', 'sex', 'style', 'password1', 'password2'),
         }),
     )
 
-    list_display = ('username', 'email', 'first_name', 'last_name', 'sex', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'sex', 'style', 'is_staff')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
-    search_fields = ('username', 'first_name', 'last_name', 'email', 'sex')
+    search_fields = ('username', 'first_name', 'last_name', 'email', 'sex', 'style')
     ordering = ('username',)
     filter_horizontal = ()
 

@@ -1,14 +1,23 @@
+{% load i18n static %}
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8" />
         <title>{% block title %}Decide!{% endblock %}</title>
         {% block extrahead %}{% endblock %}
+        {% if user.is_authenticated %}
+            {% with 'styles/'|add:user.style|add:'.css' as style_url %}
+                <link type="text/css" rel="stylesheet" href="{% static style_url %}" />
+            {% endwith %}
+        {% else %}
+            <link type="text/css" rel="stylesheet" href="{% static 'styles/N.css' %}" />
+        {% endif %}
     </head>
     <body>
         {% block content %}
         {% endblock %}
-
+        
         {% block extrabody %}{% endblock %}
     </body>
 </html>
