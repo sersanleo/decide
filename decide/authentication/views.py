@@ -42,12 +42,13 @@ class RegisterView(APIView):
 
         username = request.data.get('username', '')
         sex = request.data.get('sex', '')
+        style = request.data.get('style', '')
         pwd = request.data.get('password', '')
-        if not username or not pwd or not sex:
+        if not username or not pwd or not sex or not style:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
         try:
-            user = UserProfile(username=username, sex=sex)
+            user = UserProfile(username=username, sex=sex, style=style)
             user.set_password(pwd)
             user.save()
             token, _ = Token.objects.get_or_create(user=user)
