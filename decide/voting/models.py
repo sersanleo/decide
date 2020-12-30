@@ -32,6 +32,12 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
+
+class TypeVoting(models.Model):
+    name = models.CharField(max_length=200, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
     
 class Voting(models.Model):
     name = models.CharField(max_length=200, unique = True)
@@ -50,6 +56,8 @@ class Voting(models.Model):
     tallyM = JSONField(blank=True, null=True)
     tallyF = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
+    
+    type = models.ForeignKey(TypeVoting, related_name='voting', on_delete=models.CASCADE)
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
@@ -262,7 +270,7 @@ def tally_votes_masc(self, token=''):
                 'points': points
             })
 
-        data = { 'type': 'IDENTITY', 'options': opts }
+        data = { 'type': self.type.name, 'options': opts }
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
