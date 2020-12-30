@@ -1,11 +1,21 @@
+body {
+    background-color: black!important;
+    color:white;
+}
+
 /* Barra de navegación */
 
+.navbar {
+    background-color: #52ACFF!important;
+}
+
 .navbar-brand {
+    color: black!important;
     font-size: x-large!important;
 }
 
 .dropdown-toggle {
-    color: white!important;
+    color: black!important;
     font-size: larger;
 }
 
@@ -14,10 +24,6 @@
     width: max-content;
     padding: unset;
     margin: unset;
-}
-
-.btn-white {
-    font-size: large;
 }
 
 .radio-dalt {
@@ -33,8 +39,27 @@
     margin: unset!important;
 }
 
+.alert {
+    color: black!important;
+    background-color: white!important;
+    border-color:white!important;
+}
+
 
 /* Votación */
+
+.btn-login {
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.btn-white {
+    font-size: large;
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
+}
 
 .choice-question {
     width: 100%;
@@ -42,12 +67,15 @@
 
 .choice-question label {
     width: 100%;
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
 }
 
 .choice-question label.active {
-    background-color: #dc3545!important;
-    border-color: #dc3545!important;
-    color: white!important;
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color:black!important;
 } 
 
 .choice-question label.active:before {

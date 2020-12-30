@@ -9,18 +9,45 @@
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
         <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-        <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+        {% if d_p %}
+            <link type="text/css" rel="stylesheet" href="{% static 'booth/deuteranopia_protanopia.css' %}" />
+        {% elif tr %}
+            <link type="text/css" rel="stylesheet" href="{% static 'booth/tritanopia.css' %}" />
+        {% else %}
+            <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+        {% endif %}
+        
     </head>
     <body>
         <div id="app-booth">
             <!-- Navbar -->
-            <b-navbar type="dark" variant="primary">
+            <b-navbar type="dark" variant="primary" toggleable="lg">
                 <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-                    <b-navbar-nav class="ml-auto" v-if="!signup">
-                        <b-button variant="danger" href="#" v-on:click="decideLogout">
-                            {% trans "Logout" %}
-                        </b-button>
+                <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+                <b-collapse id="nav-collapse" is-nav>
+                    <b-navbar-nav class="ml-auto" >
+                        <b-nav-item-dropdown text="Tipo de visualización" class="mr-5" right>
+                            <div class="btn-group" data-toggle="buttons">
+                                <form class="btn-group-vertical form-daltonismo" action="{% url 'change_style' %}" method="post">
+                                    {% csrf_token %}
+                                        <label class="btn btn-dark radio-dalt">
+                                            <input class="input-dalt" type="radio" name="votacion" value="{{votacion_id}}-deuter_prot" {% if d_p %} checked {% endif %}>
+                                        Deuteranopía - Protanopía</label>
+                                        <label class="btn btn-dark radio-dalt">
+                                            <input class="input-dalt" type="radio" name="votacion" value="{{votacion_id}}-trit" {% if tr %} checked {% endif %}>
+                                        Tritanopía</label>
+                                        <label class="btn btn-dark radio-dalt">
+                                            <input class="input-dalt" type="radio" name="votacion" value="{{votacion_id}}-normal" {% if not d_p and not tr %} checked {% endif %}>
+                                        Normal</label>
+                                        <input class="btn btn-warning submit-dalt" type="submit" value="Cambiar">
+                                </form>
+                            </div>
+                        </b-nav-item-dropdown>
                     </b-navbar-nav>
+                    <b-button v-if="!signup" variant="danger" class="btn btn-white mt-3 mt-lg-0" href="#" v-on:click="decideLogout">
+                        {% trans "Logout" %}
+                    </b-button>
+                </b-collapse>
             </b-navbar>
     
             <b-alert :variant="alertLvl" dismissible v-model="alertShow">
