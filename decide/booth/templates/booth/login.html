@@ -1,6 +1,13 @@
 {% extends "booth/base.html" %}
 {% load i18n static %}
 
+{% block bg-img %}
+<div v-if="!signup" class="bg-img">
+
+</div>
+
+{% endblock %}
+
 {% block content %}
 <!--Login-->
 <b-form @submit="onSubmitLogin" v-if="signup">
@@ -28,13 +35,17 @@
 </b-form>
 <!--info-->
 <div v-if="!signup">
-    <h1>Has entrado a la cabina de votación</h1>
-    <h2>Puedes visualizar un resumen de tus votaciones aquí:</h2>
-    <form action="{% url 'dashboard' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="user" id="user" :value="user.id">
-        <button class="btn btn-lg btn-primary" type="submit">RESUMEN</button>
-    </form>
+    <div>
+        <div class="db-h">
+            <h1>Has entrado a la cabina de votación</h1>
+            <h2>Puedes visualizar un resumen de tus votaciones aquí:</h2>
+        </div>
+        <form action="{% url 'dashboard' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="user" id="user" :value="user.id">
+            <button class="btn btn-lg btn-primary m-5" type="submit">DASHBOARD</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
 

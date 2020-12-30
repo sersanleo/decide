@@ -17,3 +17,19 @@ p{
 label{
     font-size: x-large;
 }
+.bg-img{
+    background-image: url("img/cabina.jpg");
+    background-size: cover;
+    background-position: center center;
+    width: 100vh;
+    height: 100vh;
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    filter: brightness(0.3);
+    min-width: 100%;
+    min-height: 100%;
+}
+.db-h{
+    color: white;
+}
