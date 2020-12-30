@@ -33,6 +33,7 @@
     <form action="{% url 'dashboard' %}" method="post">
         {% csrf_token %}
         <input type="hidden" name="user" id="user" :value="user.id">
+        <input type="hidden" name="token" id="token" :value="token">
         <button class="btn btn-lg btn-primary" type="submit">RESUMEN</button>
     </form>
 </div>
@@ -60,7 +61,6 @@
             delimiters: ['[[', ']]'],
             el: '#app-booth',
             data: {
-                keybits: {{ KEYBITS }},
                 signup: true,
                 alertShow: false,
                 alertMsg: "",
@@ -74,7 +74,6 @@
             },
             beforeMount() {
                 this.init()
-                ElGamal.BITS = this.keybits;
             },
             methods: {
                 init() {
@@ -140,11 +139,6 @@
                     this.user = null;
                     document.cookie = 'decide=;';
                     this.signup = true;
-                },
-                decideEncrypt() {
-                    var bigmsg = BigInt.fromJSONObject(this.selected.toString());
-                    var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
-                    return cipher;
                 },
                 showAlert(lvl, msg) {
                     this.alertLvl = lvl;

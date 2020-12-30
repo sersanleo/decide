@@ -3,10 +3,13 @@
 
 {% block content %}
 <!-- Voting -->
-<h1>[[ voting.name ]]</h1>
-<p class="lead">[[voting.desc]]</p>
-<div>
-<p>[[token]]</p>
+<div v-if="!token">
+    <p>Debe loguearse en la cabina para poder acceder a sus votaciones</p>
+    <a href="{% url 'login' %}"> LOGIN </a>
+</div>
+<div v-if="token">
+    <h1>[[ voting.name ]]</h1>
+    <p class="lead">[[voting.desc]]</p>
     <div class="row py-3 py-xl-5">
         <div class="col-12 col-xl-5 offset-xl-1 pb-2">
             <h3>[[ voting.question.desc ]]</h3>
@@ -34,8 +37,6 @@
         </div>
     </div>
 </div>
-</div>
-</div>
 {% endblock %}
 
 {% block extrabody %}
@@ -61,6 +62,7 @@
             delimiters: ['[[', ']]'],
             el: '#app-booth',
             data: {
+                keybits: {{ KEYBITS }},
                 voting: voting,
                 selected: "",
                 signup: true,

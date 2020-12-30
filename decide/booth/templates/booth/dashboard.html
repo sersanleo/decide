@@ -8,7 +8,7 @@
     <h2>Votaciones disponibles:</h2>
     {% for votacion in vot_dis %}
         <ul style="list-style-type:none;">
-            <a href="{% url 'votacion' votacion.id user_id%}"><li>{{votacion.name}}</li></a>
+            <a href="{% url 'votacion' votacion.id%}"><li>{{votacion.name}}</li></a>
         </ul>    
     {% endfor %}
     {% if no_vot_dis %}
@@ -17,7 +17,7 @@
     <h2>Votaciones pendientes de resultados:</h2>
     {% for votacion in vot_pen %}
         <ul style="list-style-type:none;">
-            <a href="{% url 'votacion' votacion.id user_id%}"><li>{{votacion.name}}</li></a>
+            <a href="{% url 'votacion' votacion.id%}"><li>{{votacion.name}}</li></a>
         </ul>    
     {% endfor %}
     {% if no_vot_pen %}
@@ -56,7 +56,52 @@
                 token: null,
                 user: null,
             },
+            beforeMount() {
+                this.init()
+            },
             methods: {
+                init() {
+                    var cookies = document.cookie.split("; ");
+                    cookies.forEach((c) => {
+                        var cs = c.split("=");
+                        if (cs[0] == 'decide' && cs[1]) {
+                            this.token = cs[1];
+                            this.getUser();
+                        }
+                    });
+                },
+                postData(url, data) {
+                    // Default options are marked with *
+                    var fdata = {
+                        body: JSON.stringify(data),
+                        headers: {
+                            'content-type': 'application/json',
+                        },
+                        method: 'POST',
+                    };
+
+                    if (this.token) {
+                        fdata.headers['Authorization'] = 'Token ' + this.token;
+                    }
+
+                    return fetch(url, fdata)
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                return Promise.reject(response.statusText);
+                            }
+                        });
+                },
+                getUser(evt) {
+                    var data = {token: this.token};
+                    this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
+                        .then(data => {
+                            this.user = data;
+                        }).catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
+                },
                 showAlert(lvl, msg) {
                     this.alertLvl = lvl;
                     this.alertMsg = msg;
