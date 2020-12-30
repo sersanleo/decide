@@ -9,7 +9,40 @@ body {
 
 .navbar-brand {
     color: black!important;
+    font-size: x-large!important;
 }
+
+.dropdown-toggle {
+    color: black!important;
+    font-size: larger;
+}
+
+.dropdown-menu {
+    background-color: whitesmoke!important;
+    width: max-content;
+    padding: unset;
+    margin: unset;
+}
+
+.radio-dalt {
+    margin: unset!important;
+    border-color: whitesmoke!important;
+    text-align: left!important;
+    font-size: larger;
+}
+
+.submit-dalt {
+    font-size: larger;
+}
+
+.alert {
+    color: black!important;
+    background-color: white!important;
+    border-color:white!important;
+}
+
+
+/* Votación */
 
 .btn-login {
     background-color: #4DA9FF!important;
@@ -18,6 +51,7 @@ body {
 }
 
 .btn-white {
+    font-size: large;
     background-color: white!important;
     border-color: white!important;
     color: black!important;
