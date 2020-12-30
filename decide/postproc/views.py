@@ -11,9 +11,9 @@ class PostProcView(APIView):
         r = []
 
         for opt in options:
-            ei = math.floor(opt['votes']/q)
+            ei = math.floor(opt['votes'] / q)
             e.append(ei)
-            r.append(opt['votes']-q*ei)
+            r.append(opt['votes'] - q * ei)
 
         k = points - sum(e)
 
@@ -27,15 +27,11 @@ class PostProcView(APIView):
             out.append({
                 **opt,
                 'postproc': e[cont],
-                })
+            })
             cont += 1
 
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return out
-    
-    
-
-
 
     def identity(self, options):
         out = []
@@ -56,7 +52,7 @@ class PostProcView(APIView):
             votes = 0
             options_number = len(options)
             for i in range(0, options_number):
-                votes += opt['votes'][i]*(options_number-i)
+                votes += opt['votes'][i] * (options_number - i)
             out.append({
                 **opt,
                 'postproc': votes,
@@ -76,10 +72,10 @@ class PostProcView(APIView):
 
         for opt in options:
             if n_women > n_men:
-                votes = opt['votes_men'] + opt['votes_women']*(n_men/n_women)
+                votes = opt['votes_men'] + opt['votes_women'] * (n_men / n_women)
             else:
-                votes = opt['votes_women'] + opt['votes_men']*(n_women/n_men)
-            
+                votes = opt['votes_women'] + opt['votes_men'] * (n_women / n_men)
+
             out.append({
                 **opt,
                 'postproc': round(votes),
@@ -95,14 +91,15 @@ class PostProcView(APIView):
         for opt in options:
             total_votes += opt['votes']
 
-        q = round(1 + total_votes/(points+1))
+        q = round(1 + total_votes / (points + 1))
 
         return self.largest_remainder(options, q, points)
 
-    def sainte_lague(self, options, points):
+    def proportional_representation(self, options, points, type):
         out = []
         votes = []
         points_for_opt = []
+        multiplier = 2 if type == 'SAINTE_LAGUE' else 1
 
         for i in range(0, len(options)):
             votes.append(options[i]['votes'])
@@ -111,30 +108,7 @@ class PostProcView(APIView):
         for i in range(0, points):
             max_index = votes.index(max(votes))
             points_for_opt[max_index] += 1
-            votes[max_index] = options[max_index]['votes'] / (2 * points_for_opt[max_index] + 1)
-
-        for i in range(0, len(options)):
-            out.append({
-                **options[i],
-                'postproc': points_for_opt[i],
-            })
-
-        out.sort(key=lambda x: (-x['postproc'], -x['votes']))
-        return out
-
-    def hondt(self, options, points):
-        out = []
-        votes = []
-        points_for_opt = []
-
-        for i in range(0, len(options)):
-            votes.append(options[i]['votes'])
-            points_for_opt.append(0)
-
-        for i in range(0, points):
-            max_index = votes.index(max(votes))
-            points_for_opt[max_index] += 1
-            votes[max_index] = options[max_index]['votes'] / (points_for_opt[max_index] + 1)
+            votes[max_index] = options[max_index]['votes'] / (multiplier * points_for_opt[max_index] + 1)
 
         for i in range(0, len(options)):
             out.append({
@@ -151,7 +125,7 @@ class PostProcView(APIView):
         for opt in options:
             total_votes += opt['votes']
 
-        q = round(total_votes/(points+2))
+        q = round(total_votes / (points + 2))
 
         return self.largest_remainder(options, q, points)
 
@@ -160,24 +134,32 @@ class PostProcView(APIView):
 
         for opt in options:
             total_votes += opt['votes']
-        
-        q = round(total_votes/points)
+
+        q = round(total_votes / points)
 
         return self.largest_remainder(options, q, points)
-        
 
     def post(self, request):
         """
-         * type: IDENTITY | EQUALITY | BORDA | DROOP
+         * type: IDENTITY | EQUALITY | BORDA |
+         * options: [
+            {
+             option: str,
+             number: int,
+             votes: int
+            }
+           ]
+
+         * type: DROOP | IMPERIALI | SAINTE_LAGUE | DHONDT | HARE
+         * points: int
          * options: [
             {
              option: str,
              number: int,
              votes: int,
-             ...extraparams
             }
            ]
-        
+
         * type: EQUALITY
         * options: [
             {
@@ -188,15 +170,6 @@ class PostProcView(APIView):
             }
            ]
 
-        * type: DROOP
-        * points: int
-        * options: [
-            {
-             option: str,
-             number: int,
-             votes: int,
-            }
-           ]
         """
 
         out = []
@@ -211,10 +184,8 @@ class PostProcView(APIView):
                 out.append(self.borda(opts))
             if t == 'EQUALITY':
                 out.append(self.equality(opts))
-            if t == 'SAINTE_LAGUE':
-                out.append(self.sainte_lague(opts, q['points']))
-            if t == 'HONDT':
-                out.append(self.hondt(opts, q['points']))
+            if t == 'SAINTE_LAGUE' or t == 'HONDT':
+                out.append(self.proportional_representation(opts, q['points'], t))
             if t == 'DROOP':
                 out.append(self.droop(opts, q['points']))
             if t == 'IMPERIALI':
