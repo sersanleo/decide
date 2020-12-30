@@ -11,7 +11,7 @@
 
 
 {% block content %}
-    <div id="app-visualizer">
+    <br id="app-visualizer">
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
@@ -46,9 +46,12 @@
             {% endfor %}
             </table>
         </div>
-
+        {% if user == True %}
+            </br></br><b>Como eres superusuario puedes ver todas las votaciones</b>
+        {% else %}
+            </br></br><b>Como no eres superusuario solo puedes ver las votaciones en las que estas censado</b>
+        {% endif %}
         </div>
-    </div>
 {% endblock %}
 
 {% block extrabody %}

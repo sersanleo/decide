@@ -8,6 +8,8 @@ from base import mods
 
 from voting.models import Voting
 
+from census.models import Census
+
 
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
@@ -18,6 +20,7 @@ class VisualizerView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
+            print(r)
             context['voting'] = json.dumps(r[0])
         except:
             raise Http404
@@ -43,6 +46,17 @@ def get_list_votings(request):
                 list = Voting.objects.filter(name__contains=busqueda).all()
     except:
         raise Http404
-
-    return render(request, 'visualizer/listVisualizer.html', {'votings': list})
+    #Si no soy superuser solo veo las votaciones en las que estoy censado
+    if not request.user.is_superuser:
+        census = Census.objects.filter(voter_id=request.user.id).all()
+        new_list = []
+        for c in census:
+            for voting in list:
+                if voting.id == c.voting_id:
+                    new_list.append(voting)
+        list = new_list
+        user = False
+    else:
+        user = True
+    return render(request, 'visualizer/listVisualizer.html', {'votings': list, 'user': user})
 
