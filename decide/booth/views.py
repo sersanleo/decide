@@ -6,6 +6,8 @@ from django.shortcuts import render
 from base import mods
 from census.models import Census
 from voting.models import Voting
+from store.models import Vote
+from django.contrib.auth.models import User
 
 class LoginView(TemplateView):
     template_name = 'booth/login.html'
@@ -19,21 +21,32 @@ class LoginView(TemplateView):
 def dashboardView(request):
     if request.method == 'POST':
         user_id = request.POST['user']
-        try:
-            census_by_user = Census.objects.filter(voter_id=user_id)
-            votaciones = []
+        vot_dis = []
+        vot_pen = []
+        no_censo = False
+        no_vot_dis = False
+        no_vot_pen = False
+        census_by_user = Census.objects.filter(voter_id=user_id)
+        if census_by_user.count() == 0 :
+            no_censo = True
+        else:
             for c in census_by_user:
                 vid = c.voting_id
                 try:
                     votacion = Voting.objects.filter(end_date__isnull=True).exclude(start_date__isnull=True).get(id=vid)
-                    votaciones.append(votacion)
+                    if Vote.objects.filter(voting_id=vid, voter_id=user_id).count()==0:
+                        vot_dis.append(votacion)
+                    else:
+                        vot_pen.append(votacion)
                 except Exception:
                     error= 'Esta votación ha sido borrada'
-                    
-        except Exception:
-            error = 'No existen votaciones para este usuario'
+        if len(vot_dis) == 0:
+            no_vot_dis = True
+        if len(vot_pen) == 0:
+            no_vot_pen = True
+        return render(request, 'booth/dashboard.html', {'user_id':user_id, 'vot_dis':vot_dis, 
+        'vot_pen': vot_pen, 'no_censo':no_censo, 'no_vot_dis':no_vot_dis, 'no_vot_pen':no_vot_pen})
         
-        return render(request, 'booth/dashboard.html', {'signup':False, 'votaciones':votaciones})
     else:
         return render(request, 'booth/login.html', {'KEYBITS': settings.KEYBITS})
 
@@ -43,7 +56,8 @@ class BoothView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         vid = kwargs.get('voting_id', 0)
-
+        user_id = kwargs.get('user_id', 0)
+        print(user_id)
         try:
             r = mods.get('voting', params={'id': vid})
 
@@ -53,9 +67,8 @@ class BoothView(TemplateView):
                 r[0]['pub_key'][k] = str(v)
 
             context['voting'] = json.dumps(r[0])
+
         except:
             raise Http404
-
-        context['KEYBITS'] = settings.KEYBITS
 
         return context

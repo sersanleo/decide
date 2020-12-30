@@ -5,7 +5,8 @@
 <!-- Voting -->
 <h1>[[ voting.name ]]</h1>
 <p class="lead">[[voting.desc]]</p>
-<div v-if="!signup">
+<div>
+<p>[[token]]</p>
     <div class="row py-3 py-xl-5">
         <div class="col-12 col-xl-5 offset-xl-1 pb-2">
             <h3>[[ voting.question.desc ]]</h3>
@@ -60,10 +61,10 @@
             delimiters: ['[[', ']]'],
             el: '#app-booth',
             data: {
-                keybits: {{ KEYBITS }},
                 voting: voting,
                 selected: "",
                 signup: true,
+                cp_button: true,
                 alertShow: false,
                 alertMsg: "",
                 alertLvl: "info",
@@ -117,36 +118,14 @@
                             }
                         });
                 },
-                onSubmitLogin(evt) {
-                    evt.preventDefault();
-                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
-                        .then(data => {
-                            document.cookie = 'decide='+data.token+';';
-                            this.token = data.token;
-                            this.getUser();
-                        })
-                        .catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
                 getUser(evt) {
                     var data = {token: this.token};
                     this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
                         .then(data => {
                             this.user = data;
-                            this.signup = false;
                         }).catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
-                },
-                decideLogout(evt) {
-                    evt.preventDefault();
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
-                    this.token = null;
-                    this.user = null;
-                    document.cookie = 'decide=;';
-                    this.signup = true;
                 },
                 decideEncrypt() {
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());

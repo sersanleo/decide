@@ -16,9 +16,12 @@
             <!-- Navbar -->
             <b-navbar type="dark" variant="primary">
                 <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-                    <b-navbar-nav class="ml-auto" v-if="!signup">
-                        <b-button variant="danger" href="#" v-on:click="decideLogout">
+                    <b-navbar-nav class="ml-auto">
+                        <b-button v-if="!signup" variant="danger" href="#" v-on:click="decideLogout">
                             {% trans "Logout" %}
+                        </b-button>
+                        <b-button variant="danger" href="{% url 'login' %}" v-if="cp_button">
+                            Panel de control
                         </b-button>
                     </b-navbar-nav>
             </b-navbar>
