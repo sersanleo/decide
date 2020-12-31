@@ -4,6 +4,10 @@
     font-size: x-large!important;
 }
 
+.d-lg-none {
+    color: transparent !important;
+}
+
 .dropdown-toggle {
     color: white!important;
     font-size: larger;

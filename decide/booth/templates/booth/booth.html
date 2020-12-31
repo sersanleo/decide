@@ -30,12 +30,10 @@
 <!-- Voting -->
 <div v-if="!signup">
     <div class="row py-3 py-xl-5">
-        <div class="col-12 col-xl-5 offset-xl-1 pb-2">
+        <div class="col-12 pb-2">
             <h3>[[ voting.question.desc ]]</h3>
-            <p class="text-justify pt-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
-        </div>
-        <div class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-1">
-            <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+            <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
                 <b-form-radio v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
@@ -46,14 +44,13 @@
                     [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
-        </div>
-    </div>
-    <div class="row">
-        <div class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5">
-            <b-button class="btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Votar" %}
             </b-button>
         </div>
+    </div>
+    <div class="row">
+        <div class="mb-5 col-6 offset-3"></div>
     </div>
 </div>
 </div>
