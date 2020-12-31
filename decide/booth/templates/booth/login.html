@@ -24,3 +24,41 @@
         </div>
     </form>
 {% endblock %}
+
+{% block extrabody %}
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app-booth',
+        data: {
+            alertShow: false,
+            alertMsg: "",
+            alertLvl: "info",
+            csspd: false,
+            csstrit: false
+        },
+        methods: {
+            change_css(v1,v2) {
+                if (v1 & !v2) {
+                    this.csspd = true;
+                    this.csstrit = false;
+                    document.body.style.backgroundColor = black;
+                } else if (!v1 & v2) {
+                    this.csspd = false;
+                    this.csstrit = true;
+                    document.body.style.backgroundColor = black;
+                } else {
+                    this.csspd = false;
+                    this.csstrit = false;
+                    document.body.style.backgroundColor = white;
+                }
+            },
+            showAlert(lvl, msg) {
+                this.alertLvl = lvl;
+                this.alertMsg = msg;
+                this.alertShow = true;
+            }
+        }
+    });
+</script>
+{% endblock %}
