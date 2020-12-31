@@ -89,10 +89,18 @@ class BoothView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         vid = kwargs.get('voting_id', 0)
-        
+        token = self.request.session.get('user_token', None)
+        context['token']=token.get('token', None)
+        print(token)
+        voter = mods.post('authentication', entry_point='/getuser/', json=token)
+        context['voter']= voter
+        print(voter)
+        voter_id = voter.get('id', None)
+        print(voter_id)
+
         try:
             r = mods.get('voting', params={'id': vid})
-
+            print(r)
             # Casting numbers to string to manage in javascript with BigInt
             # and avoid problems with js and big number conversion
             for k, v in r[0]['pub_key'].items():
@@ -100,8 +108,9 @@ class BoothView(TemplateView):
 
             context['voting'] = json.dumps(r[0])
 
-            if Vote.objects.filter(voting_id=vid, voter_id=user_id).count()!=0:
+            if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()!=0:
                 context['voted'] = True 
+
         except:
             raise Http404 
 
