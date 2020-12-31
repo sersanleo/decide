@@ -18,8 +18,8 @@
                 <!-- Navbar -->
                 <b-navbar v-bind:class="{dp: csspd, trit: csstrit}" type="dark" variant="primary" toggleable="lg">
                     <b-navbar-brand v-bind:class="{dp: csspd, trit: csstrit}" tag="h1">Decide</b-navbar-brand>
-                    <b-nav-text class="d-lg-none">Menú de opciones</b-nav-text>
-                    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+                    <b-navbar-toggle aria-describedby="optionMenu" target="nav-collapse"></b-navbar-toggle>
+                    <div id="optionMenu" style="display: none">Menú de opciones. Pulsando aparece el desplegable con los tipos de visualización para daltónicos y el botón de cierre de sesión</div>
                     <b-collapse id="nav-collapse" is-nav>
                         <b-navbar-nav class="ml-auto" >
                                 <div class="btn-group" data-toggle="buttons">
@@ -30,22 +30,25 @@
                                     </b-nav-item-dropdown>
                                 </div>
                         </b-navbar-nav>
-                        <b-button v-if="!signup" variant="danger" class="btn btn-white mt-3 mt-lg-0" v-bind:class="{dp: csspd, trit: csstrit}" href="#" v-on:click="decideLogout">
+                        <b-button aria-labelledby="logoutButton" v-if="!signup" variant="danger" class="btn btn-white mt-3 mt-lg-0" v-bind:class="{dp: csspd, trit: csstrit}" href="#" v-on:click="decideLogout">
                             {% trans "Logout" %}
+                            <div id="logoutButton" style="display: none">Botón para cerrar sesión en la página</div>
                         </b-button>
                     </b-collapse>
                 </b-navbar>
         
-                <b-alert v-bind:class="{dp: csspd, trit: csstrit}" :variant="alertLvl" dismissible v-model="alertShow">
+                <b-alert aria-labelledby="alertMsg" v-bind:class="{dp: csspd, trit: csstrit}" :variant="alertLvl" dismissible v-model="alertShow">
                     [[ alertMsg ]]
+                    <div id="alertMsg" style="display: none">Mensaje de alerta lanzado por la ocurrencia de un error</div>
                 </b-alert>
                 
                 <div class="container-fluid pt-5 mt-xl-4">
                     <div class="row">
-                        <div class="col-md-8 offset-md-2 text-center">
+                        <div aria-labelledby="votingNameDesc" class="col-md-8 offset-md-2 text-center">
                             <h1>[[ voting.name ]]</h1>
                             <p class="lead">[[voting.desc]]</p>
                             {% block content %}{% endblock %}
+                            <div id="votingNameDesc" style="display: none">Título y descripción de la votación</div>
                         </div>
                     </div>
                 </div>
