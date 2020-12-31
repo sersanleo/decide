@@ -70,7 +70,6 @@ def dashboard_view(request):
         if not voter:
             return render(request, 'booth/login.html', {'no_user':True})
         else:
-            print(voter_id)
             context = dashboard_details(voter_id)
             return render(request, 'booth/dashboard.html', context)
     else:
