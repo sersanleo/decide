@@ -1,0 +1,99 @@
+body {
+    background-color: black!important;
+    color:white;
+}
+
+/* Barra de navegación */
+
+.navbar {
+    background-color: #52ACFF!important;
+}
+
+.navbar-brand {
+    color: black!important;
+    font-size: x-large!important;
+}
+
+.d-lg-none {
+    color: transparent !important;
+}
+
+.dropdown-toggle {
+    color: black!important;
+    font-size: larger;
+}
+
+.dropdown-menu {
+    background-color: whitesmoke!important;
+    width: max-content;
+    padding: unset;
+    margin: unset;
+}
+
+.radio-dalt {
+    margin: unset!important;
+    border-color: whitesmoke!important;
+    text-align: left!important;
+    font-size: larger;
+}
+
+.submit-dalt {
+    font-size: larger;
+    border-color: whitesmoke!important;
+    margin: unset!important;
+}
+
+.alert {
+    color: black!important;
+    background-color: white!important;
+    border-color:white!important;
+}
+
+
+/* Votación */
+
+.btn-login {
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.btn-white {
+    font-size: large;
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
+}
+
+.choice-question {
+    width: 100%;
+}
+
+.choice-question label {
+    width: 100%;
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.choice-question label.active {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color:black!important;
+} 
+
+.choice-question label.active:before {
+    content:  "\2192"!important;
+}
+
+.choice-question label.active:after {
+    content:  "\2190"!important;
+}
+
+p{
+    font-size: large;
+}
+
+label{
+    font-size: x-large;
+}

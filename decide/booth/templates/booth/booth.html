@@ -2,27 +2,42 @@
 {% load i18n static %}
 
 {% block content %}
-<!-- Voting -->
-<div v-if="!token">
-    <p>Debe loguearse en la cabina para poder acceder a sus votaciones</p>
-    <a href="{% url 'login' %}"> LOGIN </a>
-</div>
-{% if voted %}
-    <p>Usted ya ha votado.</p>
-{% else %}
-<div v-if="token">
-    <h1>[[ voting.name ]]</h1>
-    <p class="lead">[[voting.desc]]</p>
-    <div class="row py-3 py-xl-5">
-        <div class="col-12 col-xl-5 offset-xl-1 pb-2">
-            <h3>[[ voting.question.desc ]]</h3>
-            <p class="text-justify pt-1">La opción elegida para realizar la votación aparece resaltada en color verde. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
+<!-- Register -->
+<b-form @submit="onSubmitLogin" v-if="signup">
+    <div class="row pt-5">
+        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+            <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
+                <b-form-input
+                    id="username"
+                    type="text"
+                    v-model="form.username"
+                    autocomplete="username"
+                    required />
+            </b-form-group>
+            <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
+                <b-form-input
+                    id="password"
+                    type="password"
+                    autocomplete="current-password"
+                    v-model="form.password"
+                    required />
+            </b-form-group>
+            <b-button class="mt-3 btn-login" v-bind:class="{dp: csspd, trit: csstrit}" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
         </div>
-        <div class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-1">
-            <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+    </div>
+</b-form>
+
+<!-- Voting -->
+<div v-if="!signup">
+    <div class="row py-3 py-xl-5">
+        <div class="col-12 pb-2">
+            <h3>[[ voting.question.desc ]]</h3>
+            <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
                 <b-form-radio v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
+                            v-bind:class="{dp: csspd, trit: csstrit}"
                             name="question"
                             button
                             size="lg"
@@ -30,17 +45,17 @@
                     [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5">
-            <b-button block type="button" variant="primary" size="lg" v-on:click="decideSend">
+            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Votar" %}
             </b-button>
         </div>
     </div>
+    <div class="row">
+        <div class="mb-5 col-6 offset-3"></div>
+    </div>
 </div>
-{% endif %}
+</div>
+</div>
 {% endblock %}
 
 {% block extrabody %}
@@ -70,12 +85,11 @@
                 voting: voting,
                 selected: "",
                 signup: true,
-                sv_button: true,
                 alertShow: false,
                 alertMsg: "",
                 alertLvl: "info",
-                token: {{token}},
-                user: {{user}},
+                token: null,
+                user: null,
                 form: {
                     username: '',
                     password: ''
@@ -84,7 +98,9 @@
                     p: BigInt.fromJSONObject(voting.pub_key.p.toString()),
                     g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
                     y: BigInt.fromJSONObject(voting.pub_key.y.toString()),
-                }
+                },
+                csspd: false,
+                csstrit: false
             },
             beforeMount() {
                 this.init()
@@ -101,6 +117,21 @@
                         }
                     });
                 },
+                change_css(v1,v2) {
+                        if (v1 & !v2) {
+                            this.csspd = true;
+                            this.csstrit = false;
+                            document.body.style.backgroundColor = black;
+                        } else if (!v1 & v2) {
+                            this.csspd = false;
+                            this.csstrit = true;
+                            document.body.style.backgroundColor = black;
+                        } else {
+                            this.csspd = false;
+                            this.csstrit = false;
+                            document.body.style.backgroundColor = white;
+                        }
+                    },
                 postData(url, data) {
                     // Default options are marked with *
                     var fdata = {
@@ -124,14 +155,36 @@
                             }
                         });
                 },
+                onSubmitLogin(evt) {
+                    evt.preventDefault();
+                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                        .then(data => {
+                            document.cookie = 'decide='+data.token+';';
+                            this.token = data.token;
+                            this.getUser();
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
+                },
                 getUser(evt) {
                     var data = {token: this.token};
                     this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
                         .then(data => {
                             this.user = data;
+                            this.signup = false;
                         }).catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
+                },
+                decideLogout(evt) {
+                    evt.preventDefault();
+                    var data = {token: this.token};
+                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
+                    this.token = null;
+                    this.user = null;
+                    document.cookie = 'decide=;';
+                    this.signup = true;
                 },
                 decideEncrypt() {
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());
