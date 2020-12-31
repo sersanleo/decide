@@ -1,58 +1,38 @@
 {% extends "booth/base.html" %}
 {% load i18n static %}
 
-{% block content %}
-<!-- Register -->
-<b-form @submit="onSubmitLogin" v-if="signup">
-    <div class="row pt-5">
-        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-            <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
-                <b-form-input
-                    id="username"
-                    type="text"
-                    v-model="form.username"
-                    autocomplete="username"
-                    required />
-            </b-form-group>
-            <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
-                <b-form-input
-                    id="password"
-                    type="password"
-                    autocomplete="current-password"
-                    v-model="form.password"
-                    required />
-            </b-form-group>
-            <b-button class="mt-3 btn-login" v-bind:class="{dp: csspd, trit: csstrit}" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
-        </div>
-    </div>
-</b-form>
+{% block logout %}
+<a class="btn btn-danger" href="{% url 'logout' %}">logout</a>
+{% endblock %}
 
-<!-- Voting -->
-<div v-if="!signup">
-    <div class="row py-3 py-xl-5">
-        <div class="col-12 pb-2">
-            <h3>[[ voting.question.desc ]]</h3>
-            <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-                <b-form-radio v-model="selected"
-                            :id="'q' + opt.number"
-                            class="choice-question pb-3"
-                            v-bind:class="{dp: csspd, trit: csstrit}"
-                            name="question"
-                            button
-                            size="lg"
-                            :value="opt.number">
-                    [[ opt.option ]]
-                </b-form-radio>
-            </b-form-group>
-            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
-                {% trans "Votar" %}
-            </b-button>
-        </div>
+{% block content %}
+<div class="row py-3 py-xl-5">
+    <div class="col-12 pb-2">
+        <p>keybits- {{KEYBITS}}</p>
+        <p>token- {{token}}</p>
+        <p>voter- {{voter}}</p>
+        <p>voting- {{voting}}</p>
+        <h3>[[ voting.question.desc ]]</h3>
+        <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
+        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+            <b-form-radio v-model="selected"
+                        :id="'q' + opt.number"
+                        class="choice-question pb-3"
+                        v-bind:class="{dp: csspd, trit: csstrit}"
+                        name="question"
+                        button
+                        size="lg"
+                        :value="opt.number">
+                [[ opt.option ]]
+            </b-form-radio>
+        </b-form-group>
+        <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            {% trans "Votar" %}
+        </b-button>
     </div>
-    <div class="row">
-        <div class="mb-5 col-6 offset-3"></div>
-    </div>
+</div>
+<div class="row">
+    <div class="mb-5 col-6 offset-3"></div>
 </div>
 </div>
 </div>
@@ -84,16 +64,11 @@
                 keybits: {{ KEYBITS }},
                 voting: voting,
                 selected: "",
-                signup: true,
                 alertShow: false,
                 alertMsg: "",
                 alertLvl: "info",
-                token: null,
-                user: null,
-                form: {
-                    username: '',
-                    password: ''
-                },
+                token: {{ token }},
+                user: {{ voter }},
                 bigpk: {
                     p: BigInt.fromJSONObject(voting.pub_key.p.toString()),
                     g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
@@ -103,35 +78,24 @@
                 csstrit: false
             },
             beforeMount() {
-                this.init()
                 ElGamal.BITS = this.keybits;
             },
             methods: {
-                init() {
-                    var cookies = document.cookie.split("; ");
-                    cookies.forEach((c) => {
-                        var cs = c.split("=");
-                        if (cs[0] == 'decide' && cs[1]) {
-                            this.token = cs[1];
-                            this.getUser();
-                        }
-                    });
-                },
                 change_css(v1,v2) {
-                        if (v1 & !v2) {
-                            this.csspd = true;
-                            this.csstrit = false;
-                            document.body.style.backgroundColor = black;
-                        } else if (!v1 & v2) {
-                            this.csspd = false;
-                            this.csstrit = true;
-                            document.body.style.backgroundColor = black;
-                        } else {
-                            this.csspd = false;
-                            this.csstrit = false;
-                            document.body.style.backgroundColor = white;
-                        }
-                    },
+                    if (v1 & !v2) {
+                        this.csspd = true;
+                        this.csstrit = false;
+                        document.body.style.backgroundColor = black;
+                    } else if (!v1 & v2) {
+                        this.csspd = false;
+                        this.csstrit = true;
+                        document.body.style.backgroundColor = black;
+                    } else {
+                        this.csspd = false;
+                        this.csstrit = false;
+                        document.body.style.backgroundColor = white;
+                    }
+                },
                 postData(url, data) {
                     // Default options are marked with *
                     var fdata = {
@@ -154,37 +118,6 @@
                                 return Promise.reject(response.statusText);
                             }
                         });
-                },
-                onSubmitLogin(evt) {
-                    evt.preventDefault();
-                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
-                        .then(data => {
-                            document.cookie = 'decide='+data.token+';';
-                            this.token = data.token;
-                            this.getUser();
-                        })
-                        .catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                getUser(evt) {
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
-                        .then(data => {
-                            this.user = data;
-                            this.signup = false;
-                        }).catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                decideLogout(evt) {
-                    evt.preventDefault();
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
-                    this.token = null;
-                    this.user = null;
-                    document.cookie = 'decide=;';
-                    this.signup = true;
                 },
                 decideEncrypt() {
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());
