@@ -46,11 +46,8 @@ class UserProfile(AbstractUser):
     sex_types = (('M', 'Male'),
                  ('F', 'Female'))
     sex = models.CharField(max_length=1, choices=sex_types)
-    styles = [('N', 'Normal'),
-                 ('A', 'Achromatopsia'),
-                 ('D', 'Deuteronomy'),
-                 ('P', 'Protanomaly'),
-                 ('T', 'Tritanomaly')]
+    styles = (('N', 'Normal'),
+                 ('C', 'Color blind'))
     style = models.CharField(max_length=1, choices=styles, help_text='Designates which style will be shown to the user across pages; helpful for people with difficulties distinguishing colors.', default=styles[0][0], verbose_name='style')
 
     REQUIRED_FIELDS = ['email', 'sex', 'style']
