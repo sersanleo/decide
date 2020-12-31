@@ -7,6 +7,9 @@
     <p>Debe loguearse en la cabina para poder acceder a sus votaciones</p>
     <a href="{% url 'login' %}"> LOGIN </a>
 </div>
+{% if voted %}
+    <p>Usted ya ha votado.</p>
+{% else %}
 <div v-if="token">
     <h1>[[ voting.name ]]</h1>
     <p class="lead">[[voting.desc]]</p>
@@ -37,6 +40,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extrabody %}
@@ -66,7 +70,7 @@
                 voting: voting,
                 selected: "",
                 signup: true,
-                cp_button: true,
+                sv_button: true,
                 alertShow: false,
                 alertMsg: "",
                 alertLvl: "info",

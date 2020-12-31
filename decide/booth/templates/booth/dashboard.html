@@ -8,20 +8,11 @@
     <h2>Votaciones disponibles:</h2>
     {% for votacion in vot_dis %}
         <ul style="list-style-type:none;">
-            <a href="{% url 'votacion' votacion.id%}"><li>{{votacion.name}}</li></a>
+            <a href="{% url 'votacion' votacion.id user_id %}"><li>{{votacion.name}}</li></a>
         </ul>    
     {% endfor %}
     {% if no_vot_dis %}
         <p>No tiene votaciones disponibles</p>
-    {% endif %}
-    <h2>Votaciones pendientes de resultados:</h2>
-    {% for votacion in vot_pen %}
-        <ul style="list-style-type:none;">
-            <a href="{% url 'votacion' votacion.id%}"><li>{{votacion.name}}</li></a>
-        </ul>    
-    {% endfor %}
-    {% if no_vot_pen %}
-        <p>No tiene votaciones pendientes</p>
     {% endif %}
 {% endif %}
 {% endblock %}

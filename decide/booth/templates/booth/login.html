@@ -30,12 +30,8 @@
 <div v-if="!signup">
     <h1>Has entrado a la cabina de votación</h1>
     <h2>Puedes visualizar un resumen de tus votaciones aquí:</h2>
-    <form action="{% url 'dashboard' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="user" id="user" :value="user.id">
-        <input type="hidden" name="token" id="token" :value="token">
-        <button class="btn btn-lg btn-primary" type="submit">RESUMEN</button>
-    </form>
+    [[user.id]]
+    <a href="{% url 'dashboard' user.id %}">Dashboard</a>
 </div>
 {% endblock %}
 

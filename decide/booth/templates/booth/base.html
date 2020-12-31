@@ -23,6 +23,9 @@
                         <b-button variant="danger" href="{% url 'login' %}" v-if="cp_button">
                             Panel de control
                         </b-button>
+                        <b-button variant="danger" v-if="sv_button" href="{% url 'dashboard' user.id %}">
+                            Salir de la votación
+                        </b-button>
                     </b-navbar-nav>
             </b-navbar>
     
