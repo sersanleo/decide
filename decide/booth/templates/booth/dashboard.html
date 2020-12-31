@@ -1,6 +1,10 @@
 {% extends "booth/base.html" %}
 {% load i18n static %}
 
+{% block logout %}
+<a class="btn btn-danger" href="{% url 'logout' %}">logout</a>
+{% endblock %}
+
 {% block content %}
 {% if no_censo %}
     <p>No has sido añadido al censo de alguna votación</p>
@@ -8,98 +12,11 @@
     <h2>Votaciones disponibles:</h2>
     {% for votacion in vot_dis %}
         <ul style="list-style-type:none;">
-            <a href="{% url 'votacion' votacion.id user_id %}"><li>{{votacion.name}}</li></a>
+            <a href="{% url 'votacion' votacion.id %}"><li>{{votacion.name}}</li></a>
         </ul>    
     {% endfor %}
     {% if no_vot_dis %}
         <p>No tiene votaciones disponibles</p>
     {% endif %}
 {% endif %}
-{% endblock %}
-
-{% block extrabody %}
-    <!-- needed to generate big random -->
-    <script src="{% static "crypto/sjcl.js" %}"></script>
-
-    <!-- Big integer -->
-    <script src="{% static "crypto/jsbn.js" %}"></script>
-    <script src="{% static "crypto/jsbn2.js" %}"></script>
-    <script src="{% static "crypto/bigint.js" %}"></script>
-
-    <!-- ElGamal encrypt -->
-    <script src="{% static "crypto/elgamal.js" %}"></script>
-
-    <!-- Vuejs -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-
-    <script>
-        var app = new Vue({
-            delimiters: ['[[', ']]'],
-            el: '#app-booth',
-            data: {
-                signup: true,
-                cp_button: true,
-                alertShow: false,
-                alertMsg: "",
-                alertLvl: "info",
-                token: null,
-                user: null,
-            },
-            beforeMount() {
-                this.init()
-            },
-            methods: {
-                init() {
-                    var cookies = document.cookie.split("; ");
-                    cookies.forEach((c) => {
-                        var cs = c.split("=");
-                        if (cs[0] == 'decide' && cs[1]) {
-                            this.token = cs[1];
-                            this.getUser();
-                        }
-                    });
-                },
-                postData(url, data) {
-                    // Default options are marked with *
-                    var fdata = {
-                        body: JSON.stringify(data),
-                        headers: {
-                            'content-type': 'application/json',
-                        },
-                        method: 'POST',
-                    };
-
-                    if (this.token) {
-                        fdata.headers['Authorization'] = 'Token ' + this.token;
-                    }
-
-                    return fetch(url, fdata)
-                        .then(response => {
-                            if (response.status === 200) {
-                                return response.json();
-                            } else {
-                                return Promise.reject(response.statusText);
-                            }
-                        });
-                },
-                getUser(evt) {
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
-                        .then(data => {
-                            this.user = data;
-                        }).catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                showAlert(lvl, msg) {
-                    this.alertLvl = lvl;
-                    this.alertMsg = msg;
-                    this.alertShow = true;
-                }
-            },
-        })
-    </script>
-</body>
 {% endblock %}

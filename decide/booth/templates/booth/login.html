@@ -1,155 +1,18 @@
 {% extends "booth/base.html" %}
 {% load i18n static %}
 
-{% block bg-img %}
-<div v-if="!signup" class="bg-img">
-
-</div>
-
-{% endblock %}
-
 {% block content %}
-<!--Login-->
-<b-form @submit="onSubmitLogin" v-if="signup">
-    <div class="row pt-5">
-        <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-            <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
-                <b-form-input
-                    id="username"
-                    type="text"
-                    v-model="form.username"
-                    autocomplete="username"
-                    required />
-            </b-form-group>
-            <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
-                <b-form-input
-                    id="password"
-                    type="password"
-                    autocomplete="current-password"
-                    v-model="form.password"
-                    required />
-            </b-form-group>
-            <b-button class="mt-3" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
-        </div>
-    </div>
-</b-form>
-<!--info-->
-<div v-if="!signup">
-    <h1>Has entrado a la cabina de votación</h1>
-    <h2>Puedes visualizar un resumen de tus votaciones aquí:</h2>
-    [[user.id]]
-    <a href="{% url 'dashboard' user.id %}">Dashboard</a>
-</div>
-{% endblock %}
-
-{% block extrabody %}
-    <!-- needed to generate big random -->
-    <script src="{% static "crypto/sjcl.js" %}"></script>
-
-    <!-- Big integer -->
-    <script src="{% static "crypto/jsbn.js" %}"></script>
-    <script src="{% static "crypto/jsbn2.js" %}"></script>
-    <script src="{% static "crypto/bigint.js" %}"></script>
-
-    <!-- ElGamal encrypt -->
-    <script src="{% static "crypto/elgamal.js" %}"></script>
-
-    <!-- Vuejs -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-
-    <script>
-        var app = new Vue({
-            delimiters: ['[[', ']]'],
-            el: '#app-booth',
-            data: {
-                signup: true,
-                alertShow: false,
-                alertMsg: "",
-                alertLvl: "info",
-                token: null,
-                user: null,
-                form: {
-                    username: '',
-                    password: ''
-                },
-            },
-            beforeMount() {
-                this.init()
-            },
-            methods: {
-                init() {
-                    var cookies = document.cookie.split("; ");
-                    cookies.forEach((c) => {
-                        var cs = c.split("=");
-                        if (cs[0] == 'decide' && cs[1]) {
-                            this.token = cs[1];
-                            this.getUser();
-                        }
-                    });
-                },
-                postData(url, data) {
-                    // Default options are marked with *
-                    var fdata = {
-                        body: JSON.stringify(data),
-                        headers: {
-                            'content-type': 'application/json',
-                        },
-                        method: 'POST',
-                    };
-
-                    if (this.token) {
-                        fdata.headers['Authorization'] = 'Token ' + this.token;
-                    }
-
-                    return fetch(url, fdata)
-                        .then(response => {
-                            if (response.status === 200) {
-                                return response.json();
-                            } else {
-                                return Promise.reject(response.statusText);
-                            }
-                        });
-                },
-                onSubmitLogin(evt) {
-                    evt.preventDefault();
-                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
-                        .then(data => {
-                            document.cookie = 'decide='+data.token+';';
-                            this.token = data.token;
-                            this.getUser();
-                        })
-                        .catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        })
-                },
-                getUser(evt) {
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
-                        .then(data => {
-                            this.user = data;
-                            this.signup = false;
-                        }).catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                decideLogout(evt) {
-                    evt.preventDefault();
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
-                    this.token = null;
-                    this.user = null;
-                    document.cookie = 'decide=;';
-                    this.signup = true;
-                },
-                showAlert(lvl, msg) {
-                    this.alertLvl = lvl;
-                    this.alertMsg = msg;
-                    this.alertShow = true;
-                }
-            },
-        })
-    </script>
-</body>
+    <h1>LOGIN</h1>
+    {% if no_user %}
+    <p>El usuario no está registrado en el sistema</p>
+    {% else %}
+    <form action="{% url 'dashboard' %}" method="POST">
+        {% csrf_token %}
+        <label for="username">Username</label>
+        <input name="username" type="username" id="username">
+        <label for="password">Password</label>
+        <input name="password" type="password" id="password">
+        <button type="submit" class="btn btn-primary">Entrar</button>
+    </form>
+    {% endif%}
 {% endblock %}
