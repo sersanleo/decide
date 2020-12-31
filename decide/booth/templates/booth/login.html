@@ -1,6 +1,13 @@
 {% extends "booth/base.html" %}
 {% load i18n static %}
 
+{% block bg-img %}
+<div v-if="!signup" class="bg-img">
+
+</div>
+
+{% endblock %}
+
 {% block content %}
 <!--Login-->
 <b-form @submit="onSubmitLogin" v-if="signup">
