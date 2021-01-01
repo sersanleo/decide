@@ -18,6 +18,12 @@
     {% if no_vot_dis %}
         <p>No tiene votaciones disponibles</p>
     {% endif %}
+    <h2>Mes Anterior:</h2>
+    {% for vot_mes in vot_mes_ant %}
+    <ul style="list-style-type:none;">
+        <a href="{% url 'votacion' vot_mes.id %}"><li>{{vot_mes.name}}</li></a>
+    </ul>
+    {% endfor %}
 {% endif %}
 {% endblock %}
 

@@ -8,6 +8,8 @@ from census.models import Census
 from voting.models import Voting
 from store.models import Vote
 from django.contrib.auth.models import User
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 class LoginView(TemplateView):
     template_name = 'booth/login.html'
@@ -38,6 +40,7 @@ def autenticacion(request, username, password):
 def dashboard_details(voter_id):
     context={}
     vot_dis=[]
+    votaciones_mes=[]
     context['no_censo'], context['no_vot_dis'] = False, False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
@@ -51,9 +54,16 @@ def dashboard_details(voter_id):
                 if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()==0:
                     vot_dis.append(votacion)
             except Exception:
-                error= 'Esta votación ha sido borrada'
+                error='No se encuentra la votación'
+            try:
+                fecha = datetime.now() + relativedelta(months=-1)
+                votacion_mes_anterior = Voting.objects.filter(start_date__month = fecha.month , start_date__year = fecha.year).get(id=vid)
+                votaciones_mes.append(votacion_mes_anterior)
+            except Exception:
+                error='No se encuentra la votación'
 
     context['vot_dis'] = vot_dis
+    context['vot_mes_ant'] = votaciones_mes
     if len(vot_dis) == 0:
         context['no_vot_dis'] = True
     
