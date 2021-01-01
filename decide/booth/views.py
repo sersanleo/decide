@@ -25,6 +25,8 @@ class BoothView(TemplateView):
 
             context['voting'] = json.dumps(r[0])
             context['votacion_id'] = vid
+            context['multiple_option'] = int(json.dumps(r[0]['question']['option_types'])) == 2
+            context['rank_order_scale'] = int(json.dumps(r[0]['question']['option_types'])) == 3
 
         except:
             raise Http404
@@ -46,13 +48,13 @@ def chage_style(request):
             # and avoid problems with js and big number conversion
             for k, v in r[0]['pub_key'].items():
                 r[0]['pub_key'][k] = str(v)
-            
+
             if (tipo_vista == "deuter_prot"):
-                return render(request, 'booth/booth.html', {'d_p':True, 'tr':False, 'KEYBITS':settings.KEYBITS, 'voting':json.dumps(r[0])})
+                return render(request, 'booth/booth.html', {'d_p':True, 'tr':False, 'KEYBITS':settings.KEYBITS, 'voting':json.dumps(r[0]),'multiple_option':int(json.dumps(r[0]['question']['option_types'])) == 2,'rank_order_scale':int(json.dumps(r[0]['question']['option_types'])) == 3})
             elif (tipo_vista == "trit"):
-                return render(request, 'booth/booth.html', {'d_p':False, 'tr':True, 'KEYBITS':settings.KEYBITS, 'voting':json.dumps(r[0])})
+                return render(request, 'booth/booth.html', {'d_p':False, 'tr':True, 'KEYBITS':settings.KEYBITS, 'voting':json.dumps(r[0]),'multiple_option':int(json.dumps(r[0]['question']['option_types'])) == 2,'rank_order_scale':int(json.dumps(r[0]['question']['option_types'])) == 3})
             else:
-                return render(request, 'booth/booth.html', {'d_p':False, 'tr':False, 'KEYBITS':settings.KEYBITS, 'voting':json.dumps(r[0])})
+                return render(request, 'booth/booth.html', {'d_p':False, 'tr':False, 'KEYBITS':settings.KEYBITS, 'voting':json.dumps(r[0]),'multiple_option':int(json.dumps(r[0]['question']['option_types'])) == 2,'rank_order_scale':int(json.dumps(r[0]['question']['option_types'])) == 3})
 
         except:
             raise Http404

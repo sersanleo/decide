@@ -33,8 +33,22 @@
         <div class="col-12 pb-2">
             <h3>[[ voting.question.desc ]]</h3>
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
+            {% if multiple_option %}
+                <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+                    <b-form-checkbox v-model="selectedMultiOption"
+                                :id="'q' + opt.number"
+                                class="choice-question pb-3"
+                                name="question"
+                                button
+                                size="lg"
+                                :value="opt.number">
+                        [[ opt.option ]]
+                    </b-form-checkbox>
+                </b-form-group>
+            {% elif rank_order_scale %}
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-                <b-form-radio v-model="selected"
+                <input type="number" name="options-0-number" class="vIntegerField" min="1" max=3 id="id_options-0-number">
+                <b-form v-model="selectedRange"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
                             name="question"
@@ -42,8 +56,21 @@
                             size="lg"
                             :value="opt.number">
                     [[ opt.option ]]
-                </b-form-radio>
+                </b-form-checkbox>
             </b-form-group>
+            {% else %}
+                <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+                    <b-form-radio v-model="selectedUniqueOption"
+                                :id="'q' + opt.number"
+                                class="choice-question pb-3"
+                                name="question"
+                                button
+                                size="lg"
+                                :value="opt.number">
+                        [[ opt.option ]]
+                    </b-form-radio>
+                </b-form-group>
+            {% endif %}
             <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Votar" %}
             </b-button>
@@ -82,7 +109,8 @@
             data: {
                 keybits: {{ KEYBITS }},
                 voting: voting,
-                selected: "",
+                selectedMultiOption: [],
+                selectedUniqueOption: "",
                 signup: true,
                 alertShow: false,
                 alertMsg: "",
@@ -169,7 +197,7 @@
                     this.signup = true;
                 },
                 decideEncrypt() {
-                    var bigmsg = BigInt.fromJSONObject(this.selected.toString());
+                    var bigmsg = BigInt.fromJSONObject(this.selectedUniqueOption.toString());
                     var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
                     return cipher;
                 },
