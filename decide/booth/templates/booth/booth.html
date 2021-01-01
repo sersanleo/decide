@@ -32,8 +32,8 @@
     <div class="row py-3 py-xl-5">
         <div class="col-12 pb-2">
             <h3>[[ voting.question.desc ]]</h3>
-            <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
             {% if multiple_option %}
+                <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
                 <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
                     <b-form-checkbox v-model="selectedMultiOption"
                                 :id="'q' + opt.number"
@@ -45,21 +45,39 @@
                         [[ opt.option ]]
                     </b-form-checkbox>
                 </b-form-group>
+                <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                    {% trans "Enviar" %}
+                </b-button>
             {% elif rank_order_scale %}
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-                <input type="number" name="options-0-number" class="vIntegerField" min="1" max=3 id="id_options-0-number">
-                <b-form v-model="selectedRange"
-                            :id="'q' + opt.number"
-                            class="choice-question pb-3"
-                            name="question"
-                            button
-                            size="lg"
-                            :value="opt.number">
-                    [[ opt.option ]]
-                </b-form-checkbox>
-            </b-form-group>
-            {% else %}
+                <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
+                <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
                 <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+                    <b-form-checkbox v-model="rankOrder"
+                                    :id="'q' + opt.number"
+                                    class="choice-question pb-3"
+                                    name="question"
+                                    button
+                                    size="lg"
+                                    :value="opt.number">
+                            [[ opt.option ]]
+                        </b-form-checkbox>
+                </b-form-group>
+                <div class="pb-3 col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
+                    <h3 v-if="rankOrder.length > 0">El orden seleccionado es:</h3> 
+                    <h4>
+                        <ol>
+                            <li class="py-2" v-for="opt in rankOrder">
+                                [[ voting.question.options[opt-1].option ]]
+                            </li>
+                        </ol>
+                    </h4>
+                </div>
+                <b-button v-if="rankOrder.length == voting.question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                    {% trans "Enviar" %}
+                </b-button>
+            {% else %}
+            <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
                     <b-form-radio v-model="selectedUniqueOption"
                                 :id="'q' + opt.number"
                                 class="choice-question pb-3"
@@ -70,10 +88,10 @@
                         [[ opt.option ]]
                     </b-form-radio>
                 </b-form-group>
+                <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                    {% trans "Enviar" %}
+                </b-button>
             {% endif %}
-            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
-                {% trans "Votar" %}
-            </b-button>
         </div>
     </div>
     <div class="row">
@@ -110,6 +128,7 @@
                 keybits: {{ KEYBITS }},
                 voting: voting,
                 selectedMultiOption: [],
+                rankOrder: [],
                 selectedUniqueOption: "",
                 signup: true,
                 alertShow: false,
