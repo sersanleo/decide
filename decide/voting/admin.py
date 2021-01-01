@@ -13,6 +13,7 @@ from .filters import StartedFilter
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 
+
 def start(modeladmin, request, queryset):
     for v in queryset.all():
         v.create_pubkey()
@@ -25,8 +26,7 @@ def stop(ModelAdmin, request, queryset):
     for v in queryset.all():
         v.end_date = timezone.now()
         v.save()
-    logout(request) 
-
+    logout(request)
 
 
 def tally(ModelAdmin, request, queryset):
