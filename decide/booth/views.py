@@ -52,14 +52,14 @@ def dashboard_details(voter_id):
                     vot_dis.append(votacion)
             except Exception:
                 error= 'Esta votación ha sido borrada'
+
     context['vot_dis'] = vot_dis
-    print(vot_dis)
     if len(vot_dis) == 0:
         context['no_vot_dis'] = True
     
     return context
 
-def dashboard_view(request):
+def authentication_login(request):
     
     if request.method == 'POST':
 
@@ -90,17 +90,13 @@ class BoothView(TemplateView):
         context = super().get_context_data(**kwargs)
         vid = kwargs.get('voting_id', 0)
         token = self.request.session.get('user_token', None)
-        context['token']=token.get('token', None)
-        print(token)
+        context['token']= json.dumps(token.get('token', None))
         voter = mods.post('authentication', entry_point='/getuser/', json=token)
-        context['voter']= voter
-        print(voter)
+        context['voter']= json.dumps(voter)
         voter_id = voter.get('id', None)
-        print(voter_id)
 
         try:
             r = mods.get('voting', params={'id': vid})
-            print(r)
             # Casting numbers to string to manage in javascript with BigInt
             # and avoid problems with js and big number conversion
             for k, v in r[0]['pub_key'].items():
