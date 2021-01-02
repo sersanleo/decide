@@ -35,7 +35,7 @@
             {% if multiple_option %}
                 <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
                 <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-                    <b-form-checkbox v-model="selectedMultiOption"
+                    <b-form-checkbox v-model="selected"
                                 :id="'q' + opt.number"
                                 class="choice-question pb-3"
                                 name="question"
@@ -45,6 +45,7 @@
                         [[ opt.option ]]
                     </b-form-checkbox>
                 </b-form-group>
+                [[ selected ]]
                 <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                     {% trans "Enviar" %}
                 </b-button>
@@ -52,7 +53,7 @@
                 <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
                 <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
                 <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-                    <b-form-checkbox v-model="rankOrder"
+                    <b-form-checkbox v-model="selected"
                                     :id="'q' + opt.number"
                                     class="choice-question pb-3"
                                     name="question"
@@ -63,22 +64,22 @@
                         </b-form-checkbox>
                 </b-form-group>
                 <div class="pb-3 col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
-                    <h3 v-if="rankOrder.length > 0">El orden seleccionado es:</h3> 
+                    <h3 v-if="selected.length > 0">El orden seleccionado es:</h3> 
                     <h4>
                         <ol>
-                            <li class="py-2" v-for="opt in rankOrder">
+                            <li class="py-2" v-for="opt in selected">
                                 [[ voting.question.options[opt-1].option ]]
                             </li>
                         </ol>
                     </h4>
                 </div>
-                <b-button v-if="rankOrder.length == voting.question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                <b-button v-if="selected.length == voting.question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                     {% trans "Enviar" %}
                 </b-button>
             {% else %}
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-                    <b-form-radio v-model="selectedUniqueOption"
+                    <b-form-radio v-model="selected"
                                 :id="'q' + opt.number"
                                 class="choice-question pb-3"
                                 name="question"
@@ -127,9 +128,7 @@
             data: {
                 keybits: {{ KEYBITS }},
                 voting: voting,
-                selectedMultiOption: [],
-                rankOrder: [],
-                selectedUniqueOption: "",
+                selected: [],
                 signup: true,
                 alertShow: false,
                 alertMsg: "",
@@ -216,13 +215,28 @@
                     this.signup = true;
                 },
                 decideEncrypt() {
-                    var bigmsg = BigInt.fromJSONObject(this.selectedUniqueOption.toString());
-                    var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
+                    var cipher = [];
+                    console.log(this.selected);
+                    if (this.selected != []){
+                        for(let i =0; i<this.selected.length;i++){
+                            var voto = this.selected[i];
+                            var bigmsg = BigInt.fromJSONObject(voto.toString());
+                            var element = ElGamal.encrypt(this.bigpk, bigmsg);
+                            cipher.push(element);
+                        }
+                    }
                     return cipher;
+                    
                 },
                 decideSend(evt) {
                     evt.preventDefault();
                     var v = this.decideEncrypt();
+                    console.log(v);
+                    var votos = {};
+                    for(let i =0; i<v.length;i++){ 
+                        votos.push(v[i]);
+                    }
+                    console.log(votos);
                     var data = {
                         vote: {a: v.alpha.toString(), b: v.beta.toString()},
                         voting: this.voting.id,
