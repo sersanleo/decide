@@ -8,10 +8,11 @@ from census.models import Census
 from voting.models import Voting
 from store.models import Vote
 from django.contrib.auth.models import User
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from django.db.models.functions import ExtractMonth
 from django.db.models import Count
+import numpy as np
 
 class LoginView(TemplateView):
     template_name = 'booth/login.html'
@@ -43,6 +44,7 @@ def dashboard_details(voter_id):
     context={}
     vot_dis=[]
     votaciones_por_meses=[]
+    votaciones_por_mes = []
     context['no_censo'], context['no_vot_dis'] = False, False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
@@ -61,14 +63,17 @@ def dashboard_details(voter_id):
         except Exception:
             error='No se encuentra la votación'
         try:
-            fecha = datetime.now() + relativedelta(months=-1)
-            votaciones_meses = Voting.objects.filter(id__in=list_vid).annotate(month=ExtractMonth('start_date')).values('month').annotate(votaciones=Count('id')).order_by()
-            for votaciones_mes in votaciones_meses:
-                votaciones_por_meses.append(votaciones_mes['votaciones'])
-
+            fecha = datetime.now()
+            votaciones_meses = Voting.objects.filter(id__in=list_vid).exclude(start_date__isnull=True).filter(start_date__year__gte=fecha.year).annotate(month=ExtractMonth('start_date')).values('month').annotate(votaciones=Count('id')).order_by()
+            month_aux = [[i for i in range(1,13)]]
+            m = np.array(month_aux)
+            m = np.concatenate((m, np.zeros((1,12))), axis=0).transpose()
+            for v in votaciones_meses:
+                m[v['month']-1,1] = v['votaciones']
         except Exception:
             error='No se encuentra la votación'
-    
+
+    votaciones_por_meses = [m[i,1] for i in range(0,12)]
     context['vot_dis'] = vot_dis
     context['votaciones_por_meses'] = votaciones_por_meses
     if len(vot_dis) == 0:

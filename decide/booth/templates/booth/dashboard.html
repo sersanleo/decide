@@ -18,8 +18,8 @@
     {% if no_vot_dis %}
         <p>No tiene votaciones disponibles</p>
     {% endif %}
-    <h2>Votaciones por meses:</h2>
-    <div id="container" style="width: 75%;">
+    <h2>Votaciones por meses del año:</h2>
+    <div id="container" style="width: 50%;">
         <canvas id="pie-chart"></canvas>
     </div>
 {% endif %}
@@ -66,12 +66,12 @@
 <script>
 
     var config = {
-      type: 'pie',
+      type: 'bar',
       data: {
         datasets: [{
           data:{{votaciones_por_meses}},
-          backgroundColor: [ '#808080'],
-          label: 'Population'
+          backgroundColor: '#007bff',
+          label: 'Votaciones'
         }],
         labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       },
