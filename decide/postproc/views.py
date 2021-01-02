@@ -85,21 +85,24 @@ class PostProcView(APIView):
 
         return out
 
-    def droop(self, options, points):
+    def droop(self, options):
         total_votes = 0
+        points = None
 
         for opt in options:
+            if points is None: points = opt['points']
             total_votes += opt['votes']
 
         q = round(1 + total_votes / (points + 1))
 
         return self.largest_remainder(options, q, points)
 
-    def proportional_representation(self, options, points, type):
+    def proportional_representation(self, options, type):
         out = []
         votes = []
         points_for_opt = []
         multiplier = 2 if type == 'SAINTE_LAGUE' else 1
+        points = options[0]['points']
 
         for i in range(0, len(options)):
             votes.append(options[i]['votes'])
@@ -119,20 +122,24 @@ class PostProcView(APIView):
         out.sort(key=lambda x: (-x['postproc'], -x['votes']))
         return out
 
-    def imperiali(self, options, points):
+    def imperiali(self, options):
         total_votes = 0
+        points = None
 
         for opt in options:
+            if points is None: points = opt['points']
             total_votes += opt['votes']
 
         q = round(total_votes / (points + 2))
 
         return self.largest_remainder(options, q, points)
 
-    def hare(self, options, points):
+    def hare(self, options):
         total_votes = 0
+        points = None
 
         for opt in options:
+            if points is None: points = opt['points']
             total_votes += opt['votes']
 
         q = round(total_votes / points)
@@ -185,11 +192,11 @@ class PostProcView(APIView):
             if t == 'EQUALITY':
                 out.append(self.equality(opts))
             if t == 'SAINTE_LAGUE' or t == 'HONDT':
-                out.append(self.proportional_representation(opts, q['points'], t))
+                out.append(self.proportional_representation(opts, t))
             if t == 'DROOP':
-                out.append(self.droop(opts, q['points']))
+                out.append(self.droop(opts))
             if t == 'IMPERIALI':
-                out.append(self.imperiali(opts, q['points']))
+                out.append(self.imperiali(opts))
             if t == 'HARE':
-                out.append(self.hare(opts, q['points']))
+                out.append(self.hare(opts))
         return Response(out)
