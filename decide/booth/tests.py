@@ -5,11 +5,12 @@ from django.utils import timezone
 from django.urls import reverse
 
 from .models import SuggestingForm
+from .views import check_unresolved_post_data, is_future_date
 
 NOW_DATE = timezone.now().date()
 S_DATE = NOW_DATE + datetime.timedelta(weeks=1)
 
-class SuggestingFormModelTests(TestCase):
+class SuggestingFormTests(TestCase):
     def setUp(self):
         super().setUp()
         session = self.client.session
@@ -65,13 +66,12 @@ class SuggestingFormModelTests(TestCase):
         response = self.client.get(reverse('suggesting-detail', args=(2,)), follow=True)
         self.assertEqual(response.status_code, 404)
 
-    def test_post_suggesting_form_success(self):
+    def test_send_suggesting_form_success(self):
         """
         Se comprueba que la petición de registro de una sugerencia se realiza de forma
         correcta y que persiste en base de datos, retornando un código de estado HTTP 200
         """
         data = {'suggesting-title': 'Suggestsing', 'suggesting-date': '2021-01-08', 'suggesting-content': 'Full suggesting content...'}
-
         initital_suggesting_counter = SuggestingForm.objects.all().count()
 
         response = self.client.post('/booth/suggesting/send/', data, follow=True)
@@ -80,4 +80,75 @@ class SuggestingFormModelTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(afterpost_suggesting_counter, initital_suggesting_counter + 1)
+
+    def test_send_suggesting_form_with_error(self):
+        data = {'suggesting-title': 'Suggestsing', 'suggesting-date': '2020-12-01', 'suggesting-content': 'Full suggesting content...'}
+        initital_suggesting_counter = SuggestingForm.objects.all().count()
+
+        response = self.client.post('/booth/suggesting/send/', data, follow=True)
+        
+        afterpost_suggesting_counter = SuggestingForm.objects.all().count()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(afterpost_suggesting_counter, initital_suggesting_counter)
+        
+
+    def test_check_unresolved_post_data(self):
+        """
+        Comprueba si se recuperan de la session los datos del formulario cuando no se
+        cumple con la validación de la fecha y, una vez se capturan los datos, se liberan
+        de la session correctamente.
+        """
+        context = {}
+        session = self.client.session
+        session['title'] = "Suggesting title"
+        session['suggesting_date'] = "2020-12-01"
+        session['content'] = "Suggesting content..."
+        session['errors'] = "Suggesting error msg!"
+        session.save()
+
+        context['post_data'] = check_unresolved_post_data(session)
+
+        self.assertEqual(context['post_data']['title'], "Suggesting title")
+        self.assertEqual('title' in session, False)
+        self.assertEqual('suggesting_date' in session, False)
+        self.assertEqual('content' in session, False)
+        self.assertEqual('errors' in session, False)
+
+    def test_check_unresolved_post_data_with_empty_session(self):
+        """
+        Comprueba que se retorna un diccionario vacío si no hay datos del formulario
+        guardados en la session.
+        """
+        context = {}
+        session = self.client.session
+
+        context['post_data'] = check_unresolved_post_data(session)
+
+        self.assertEqual(not context['post_data'], True)
+
+    def test_is_future_date_with_past_date(self):
+        """
+        is_future_date() debe retornar False cuando se le pasa una fecha anterior
+        al día actual.
+        """
+        date = timezone.now().date() - datetime.timedelta(weeks=1)
+        self.assertEqual(is_future_date(date), False)
+
+    def test_is_future_date_with_now_date(self):
+        """
+        is_future_date() debe retornar False cuando se le pasa la fecha del
+        día actual.
+        """
+        date = timezone.now().date()
+        self.assertEqual(is_future_date(date), False)
+
+    def test_is_future_date_with_future_date(self):
+        """
+        is_future_date() debe retornar True cuando se le pasa una fecha posterior
+        al día actual.
+        """
+        date = timezone.now().date() + datetime.timedelta(weeks=1)
+        self.assertEqual(is_future_date(date), True)
+
 
