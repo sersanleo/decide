@@ -3,4 +3,28 @@
     background-color: blueviolet;
 }
 
+.colMS {
+    background-color:#b7e4cd !important;
+}
+
+h1{
+    color: #0a1b2b !important;
+    font: small-caps 150%/200% serif !important;
+}
+
+.module caption{
+    background: #185471 !important;
+}
+
+img{
+    margin-left: 110px !important;
+}
+
+#container{
+    background-color: #b7e4cd !important ;
+}
+
+footer{
+    background-color: #b7e4cd !important ;
+}
 //completar
