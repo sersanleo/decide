@@ -68,7 +68,7 @@ class SuggestingFormTests(TestCase):
         afterpost_suggesting_counter = SuggestingForm.objects.all().count()
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(afterpost_suggesting_counter, initital_suggesting_counter)        
+        self.assertEqual(afterpost_suggesting_counter, initital_suggesting_counter)
 
     def test_check_unresolved_post_data(self):
         context = {}
