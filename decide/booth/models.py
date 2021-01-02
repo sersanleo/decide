@@ -12,6 +12,9 @@ class SuggestingForm(models.Model):
     is_approved = models.NullBooleanField()
 
     def __str__(self):
+        """
+        Imprime el título de la sugerencia de votación.
+        """
         return self.title
 
     def was_published_recently(self):
