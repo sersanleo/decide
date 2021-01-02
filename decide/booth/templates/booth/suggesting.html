@@ -60,20 +60,39 @@
             csspd: false,
             csstrit: false
         },
+        beforeMount() {
+            console.log(document.cookie)
+            this.checkDaltCookie();
+        },
         methods: {
+            checkDaltCookie() {
+                var cookies = document.cookie.split("; ");
+                cookies.forEach((c) => {
+                    var cs = c.split("=");
+                    if (cs[0] == 'cssMode' && cs[1]) {
+                        if (cs[1] == 'pd') {
+                            this.csspd = true;
+                            this.csstrit = false;
+                        } else if (cs[1] == 'trit') {
+                            this.csspd = false;
+                            this.csstrit = true;
+                        }
+                    }
+                });
+            },
             change_css(v1,v2) {
                 if (v1 & !v2) {
                     this.csspd = true;
                     this.csstrit = false;
-                    document.body.style.backgroundColor = black;
+                    document.cookie = 'cssMode=pd; path=/;';
                 } else if (!v1 & v2) {
                     this.csspd = false;
                     this.csstrit = true;
-                    document.body.style.backgroundColor = black;
+                    document.cookie = 'cssMode=trit; path=/;';
                 } else {
                     this.csspd = false;
                     this.csstrit = false;
-                    document.body.style.backgroundColor = white;
+                    document.cookie = 'cssMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 }
             },
             showAlert(lvl, msg) {
