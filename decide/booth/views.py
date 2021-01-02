@@ -45,6 +45,7 @@ def dashboard_details(voter_id):
     vot_dis=[]
     votaciones_por_meses=[]
     votaciones_por_mes = []
+    tipo_votaciones = []
     context['no_censo'], context['no_vot_dis'] = False, False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
@@ -72,10 +73,28 @@ def dashboard_details(voter_id):
                 m[v['month']-1,1] = v['votaciones']
         except Exception:
             error='No se encuentra la votación'
+        try:
+            votaciones = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=False)
+            unique = 0
+            mult = 0
+            rank = 0
+            for v in votaciones:
+                if v.question.option_types == 1:
+                    unique+=1
+                elif v.question.option_types == 2:
+                    mult+=1
+                elif v.question.option_types == 3:
+                    rank+=1
+        except Exception:
+            error='No se encuentra la votación'
 
+    tipo_votaciones.append(unique)
+    tipo_votaciones.append(mult)
+    tipo_votaciones.append(rank)
     votaciones_por_meses = [m[i,1] for i in range(0,12)]
     context['vot_dis'] = vot_dis
     context['votaciones_por_meses'] = votaciones_por_meses
+    context['tipo_votaciones'] = tipo_votaciones
     if len(vot_dis) == 0:
         context['no_vot_dis'] = True
     

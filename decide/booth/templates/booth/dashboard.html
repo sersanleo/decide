@@ -19,8 +19,12 @@
         <p>No tiene votaciones disponibles</p>
     {% endif %}
     <h2>Votaciones por meses del año:</h2>
-    <div id="container" style="width: 50%;">
-        <canvas id="pie-chart"></canvas>
+    <div id="container1" style="width: 50%;">
+        <canvas id="vot_por_mes_chart"></canvas>
+    </div>
+    <h2>Votaciones de cada tipo</h2>
+    <div id="container2" style="width: 50%;">
+        <canvas id="tipos_vot_chart"></canvas>
     </div>
 {% endif %}
 {% endblock %}
@@ -65,7 +69,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 <script>
 
-    var config = {
+    var config1 = {
       type: 'bar',
       data: {
         datasets: [{
@@ -80,10 +84,26 @@
       }
     };
 
-    window.onload = function() {
-      var ctx = document.getElementById('pie-chart').getContext('2d');
-      window.myPie = new Chart(ctx, config);
+    var config2 = {
+      type: 'bar',
+      data: {
+        datasets: [{
+          data:{{tipo_votaciones}},
+          backgroundColor: '#007bff',
+          label: 'Votaciones'
+        }],
+        labels: ['Única', 'Múltiple', 'Rango']
+      },
+      options: {
+        responsive: true
+      }
     };
 
+    window.onload = function() {
+      var ctx1 = document.getElementById('vot_por_mes_chart').getContext('2d');
+      var ctx2 = document.getElementById('tipos_vot_chart').getContext('2d');
+      window.myBar = new Chart(ctx1, config1);
+      window.myBar = new Chart(ctx2, config2);
+    };
   </script>
 {% endblock %}
