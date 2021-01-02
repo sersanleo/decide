@@ -3,16 +3,32 @@ from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django import forms
+from django.core.exceptions import ValidationError
 
 from base import mods
 from base.models import Auth, Key
 
+class TypeVoting(models.Model):
+    name = models.CharField(max_length=200, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
 
 class Question(models.Model):
     ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"), (3,"Rank order scale"))
     option_types = models.PositiveIntegerField(choices=ANSWER_TYPES, default="1")
     desc = models.TextField(unique=True)
-    
+    ANSWER_TYPES_VOTING = ((0, "--------------"),(1, "IDENTITY"), (2, "BORDA"), (3, "HONDT"),
+                    (4, "EQUALITY"), (5, "SAINTE_LAGUE"), (6, "DROOP"),
+                    (7, "IMPERIALI"), (8, "HARE"))
+    type = models.PositiveIntegerField(choices=ANSWER_TYPES_VOTING, default="0")
+    #type = models.ForeignKey(TypeVoting, related_name='voting', on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.option_types == 3 and not self.type == 2:
+            raise ValidationError(('Rank order scale option type must be selected with Borda type.'))
+
+
     def __str__(self):
         return self.desc
 
@@ -24,19 +40,21 @@ class QuestionOption(models.Model):
     rank_order = models.PositiveIntegerField(blank=True, null=True)
     
 
+
+
+
+
     def save(self):
+
         if not self.number:
             self.number = self.question.options.count() + 2
         return super().save()
 
+
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
 
-class TypeVoting(models.Model):
-    name = models.CharField(max_length=200, null=False, blank=False)
 
-    def __str__(self):
-        return self.name
     
 class Voting(models.Model):
     name = models.CharField(max_length=200, unique = True)
@@ -56,7 +74,7 @@ class Voting(models.Model):
     tallyM = JSONField(blank=True, null=True)
     tallyF = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
-    type = models.ForeignKey(TypeVoting, related_name='voting', on_delete=models.CASCADE)
+
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
@@ -102,7 +120,6 @@ class Voting(models.Model):
         '''
 
         votes, ranked_votes = self.get_votes(token)
-        print(self.type.name)
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
@@ -253,36 +270,33 @@ class Voting(models.Model):
         tally = self.tally
         tallyM = self.tallyM
         tallyF = self.tallyF
-        options = set()
         points = self.points
-        for q in self.question.all():
-            for o in q.options.all():
-                options.add(o)
-    
-
+        tallies = ['IDENTITY', 'BORDA', 'HONDT', 'EQUALITY', 'SAINTE_LAGUE', 'DROOP', 'IMPERIALI', 'HARE']
         opts = []
-        for opt in options:
-            votesM = tallyM.count(opt.number)
-            votesF = tallyF.count(opt.number)
-            if isinstance(tally, list) and len(tally) !=0 and isinstance(tally[0], list):
-                m = [i for i,x in enumerate(tally[0]) if x==opt.number] 
-                votes = [tally[1][j] for j in m]
-                
-            elif isinstance(tally, list) and len(tally) !=0:
-                votes = tally.count(opt.number)
-                
-            else:
-                votes = 0
-            opts.append({
-                'question': opt.question.desc,
-                'option': opt.option,
-                'number': opt.number,
-                'votes': votes,
-                'votes_masc': votesM,
-                'votes_fem': votesF,
-                'points': points
-            })
-        data = { 'type': self.type.name, 'options': opts }
+        data = []
+        for q in self.question.all():
+            for opt in q.options.all():
+                votesM = tallyM.count(opt.number)
+                votesF = tallyF.count(opt.number)
+                if isinstance(tally, list) and len(tally) != 0 and isinstance(tally[0], list):
+                    m = [i for i, x in enumerate(tally[0]) if x == opt.number]
+                    votes = [tally[1][j] for j in m]
+
+                elif isinstance(tally, list) and len(tally) != 0:
+                    votes = tally.count(opt.number)
+
+                else:
+                    votes = 0
+                opts.append({
+                    'question': opt.question.desc,
+                    'option': opt.option,
+                    'number': opt.number,
+                    'votes': votes,
+                    'votes_masc': votesM,
+                    'votes_fem': votesF,
+                    'points': points
+                })
+            data.append( { 'type': tallies[q.type],'options': opts })       
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
