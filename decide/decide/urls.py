@@ -19,7 +19,7 @@ from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
 from decide import views
 
-
+   
 schema_view = get_swagger_view(title='Decide API')
 
 urlpatterns = [
