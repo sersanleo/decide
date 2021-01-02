@@ -41,6 +41,7 @@ def dashboard_details(voter_id):
     context={}
     vot_dis=[]
     votaciones_mes=[]
+    votaciones = []
     context['no_censo'], context['no_vot_dis'] = False, False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
@@ -62,8 +63,11 @@ def dashboard_details(voter_id):
             except Exception:
                 error='No se encuentra la votación'
 
+    context['votaciones'] = votaciones
     context['vot_dis'] = vot_dis
-    context['vot_mes_ant'] = votaciones_mes
+    vot_count = []
+    vot_count.append(len(votaciones_mes))
+    context['vot_mes_ant'] = vot_count
     if len(vot_dis) == 0:
         context['no_vot_dis'] = True
     
