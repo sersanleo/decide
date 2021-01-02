@@ -30,10 +30,7 @@
                                     </b-nav-item-dropdown>
                                 </div>
                         </b-navbar-nav>
-                        <b-button aria-labelledby="logoutButton" v-if="!signup" variant="danger" class="btn btn-white mt-3 mt-lg-0" v-bind:class="{dp: csspd, trit: csstrit}" href="#" v-on:click="decideLogout">
-                            {% trans "Logout" %}
-                            <div id="logoutButton" style="display: none">Botón para cerrar sesión en la página</div>
-                        </b-button>
+                        {% block logout %}{% endblock %}
                     </b-collapse>
                 </b-navbar>
         
@@ -44,16 +41,28 @@
                 
                 <div class="container-fluid pt-5 mt-xl-4">
                     <div class="row">
-                        <div aria-labelledby="votingNameDesc" class="col-md-8 offset-md-2 text-center">
-                            <div id="votingNameDesc" style="display: none">Título y descripción de la votación</div>
-                            <h1>[[ voting.name ]]</h1>
-                            <p class="lead">[[voting.desc]]</p>
+                        <div class="col-md-8 offset-md-2 text-center">
                             {% block content %}{% endblock %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- needed to generate big random -->
+        <script src="{% static "crypto/sjcl.js" %}"></script>
+        
+        <!-- Big integer -->
+        <script src="{% static "crypto/jsbn.js" %}"></script>
+        <script src="{% static "crypto/jsbn2.js" %}"></script>
+        <script src="{% static "crypto/bigint.js" %}"></script>
+        
+        <!-- ElGamal encrypt -->
+        <script src="{% static "crypto/elgamal.js" %}"></script>
+        
+        <!-- Vuejs -->
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+        <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+        {% block extrabody %}{% endblock %}
     </body>
-    {% block extrabody %}{% endblock %}
 </html>
