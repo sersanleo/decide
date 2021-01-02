@@ -181,7 +181,7 @@ def send_suggesting_form(request):
             request.session['title'] = title
             request.session['suggesting_date'] = str_s_date
             request.session['content'] = content
-            request.session['errors'] = "La fecha debe ser posterior a hoy."
+            request.session['errors'] = "La fecha seleccionada ya ha pasado. Debe seleccionar una posterior al día de hoy."
             return HttpResponseRedirect(reverse('suggesting-form'))
     else:
         return HttpResponseRedirect(reverse('dashboard'))

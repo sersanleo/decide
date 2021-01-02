@@ -28,7 +28,7 @@
         <input name="suggesting-date" type="date" class="form-control" id="suggestingDate" required
         {% if suggesting %} value="{{suggesting.suggesting_date|date:"Y-m-d"}}" readonly {% endif %}
         {% if post_data %} value="{{post_data.suggesting_date}}" {% endif %}>
-        {% if not suggesting %}<small class="form-text text-muted">Debe elegir una fecha futura</small>{% endif %}
+        {% if not suggesting and not post_data %}<small class="form-text text-muted">Debe elegir una fecha futura</small>{% endif %}
         {% if post_data %}
         <p class="alert alert-danger">{{post_data.errors}}</p>
         {% endif %}
