@@ -1,0 +1,29 @@
+{% load i18n static %}
+
+{% block content %}
+<head>
+    <!-- Header -->
+    <div id="header">
+        <a href="{% url 'admin:login' %}">{% trans 'Log in' %}</a>
+        <br>
+        <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+        <br>
+        {% trans 'Welcome to Decide,' %}
+                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+    
+    </div>
+</head>
+
+<body>
+    <br>
+    You can go to booth or view your dashboard
+    <br><br>
+    <a href="http://127.0.0.1:8000/booth/" class="button">Go to booth</a>
+    <br>
+    <a href="http://127.0.0.1:8000/visualizer/" class="button">Go to visualizer</a>
+    <br>
+    <a href="http://127.0.0.1:8000/voting/" class="button">Go to voting</a>
+</body>
+
+
+{% endblock %}
