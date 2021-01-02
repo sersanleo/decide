@@ -107,17 +107,18 @@ class BoothView(TemplateView):
                 r[0]['pub_key'][k] = str(v)
 
             context['voting'] = json.dumps(r[0])
+            context['votacion_id'] = vid
+            context['multiple_option'] = int(json.dumps(r[0]['question']['option_types'])) == 2
+            context['rank_order_scale'] = int(json.dumps(r[0]['question']['option_types'])) == 3
 
             if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()!=0:
-                context['voted'] = True 
-
+                context['voted'] = True
         except:
             raise Http404 
 
         context['KEYBITS'] = settings.KEYBITS
 
         return context
-
 
 class SuggestingFormView(TemplateView):
     template_name="booth/suggesting.html"
