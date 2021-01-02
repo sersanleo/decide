@@ -18,9 +18,9 @@ class Question(models.Model):
     ANSWER_TYPES = ((1, "Unique option"), (2,"Multiple option"), (3,"Rank order scale"))
     option_types = models.PositiveIntegerField(choices=ANSWER_TYPES, default="1")
     desc = models.TextField(unique=True)
-    ANSWER_TYPES_VOTING = ((0, "--------------"),(1, "IDENTITY"), (2, "BORDA"), (3, "HONDT"),
-                    (4, "EQUALITY"), (5, "SAINTE_LAGUE"), (6, "DROOP"),
-                    (7, "IMPERIALI"), (8, "HARE"))
+    ANSWER_TYPES_VOTING = ((0, "IDENTITY"), (1, "BORDA"), (2, "HONDT"),
+                    (3, "EQUALITY"), (4, "SAINTE_LAGUE"), (5, "DROOP"),
+                    (6, "IMPERIALI"), (7, "HARE"))
     type = models.PositiveIntegerField(choices=ANSWER_TYPES_VOTING, default="0")
     #type = models.ForeignKey(TypeVoting, related_name='voting', on_delete=models.CASCADE)
 
@@ -296,7 +296,8 @@ class Voting(models.Model):
                     'votes_fem': votesF,
                     'points': points
                 })
-            data.append( { 'type': tallies[q.type],'options': opts })       
+                data.append( { 'type': tallies[q.type],'options': opts }) 
+                print(data)      
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
