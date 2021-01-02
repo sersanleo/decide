@@ -18,7 +18,7 @@
     {% if no_vot_dis %}
         <p>No tiene votaciones disponibles</p>
     {% endif %}
-    <h2>Mes Anterior:</h2>
+    <h2>Votaciones por meses:</h2>
     <div id="container" style="width: 75%;">
         <canvas id="pie-chart"></canvas>
     </div>
@@ -69,11 +69,11 @@
       type: 'pie',
       data: {
         datasets: [{
-          data:{{vot_mes_ant}},
+          data:{{votaciones_por_meses}},
           backgroundColor: [ '#808080'],
           label: 'Population'
         }],
-        labels: ['Madrid']
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       },
       options: {
         responsive: true

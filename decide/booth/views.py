@@ -10,6 +10,8 @@ from store.models import Vote
 from django.contrib.auth.models import User
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from django.db.models.functions import ExtractMonth
+from django.db.models import Count
 
 class LoginView(TemplateView):
     template_name = 'booth/login.html'
@@ -40,34 +42,35 @@ def autenticacion(request, username, password):
 def dashboard_details(voter_id):
     context={}
     vot_dis=[]
-    votaciones_mes=[]
-    votaciones = []
+    votaciones_por_meses=[]
     context['no_censo'], context['no_vot_dis'] = False, False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
     if census_by_user.count() == 0 :
         context['no_censo'] = True
     else:
+        list_vid=[]
         for c in census_by_user:
             vid = c.voting_id
-            try:
-                votacion = Voting.objects.filter(end_date__isnull=True).exclude(start_date__isnull=True).get(id=vid)
-                if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()==0:
-                    vot_dis.append(votacion)
-            except Exception:
-                error='No se encuentra la votación'
-            try:
-                fecha = datetime.now() + relativedelta(months=-1)
-                votacion_mes_anterior = Voting.objects.filter(start_date__month = fecha.month , start_date__year = fecha.year).get(id=vid)
-                votaciones_mes.append(votacion_mes_anterior)
-            except Exception:
-                error='No se encuentra la votación'
+            list_vid.append(vid)
+        try:
+            votaciones = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=True).exclude(start_date__isnull=True)
+            for v in votaciones:
+                if Vote.objects.filter(voting_id=v.id, voter_id=voter_id).count()==0:
+                    vot_dis.append(v)
+        except Exception:
+            error='No se encuentra la votación'
+        try:
+            fecha = datetime.now() + relativedelta(months=-1)
+            votaciones_meses = Voting.objects.filter(id__in=list_vid).annotate(month=ExtractMonth('start_date')).values('month').annotate(votaciones=Count('id')).order_by()
+            for votaciones_mes in votaciones_meses:
+                votaciones_por_meses.append(votaciones_mes['votaciones'])
 
-    context['votaciones'] = votaciones
+        except Exception:
+            error='No se encuentra la votación'
+    
     context['vot_dis'] = vot_dis
-    vot_count = []
-    vot_count.append(len(votaciones_mes))
-    context['vot_mes_ant'] = vot_count
+    context['votaciones_por_meses'] = votaciones_por_meses
     if len(vot_dis) == 0:
         context['no_vot_dis'] = True
     
