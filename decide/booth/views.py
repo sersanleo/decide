@@ -130,21 +130,8 @@ class SuggestingFormView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if 'title' in self.request.session:
-            context['title'] = self.request.session['title']
-            del self.request.session['title']
-        
-        if 'suggesting_date' in self.request.session:
-            context['suggesting_date'] = self.request.session['suggesting_date']
-            del self.request.session['suggesting_date']
 
-        if 'content' in self.request.session:
-            context['content'] = self.request.session['content']
-            del self.request.session['content']
-
-        if 'errors' in self.request.session:
-            context['errors'] = self.request.session['errors']
-            del self.request.session['errors']
+        context['post_data'] = check_unresolved_post_data(self.request.session)
 
         return context
 
@@ -201,3 +188,18 @@ def send_suggesting_form(request):
 
 def is_future_date(date):
     return date > timezone.now().date()
+
+def check_unresolved_post_data(session):
+    context = {}
+
+    if 'title' in session and 'suggesting_date' in session and 'content' in session and 'errors' in session:
+        context['title'] = session['title']
+        context['suggesting_date'] = session['suggesting_date']
+        context['content'] = session['content']
+        context['errors'] = session['errors']
+        del session['title']
+        del session['suggesting_date']
+        del session['content']
+        del session['errors']
+
+    return context

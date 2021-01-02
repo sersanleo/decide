@@ -21,23 +21,23 @@
         <label for="suggestingTitle">Título</label>
         <input name="suggesting-title" type="text" class="form-control" id="suggestingTitle" required
             {% if suggesting %} value="{{suggesting.title}}" readonly {% endif %}
-            {% if title %} value="{{title}}" {% endif %}>
+            {% if post_data %} value="{{post_data.title}}" {% endif %}>
     </div>
     <div class="form-group">
         <label for="suggestingDate">Fecha propuesta</label>
         <input name="suggesting-date" type="date" class="form-control" id="suggestingDate" required
         {% if suggesting %} value="{{suggesting.suggesting_date|date:"Y-m-d"}}" readonly {% endif %}
-        {% if suggesting_date %} value="{{suggesting_date}}" {% endif %}>
+        {% if post_data %} value="{{post_data.suggesting_date}}" {% endif %}>
         {% if not suggesting %}<small class="form-text text-muted">Debe elegir una fecha futura</small>{% endif %}
-        {% if errors %}
-        <p class="alert alert-danger">{{errors}}</p>
+        {% if post_data %}
+        <p class="alert alert-danger">{{post_data.errors}}</p>
         {% endif %}
     </div>
     <div class="form-group">
         <label for="suggestingContent">Argumentos y razones</label>
         <textarea name="suggesting-content" class="form-control" id="suggestingContent" rows="6" required style="min-height:120px;"
             placeholder="Por favor, argumente los motivos por los que considera necesaria la celebración de la votación que sugiere."
-            {% if suggesting %} readonly {% endif %}>{% if suggesting %}{{suggesting.content}}{% endif %}{% if content %}{{content}}{% endif %}</textarea>
+            {% if suggesting %} readonly {% endif %}>{% if suggesting %}{{suggesting.content}}{% endif %}{% if post_data %}{{post_data.content}}{% endif %}</textarea>
     </div>
     {% if suggesting %}
         {{suggesting_state}}
