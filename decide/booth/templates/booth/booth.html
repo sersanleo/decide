@@ -16,10 +16,11 @@
         <h3>[[ voting.question.desc ]]</h3>
         {% if multiple_option %}
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
                 <b-form-checkbox v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
+                            v-bind:class="{dp: csspd, trit: csstrit}"
                             name="question"
                             button
                             size="lg"
@@ -27,16 +28,17 @@
                     [[ opt.option ]]
                 </b-form-checkbox>
             </b-form-group>
-            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% elif rank_order_scale %}
             <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
             <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
                 <b-form-checkbox v-model="selected"
                                 :id="'q' + opt.number"
                                 class="choice-question pb-3"
+                                v-bind:class="{dp: csspd, trit: csstrit}"
                                 name="question"
                                 button
                                 size="lg"
@@ -49,20 +51,21 @@
                 <h4>
                     <ol>
                         <li class="py-2" v-for="opt in selected">
-                            [[ voting.question.options[opt-1].option ]]
+                            [[ voting.question[0].options[opt-1].option ]]
                         </li>
                     </ol>
                 </h4>
             </div>
-            <b-button v-if="selected.length == voting.question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button v-if="selected.length == voting.question[0].options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% else %}
         <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
+        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
                 <b-form-radio v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
+                            v-bind:class="{dp: csspd, trit: csstrit}"
                             name="question"
                             button
                             size="lg"
@@ -70,7 +73,7 @@
                     [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
-            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% endif %}
@@ -111,25 +114,18 @@
         },
         beforeMount() {
             ElGamal.BITS = this.keybits;
-            console.log(ElGamal.BITS)
-            console.log(this.user)
-            console.log(this.token)
-            console.log(this.voting)
         },
         methods: {
             change_css(v1,v2) {
                 if (v1 & !v2) {
                     this.csspd = true;
                     this.csstrit = false;
-                    document.body.style.backgroundColor = black;
                 } else if (!v1 & v2) {
                     this.csspd = false;
                     this.csstrit = true;
-                    document.body.style.backgroundColor = black;
                 } else {
                     this.csspd = false;
                     this.csstrit = false;
-                    document.body.style.backgroundColor = white;
                 }
             },
             postData(url, data) {
