@@ -272,9 +272,9 @@ class Voting(models.Model):
         tallyF = self.tallyF
         points = self.points
         tallies = ['IDENTITY', 'BORDA', 'HONDT', 'EQUALITY', 'SAINTE_LAGUE', 'DROOP', 'IMPERIALI', 'HARE']
-        opts = []
+        data = []
         for q in self.question.all():
-            data = []
+            opts = []
             for opt in q.options.all():
                 votesM = tallyM.count(opt.number)
                 votesF = tallyF.count(opt.number)
@@ -296,7 +296,7 @@ class Voting(models.Model):
                     'votes_fem': votesF,
                     'points': points
                 })
-            data.append( { 'type': tallies[q.type],'options': opts })  
+            data.append( { 'type': tallies[q.type],'options': opts }) 
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
