@@ -45,7 +45,6 @@
                         [[ opt.option ]]
                     </b-form-checkbox>
                 </b-form-group>
-                [[ selected ]]
                 <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                     {% trans "Enviar" %}
                 </b-button>
@@ -85,7 +84,7 @@
                                 name="question"
                                 button
                                 size="lg"
-                                :value="opt.number">
+                                :value="[opt.number]">
                         [[ opt.option ]]
                     </b-form-radio>
                 </b-form-group>
@@ -216,7 +215,6 @@
                 },
                 decideEncrypt() {
                     var cipher = [];
-                    console.log(this.selected);
                     if (this.selected != []){
                         for(let i =0; i<this.selected.length;i++){
                             var voto = this.selected[i];
@@ -231,14 +229,12 @@
                 decideSend(evt) {
                     evt.preventDefault();
                     var v = this.decideEncrypt();
-                    console.log(v);
-                    var votos = {};
+                    var votes = [];
                     for(let i =0; i<v.length;i++){ 
-                        votos.push(v[i]);
+                        votes.push({a: v[i].alpha.toString(), b: v[i].beta.toString()});
                     }
-                    console.log(votos);
                     var data = {
-                        vote: {a: v.alpha.toString(), b: v.beta.toString()},
+                        vote: votes,
                         voting: this.voting.id,
                         voter: this.user.id,
                         token: this.token
