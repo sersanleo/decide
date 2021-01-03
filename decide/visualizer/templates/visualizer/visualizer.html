@@ -18,7 +18,6 @@
 
         <div class="voting container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
             <h2 v-else-if="!voting.end_date">Votación en curso</h2>
             <div v-else>
@@ -41,9 +40,21 @@
                     </tbody>
                 </table>
             </div>
+            <div class="statistics container">
             <h2 class="heading">Estadísticas:</h2>
-
-
+            <div>
+            <p>[[ stats.census ]] personas censadas en esta votación</p>
+            </div>
+            <div v-if="!voting.start_date">
+                <p>estadisticas sin empezar</p>
+            </div>
+            <div v-else-if="!voting.end_date">
+                <p>estadisticas en progreso</p>
+            </div>
+            <div v-else>
+                <p>estadisticas votacion finalizada</p>
+            </div>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -56,11 +67,13 @@
 
     <script>
         var voting = {{voting|safe}};
+        var stats = {{stats|safe}};
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
             data: {
-                voting: voting
+                voting: voting,
+                stats: stats
             }
         })
     </script>

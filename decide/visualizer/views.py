@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import Http404
 
 from base import mods
+from census.models import Census
 
 
 class VisualizerView(TemplateView):
@@ -15,9 +16,11 @@ class VisualizerView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
-            s = mods.get('voting', params={'id': vid})
+            census = Census.objects.filter(voting_id=vid).all()
+            c=census.count()
+            stat = {"census":c}
             context['voting'] = json.dumps(r[0])
-            context['statistics'] = json.dumps(s[0])
+            context['stats'] = json.dumps(stat)
         except:
             raise Http404
 
