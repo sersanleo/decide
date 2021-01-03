@@ -2,9 +2,11 @@ import json
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import Http404
+from django.core import serializers
 
 from census.models import Census
 from voting.models import Voting
+from voting.serializers import MinimalVotingSerializer
 from store.models import Vote
 
 from base import mods
@@ -32,6 +34,6 @@ class IndexView(TemplateView):
             except:
                 pass
 
-        context['pending_votings'] = pending_votings
-        context['past_votings'] = past_votings
+        context['pending_votings'] = json.dumps(MinimalVotingSerializer(pending_votings, many=True).data)
+        context['past_votings'] = json.dumps(MinimalVotingSerializer(past_votings, many=True).data)
         return context
