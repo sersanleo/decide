@@ -55,7 +55,7 @@
                 {% if user.has_usable_password %}
                 <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
                 {% endif %}
-                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                <a href="{% url 'admin:logout' %}" onclick="return logoutmessage();">{% trans 'Log out' %}</a>
             {% endblock %}
         </div>
         {% endif %}
@@ -101,3 +101,16 @@
             <img src="{% static 'styles/footer.png' %}"" alt="footer">
     </footer>
 </html>
+
+<script>
+function logoutmessage(){
+    var opcion = confirm("¿Estas seguro que desea desloguearse?");
+    if (opcion == true) {
+        alert ("se ha deslogueado correctamente");
+        return true;
+	} else {
+        return false;
+    }
+}
+
+</script>
