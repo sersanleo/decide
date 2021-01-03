@@ -16,6 +16,7 @@ class SuggestingFormTests(TestCase):
         session = self.client.session
         session['voter_id'] = 1
         session.save()
+        User(username = "UserTest", email='', sex='M' , password='UserTest').save()
 
     def tearDown(self):
         super().tearDown()
@@ -106,3 +107,11 @@ class SuggestingFormTests(TestCase):
     def test_is_future_date_with_future_date(self):
         date = timezone.now().date() + datetime.timedelta(weeks=1)
         self.assertEqual(is_future_date(date), True)
+#---------------------------------------------------------------
+#--------------------TEST DE INTERFAZ --------------------------
+#--------------------------------------------------------------- 
+
+    def test_login_sucess(self):
+        
+        
+
