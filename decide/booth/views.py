@@ -26,6 +26,7 @@ class LogoutView(TemplateView):
             mods.post('authentication', entry_point='/logout/', json={'token':token})
             del self.request.session['user_token']
             del self.request.session['voter_id']
+            del self.request.session['username']
 
         return context
 
@@ -41,7 +42,7 @@ def autenticacion(request, username, password):
 
     return True, voter_id
 
-def available_votings_user(list_vid):
+def available_votings_user(list_vid, voter_id):
     available_votings=[]
     try:
         votings = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=True).exclude(start_date__isnull=True)
@@ -58,9 +59,9 @@ def last_12_months_votings_user(list_vid):
 
     try:
         today = datetime.now()
-        last_month = today.month - 1
-        if last_month == 0: last_month = 11
-        print(last_month)
+        last_month = today.month - 1    # 0
+        if last_month == 0: last_month = 12  # 11
+
         start = today.replace(minute=0, hour=0, second=0, microsecond=0, year=today.year-1, day=1)
         end = today.replace(minute=0, hour=0, second=0, microsecond=0, day=1)
 
@@ -73,17 +74,12 @@ def last_12_months_votings_user(list_vid):
         error='No se encuentra la votación'
 
     second_counter_months = months[:last_month]
-    second_counter_months.reverse()
     first_counter_months = months[last_month:12]
     counter_months = first_counter_months + second_counter_months
 
     second_str_months = str_months[:last_month]
-    second_str_months.reverse()
     first_str_months = str_months[last_month:12]
     str_months = first_str_months + second_str_months
-
-    print('First:', first_str_months)
-    print('Second:',second_str_months)
 
     return counter_months, str_months
 
@@ -127,11 +123,10 @@ def dashboard_details(voter_id):
             vid = c.voting_id
             list_vid.append(vid)
 
-        available_votings = available_votings_user(list_vid)
+        available_votings = available_votings_user(list_vid, voter_id)
         votings_by_month, months = last_12_months_votings_user(list_vid)
         votings_by_type = votings_user_by_type(list_vid)
-    print(votings_by_month)
-    print(months)
+
     context['vot_dis'] = available_votings
     context['votaciones_por_meses'] = votings_by_month
     context['months'] = months
@@ -147,6 +142,7 @@ def authentication_login(request):
     if request.method == 'POST':
 
         username = request.POST['username']
+        request.session['username'] = username
         password = request.POST['password']
         # Autenticacion
         voter, voter_id = autenticacion(request, username, password)
@@ -155,9 +151,11 @@ def authentication_login(request):
             return render(request, 'booth/login.html', {'no_user':True})
         else:
             context = dashboard_details(voter_id)
+            context['username'] = username
             return render(request, 'booth/dashboard.html', context)
     else:
-
+        if 'username' in request.session:
+            context['username'] = request.session['username']
         token = request.session.get('user_token', None)
         if token == None:
             return render(request, 'booth/login.html')
@@ -178,9 +176,9 @@ class BoothView(TemplateView):
         voter = mods.post('authentication', entry_point='/getuser/', json=token)
         context['voter']= json.dumps(voter)
         voter_id = voter.get('id', None)
-
         try:
             r = mods.get('voting', params={'id': vid})
+            print(r)
             # Casting numbers to string to manage in javascript with BigInt
             # and avoid problems with js and big number conversion
             for k, v in r[0]['pub_key'].items():
