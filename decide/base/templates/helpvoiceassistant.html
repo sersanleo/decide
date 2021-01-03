@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+        <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+    </head>
+    <body>
+        <div id="help-voice-assistant">
+        {% block content %}
+        <h2>Ayuda con los asistentes de voz</h2>
+            <p>
+                Bienvenido a la página de ayuda con los asistentes de voz. En esta página indicaremos algunos asistentes de voz
+                recomendados por nosotros, que hemos utilizado para comprobar que nuestra página es legible por estos.
+            </p>
+            <p>
+                Nuestra página queremos que sea lo más adecuada posible para cada persona, ayudando a aquellas personas que tienen
+                algún tipo de problema de vista con el apoyo de un asistente de voz. Además, con los asistentes de voz que se
+                indican a continuación, se podrá escuchar información que no viene explícitamente escrita en la página, como por
+                ejemplo una explicación de una imagen o una gráfica.
+            </p>
+            <p>
+                Asistentes de voz recomendados:
+                <ul>
+                    <li>En cualquier ordenador: Extensión Read Aloud para navegadores
+                        Hemos elegido esta extensión, al ser muy fácil tanto de instalar como utilizar. En prácticamente un solo minuto, puede instalarla
+                        y aprender como utilizarla. A continuación dejamos varios enlaces para su descarga.
+                        <ul>
+                        <li>Chrome: <a href="https://chrome.google.com/webstore/detail/read-aloud-a-text-to-spee/hdhinadidafjejdhmfkjgnolgimiaplp?hl=es" target="_blank">Pinche aquí para instalar</a></li>
+                        <li>Firefox: <a href="https://addons.mozilla.org/es/firefox/addon/read-aloud/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search" target="_blank">Pinche aquí para instalar</a></li>
+                        </ul>
+                    </li>
+                    <li>En dispositivos móviles: Instalar google assistant desde la Play Store(Android) o App Store (iOS)</li>
+                </ul>
+            </p>
+        {% endblock %}
+        </div>
+    </body>
+</html>
