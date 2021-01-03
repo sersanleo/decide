@@ -26,10 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
-
-    path('', views.IndexView.as_view(), name="index"),
-    path('login/', views.LoginView.as_view(), name="login"),
-    path('logout/', views.LogoutView.as_view(), name="logout"),
+    path('', views.IndexView.as_view(), name="index")
 ]
 
 for module in settings.MODULES:
