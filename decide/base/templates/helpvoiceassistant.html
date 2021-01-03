@@ -6,11 +6,7 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link type="text/css" rel="stylesheet"
-         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
-        <link type="text/css" rel="stylesheet"
-         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-        <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+        <link type="text/css" rel="stylesheet" href="{% static 'styles/N.css' %}" />
     </head>
     <body>
         <div id="help-voice-assistant">
@@ -29,15 +25,24 @@
             <p>
                 Asistentes de voz recomendados:
                 <ul>
-                    <li>En cualquier ordenador: Extensión Read Aloud para navegadores
+                    <li>En cualquier ordenador: Extensión Read Aloud para navegadores.<br>
                         Hemos elegido esta extensión, al ser muy fácil tanto de instalar como utilizar. En prácticamente un solo minuto, puede instalarla
-                        y aprender como utilizarla. A continuación dejamos varios enlaces para su descarga.
+                        y aprender como utilizarla. Simplemente con pulsar el boton de "Añadir a Chrome" (o "Añadir a Firefox"), ya
+                        estaría listo para su uso.<br>
+                        <img id="asistente_instalacion" src="{% static 'styles/asistente_voz_instalacion.png' %}" alt="Imagen instalacion asistente"><br>
+                        Y para utilizarlo, simplemente tenemos que ir a la página que queremos escuchar a través del ordenador y pulsar el
+                        siguiente botón.<br>
+                        <img id="asistente_uso" src="{% static 'styles/asistente_voz_uso.png' %}" alt="Imagen uso asistente"><br>
+                        A continuación dejamos varios enlaces para su descarga:
                         <ul>
                         <li>Chrome: <a href="https://chrome.google.com/webstore/detail/read-aloud-a-text-to-spee/hdhinadidafjejdhmfkjgnolgimiaplp?hl=es" target="_blank">Pinche aquí para instalar</a></li>
                         <li>Firefox: <a href="https://addons.mozilla.org/es/firefox/addon/read-aloud/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search" target="_blank">Pinche aquí para instalar</a></li>
                         </ul>
                     </li>
-                    <li>En dispositivos móviles: Instalar google assistant desde la Play Store(Android) o App Store (iOS)</li>
+                    <li>
+                        En dispositivos móviles: Instalar google assistant desde la Play Store (Android) o App Store (iOS)<br>
+                        <img id="asistente_movil" src="{% static 'styles/asistente_voz_movil.jpeg' %}" alt="Imagen asistente movil">
+                    </li>
                 </ul>
             </p>
         {% endblock %}
