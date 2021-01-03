@@ -23,11 +23,12 @@
                     <b-collapse id="nav-collapse" is-nav>
                         <b-navbar-nav class="ml-auto" >
                                 <div class="btn-group" data-toggle="buttons">
-                                    <b-nav-item-dropdown text="Tipo de visualización" class="mr-5" v-bind:class="{dp: csspd, trit: csstrit}" right>
+                                    <b-nav-item-dropdown aria-labelledby="daltHelp" text="Tipo de visualización" class="mr-5" v-bind:class="{dp: csspd, trit: csstrit}" right>
                                         <b-dropdown-item class="di-visualizacion" v-bind:class="{dp: csspd, trit: csstrit}" @click="change_css(true,false)">Deuteranopia y protanopia</b-dropdown-item>
                                         <b-dropdown-item class="di-visualizacion" v-bind:class="{dp: csspd, trit: csstrit}" @click="change_css(false,true)">Tritanopia</b-dropdown-item>
                                         <b-dropdown-item class="di-visualizacion" v-bind:class="{dp: csspd, trit: csstrit}" @click="change_css(false,false)">Normal</b-dropdown-item>
                                     </b-nav-item-dropdown>
+                                    <div id="daltHelp" style="display: none">Menú desplegable con las opciones de visualización adaptables a personas con daltonismo</div>
                                 </div>
                         </b-navbar-nav>
                         {% block logout %}{% endblock %}
@@ -38,14 +39,13 @@
                     [[ alertMsg ]]
                     <div id="alertMsg" style="display: none">Mensaje de alerta lanzado por la ocurrencia de un error</div>
                 </b-alert>
-                
-                <div class="container-fluid pt-5 mt-xl-4">
-                    <div class="row">
-                        <div class="col-md-8 offset-md-2 text-center">
-                            {% block content %}{% endblock %}
-                        </div>
+                <div class="body" v-bind:class="{dp: csspd, trit: csstrit}">
+                    <div class="container-fluid pt-5 mt-xl-4">
+                            <div class="col-md-8 offset-md-2 text-center">
+                                {% block content %}{% endblock %}
+                            </div>
                     </div>
-                </div>
+                </div>    
             </div>
         </div>
         <!-- needed to generate big random -->

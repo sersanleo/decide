@@ -2,7 +2,8 @@
 {% load i18n static %}
 
 {% block logout %}
-<a class="btn btn-danger" href="{% url 'logout' %}">Cerrar Sesión</a>
+<a aria-labelledby="logoutHelp" class="btn btn-danger" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'logout' %}">Cerrar Sesión</a>
+<div id="logoutHelp" style="display: none">Botón para cerrar la sesión en la página</div>
 {% endblock %}
 
 {% block content %}
