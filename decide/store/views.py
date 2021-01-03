@@ -20,7 +20,7 @@ class StoreView(generics.ListAPIView):
     def get(self, request):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
-        
+
         return super().get(request)
 
     def post(self, request):
@@ -43,7 +43,7 @@ class StoreView(generics.ListAPIView):
 
         uid = request.data.get('voter')
         vote = request.data.get('vote')
-        # question_id = request.data.get('question')              
+        # question_id = request.data.get('question')
 
         if not vid or not uid or not vote:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
@@ -67,19 +67,18 @@ class StoreView(generics.ListAPIView):
         for opt in vote:
             a = a + opt['a'] + ','
             b = b + opt['b'] + ','
-            
+
         a = a[:-1]
         b = b[:-1]
-        
-        # print(question_id)
         print(a)
         print(b)
+        # print(question_id)
 
         v = Vote(voting_id=vid, voter_id=uid,sex=sexType)
-                
+
         v.a = a
         v.b = b
-        
+
         v.save()
 
         return  Response({})

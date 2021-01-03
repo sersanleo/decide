@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.urls import reverse
 from base import mods
 from census.models import Census
-from voting.models import Voting
+from voting.models import Voting, Question
 from store.models import Vote
 from django.contrib.auth.models import User
 from .models import SuggestingForm
@@ -18,15 +18,15 @@ class LoginView(TemplateView):
 
 class LogoutView(TemplateView):
     template_name = 'booth/login.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         token = self.request.session.get('user_token')
-        if token: 
+        if token:
             mods.post('authentication', entry_point='/logout/', json={'token':token})
             del self.request.session['user_token']
             del self.request.session['voter_id']
-    
+
         return context
 
 def autenticacion(request, username, password):
@@ -39,7 +39,7 @@ def autenticacion(request, username, password):
         return False, voter_id
     return True, voter_id
 
-def dashboard_details(voter_id):
+def dashboard_details(request,voter_id):
     context={}
     vot_dis=[]
     context['no_censo'], context['no_vot_dis'] = False, False
@@ -60,11 +60,11 @@ def dashboard_details(voter_id):
     context['vot_dis'] = vot_dis
     if len(vot_dis) == 0:
         context['no_vot_dis'] = True
-    
+
     return context
 
 def authentication_login(request):
-    
+
     if request.method == 'POST':
 
         username = request.POST['username']
@@ -74,7 +74,7 @@ def authentication_login(request):
         if not voter:
             return render(request, 'booth/login.html', {'no_user':True})
         else:
-            context = dashboard_details(voter_id)
+            context = dashboard_details(request, voter_id)
             return render(request, 'booth/dashboard.html', context)
     else:
 
@@ -83,16 +83,27 @@ def authentication_login(request):
             return render(request, 'booth/login.html')
         else:
             voter_id = request.session.get('voter_id', None)
-            context = dashboard_details(voter_id)
+            context = dashboard_details(request, voter_id)
             return render(request, 'booth/dashboard.html', context)
 
+def posicion_question_by_id(questions_list, question_id):
+    i=0
+    for question in questions_list:
+        if int(question['id']) == question_id:
+            break
+        else:
+            i+=1
+
+    return i
 
 class BoothView(TemplateView):
     template_name = 'booth/booth.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        vid = kwargs.get('voting_id', 0)
+        voting_id = kwargs.get('voting_id', 0)
+        context['voting_id'] = voting_id
+        question_id = kwargs.get('question_id', 0)
         token = self.request.session.get('user_token', None)
         context['token']= json.dumps(token.get('token', None))
         voter = mods.post('authentication', entry_point='/getuser/', json=token)
@@ -100,19 +111,36 @@ class BoothView(TemplateView):
         voter_id = voter.get('id', None)
 
         try:
-            r = mods.get('voting', params={'id': vid})
+            r = mods.get('voting', params={'id': voting_id})
             # Casting numbers to string to manage in javascript with BigInt
             # and avoid problems with js and big number conversion
             for k, v in r[0]['pub_key'].items():
                 r[0]['pub_key'][k] = str(v)
 
-            context['voting'] = json.dumps(r[0])
-            context['multiple_option'] = int(json.dumps(r[0]['question'][0]['option_types'])) == 2
-            context['rank_order_scale'] = int(json.dumps(r[0]['question'][0]['option_types'])) == 3
-            if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()!=0:
-                context['voted'] = True
+            number_of_questions = len(r[0]['question'])
+            print(number_of_questions)
+            posicion_question = posicion_question_by_id(r[0]['question'], question_id)
+            print(posicion_question)
+            if number_of_questions > posicion_question:
+                if posicion_question == number_of_questions-1:
+                    context['last_question']=True
+                else:
+                    next_question_id = r[0]['question'][posicion_question+1]['id']
+                    context['next_question_id'] = next_question_id
+                    print(next_question_id)
+                question = Question.objects.get(id=question_id)
+                context['voting'] = json.dumps(r[0])
+                context['question'] = question
+                context['multiple_option'] = question.option_types == 2
+                context['rank_order_scale'] = question.option_types == 3
+                # if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()==number_of_questions:
+                #     context['voted'] = True
+            else:
+                request.session['number_of_questions'] = 0
+                context['voting_finished']=True
+
         except:
-            raise Http404 
+            raise Http404
 
         context['KEYBITS'] = settings.KEYBITS
 
@@ -124,7 +152,7 @@ class SuggestingFormView(TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if not 'user_token' in request.session:
             return HttpResponseRedirect(reverse('login'))
-        
+
         return super(SuggestingFormView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -141,13 +169,13 @@ class SuggestingDetailView(TemplateView):
         context = super().get_context_data(**kwargs)
         sid = kwargs.get('suggesting_id', 0)
         user_id = self.request.session['voter_id']
-        
+
         try:
             suggesting = SuggestingForm.objects.get(pk=sid)
 
             if suggesting.user_id == user_id:
                 context['suggesting'] = suggesting
-                
+
                 if suggesting.is_approved:
                     context['suggesting_state'] = "Su sugerencia ha sido aprobada."
                 elif suggesting.is_approved is None:
@@ -162,7 +190,7 @@ class SuggestingDetailView(TemplateView):
         return context
 
 def send_suggesting_form(request):
-    
+
     if request.method == 'POST':
         user_id = request.session['voter_id']
         title = request.POST['suggesting-title']

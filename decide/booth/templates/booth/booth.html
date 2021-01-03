@@ -8,12 +8,17 @@
 {% block content %}
 {% if voted %}
 <p class="lead">Usted ya ha votado</p>
+{% elif voting_finished %}
+<p class="lead">La votación a finalizado</p>
 {% else %}
 <div class="row py-3 py-xl-5">
     <div class="col-12 pb-2">
-        <h1>[[ voting.name ]]</h1>
-        <p class="lead">[[ voting.desc ]]</p>
-        <h3>[[ voting.question.desc ]]</h3>
+        <h1>{{question.desc}}</h1>
+        <p>{{ question.options.all }}</p>
+        <p>{{ question.id }}</p>
+        {% if not last_question %}
+            <a href="{% url 'votacion' voting_id next_question_id%}">Siguiente pregunta</a>
+        {% endif %}
         {% if multiple_option %}
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
@@ -181,13 +186,13 @@
                     }
                 }
                 return cipher;
-                
+
             },
             decideSend(evt) {
                 evt.preventDefault();
                 var v = this.decideEncrypt();
                 var votes = [];
-                for(let i =0; i<v.length;i++){ 
+                for(let i =0; i<v.length;i++){
                     votes.push({a: v[i].alpha.toString(), b: v[i].beta.toString()});
                 }
                 var data = {
