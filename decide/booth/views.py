@@ -1,8 +1,11 @@
 import json
+import datetime
 from django.views.generic import TemplateView
 from django.conf import settings
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.utils import timezone
+from django.urls import reverse
 from base import mods
 from census.models import Census
 from voting.models import Voting
@@ -11,6 +14,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.db.models.functions import ExtractMonth
 from django.db.models import Count
+from .models import SuggestingForm
 
 class LoginView(TemplateView):
     template_name = 'booth/login.html'
@@ -185,7 +189,8 @@ class BoothView(TemplateView):
                 r[0]['pub_key'][k] = str(v)
 
             context['voting'] = json.dumps(r[0])
-
+            context['multiple_option'] = int(json.dumps(r[0]['question'][0]['option_types'])) == 2
+            context['rank_order_scale'] = int(json.dumps(r[0]['question'][0]['option_types'])) == 3
             if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()!=0:
                 context['voted'] = True
 
@@ -195,3 +200,88 @@ class BoothView(TemplateView):
         context['KEYBITS'] = settings.KEYBITS
 
         return context
+
+class SuggestingFormView(TemplateView):
+    template_name="booth/suggesting.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not 'user_token' in request.session:
+            return HttpResponseRedirect(reverse('login'))
+
+        return super(SuggestingFormView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['post_data'] = check_unresolved_post_data(self.request.session)
+
+        return context
+
+class SuggestingDetailView(TemplateView):
+    template_name="booth/suggesting.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sid = kwargs.get('suggesting_id', 0)
+        user_id = self.request.session['voter_id']
+
+        try:
+            suggesting = SuggestingForm.objects.get(pk=sid)
+
+            if suggesting.user_id == user_id:
+                context['suggesting'] = suggesting
+
+                if suggesting.is_approved:
+                    context['suggesting_state'] = "Su sugerencia ha sido aprobada."
+                elif suggesting.is_approved is None:
+                    context['suggesting_state'] = "Su sugerencia está pendiente de revisión."
+                else:
+                    context['suggesting_state'] = "Su sugerencia ha sido rechazada."
+            else:
+                context['access_blocked'] = True
+        except:
+            raise Http404("Suggesting Form %s does not exist" % sid)
+
+        return context
+
+def send_suggesting_form(request):
+
+    if request.method == 'POST':
+        user_id = request.session['voter_id']
+        title = request.POST['suggesting-title']
+        str_s_date = request.POST['suggesting-date']
+        content = request.POST['suggesting-content']
+        send_date = timezone.now().date()
+
+        s_date = datetime.datetime.strptime(str_s_date, '%Y-%m-%d').date()
+
+        if is_future_date(s_date):
+            s = SuggestingForm(user_id=user_id, title=title, suggesting_date=s_date, content=content, send_date=send_date)
+            s.save()
+            return HttpResponseRedirect(reverse('dashboard'))
+        else:
+            request.session['title'] = title
+            request.session['suggesting_date'] = str_s_date
+            request.session['content'] = content
+            request.session['errors'] = "La fecha seleccionada ya ha pasado. Debe seleccionar una posterior al día de hoy."
+            return HttpResponseRedirect(reverse('suggesting-form'))
+    else:
+        return HttpResponseRedirect(reverse('dashboard'))
+
+def is_future_date(date):
+    return date > timezone.now().date()
+
+def check_unresolved_post_data(session):
+    context = {}
+
+    if 'title' in session and 'suggesting_date' in session and 'content' in session and 'errors' in session:
+        context['title'] = session['title']
+        context['suggesting_date'] = session['suggesting_date']
+        context['content'] = session['content']
+        context['errors'] = session['errors']
+        del session['title']
+        del session['suggesting_date']
+        del session['content']
+        del session['errors']
+
+    return context

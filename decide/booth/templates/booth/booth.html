@@ -9,27 +9,74 @@
 {% if voted %}
 <p class="lead">Usted ya ha votado</p>
 {% else %}
-<div class="row py-3 py-xl-5 text-center">
+<div class="row py-3 py-xl-5">
     <div class="col-12 pb-2">
         <h1>[[ voting.name ]]</h1>
         <p class="lead">[[ voting.desc ]]</p>
         <h3>[[ voting.question.desc ]]</h3>
-        <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Votar" para confirmar su selección y efectuar el voto.</p>
-        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question.options" :key="opt.number">
-            <b-form-radio v-model="selected"
-                        :id="'q' + opt.number"
-                        class="choice-question pb-3"
-                        v-bind:class="{dp: csspd, trit: csstrit}"
-                        name="question"
-                        button
-                        size="lg"
-                        :value="opt.number">
-                [[ opt.option ]]
-            </b-form-radio>
-        </b-form-group>
-        <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
-            {% trans "Votar" %}
-        </b-button>
+        {% if multiple_option %}
+            <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
+                <b-form-checkbox v-model="selected"
+                            :id="'q' + opt.number"
+                            class="choice-question pb-3"
+                            v-bind:class="{dp: csspd, trit: csstrit}"
+                            name="question"
+                            button
+                            size="lg"
+                            :value="opt.number">
+                    [[ opt.option ]]
+                </b-form-checkbox>
+            </b-form-group>
+            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                {% trans "Enviar" %}
+            </b-button>
+        {% elif rank_order_scale %}
+            <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
+            <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
+                <b-form-checkbox v-model="selected"
+                                :id="'q' + opt.number"
+                                class="choice-question pb-3"
+                                v-bind:class="{dp: csspd, trit: csstrit}"
+                                name="question"
+                                button
+                                size="lg"
+                                :value="opt.number">
+                        [[ opt.option ]]
+                    </b-form-checkbox>
+            </b-form-group>
+            <div class="pb-3 col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
+                <h3 v-if="selected.length > 0">El orden seleccionado es:</h3> 
+                <h4>
+                    <ol>
+                        <li class="py-2" v-for="opt in selected">
+                            [[ voting.question[0].options[opt-1].option ]]
+                        </li>
+                    </ol>
+                </h4>
+            </div>
+            <b-button v-if="selected.length == voting.question[0].options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                {% trans "Enviar" %}
+            </b-button>
+        {% else %}
+        <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
+        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
+                <b-form-radio v-model="selected"
+                            :id="'q' + opt.number"
+                            class="choice-question pb-3"
+                            v-bind:class="{dp: csspd, trit: csstrit}"
+                            name="question"
+                            button
+                            size="lg"
+                            :value="[opt.number]">
+                    [[ opt.option ]]
+                </b-form-radio>
+            </b-form-group>
+            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+                {% trans "Enviar" %}
+            </b-button>
+        {% endif %}
     </div>
 </div>
 <div class="row">
@@ -51,7 +98,7 @@
         data: {
             keybits: {{ KEYBITS }},
             voting: voting,
-            selected: "",
+            selected: [],
             alertShow: false,
             alertMsg: "",
             alertLvl: "info",
@@ -67,25 +114,37 @@
         },
         beforeMount() {
             ElGamal.BITS = this.keybits;
-            console.log(ElGamal.BITS)
-            console.log(this.user)
-            console.log(this.token)
-            console.log(this.voting)
+            this.checkDaltCookie();
         },
         methods: {
+            checkDaltCookie() {
+                var cookies = document.cookie.split("; ");
+                cookies.forEach((c) => {
+                    var cs = c.split("=");
+                    if (cs[0] == 'cssMode' && cs[1]) {
+                        if (cs[1] == 'pd') {
+                            this.csspd = true;
+                            this.csstrit = false;
+                        } else if (cs[1] == 'trit') {
+                            this.csspd = false;
+                            this.csstrit = true;
+                        }
+                    }
+                });
+            },
             change_css(v1,v2) {
                 if (v1 & !v2) {
                     this.csspd = true;
                     this.csstrit = false;
-                    document.body.style.backgroundColor = black;
+                    document.cookie = 'cssMode=pd; path=/;';
                 } else if (!v1 & v2) {
                     this.csspd = false;
                     this.csstrit = true;
-                    document.body.style.backgroundColor = black;
+                    document.cookie = 'cssMode=trit; path=/;';
                 } else {
                     this.csspd = false;
                     this.csstrit = false;
-                    document.body.style.backgroundColor = white;
+                    document.cookie = 'cssMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                 }
             },
             postData(url, data) {
@@ -112,22 +171,34 @@
                     });
             },
             decideEncrypt() {
-                var bigmsg = BigInt.fromJSONObject(this.selected.toString());
-                var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
+                var cipher = [];
+                if (this.selected != []){
+                    for(let i =0; i<this.selected.length;i++){
+                        var voto = this.selected[i];
+                        var bigmsg = BigInt.fromJSONObject(voto.toString());
+                        var element = ElGamal.encrypt(this.bigpk, bigmsg);
+                        cipher.push(element);
+                    }
+                }
                 return cipher;
             },
             decideSend(evt) {
                 evt.preventDefault();
                 var v = this.decideEncrypt();
+                var votes = [];
+                for(let i =0; i<v.length;i++){
+                    votes.push({a: v[i].alpha.toString(), b: v[i].beta.toString()});
+                }
                 var data = {
-                    vote: {a: v.alpha.toString(), b: v.beta.toString()},
+                    vote: votes,
                     voting: this.voting.id,
+                    // question: this.voting.question[0].id,
                     voter: this.user.id,
                     token: this.token
                 }
                 this.postData("{% url "gateway" "store" "/" %}", data)
                     .then(data => {
-                        this.showAlert("success", '{% trans "Enhorabuena. Tu voto ha sido enviado" %}');
+                        this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
                     })
                     .catch(error => {
                         this.showAlert("danger", '{% trans "Error: " %}' + error);
