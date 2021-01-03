@@ -27,7 +27,7 @@ class StoreView(generics.ListAPIView):
         """
          * voting: id
          * voter: id
-         * vote: { "a": int, "b": int }
+         * vote: [{ "a": int, "b": int }, { "a": int, "b": int }, ...]
         """
 
         vid = request.data.get('voting')
@@ -42,9 +42,10 @@ class StoreView(generics.ListAPIView):
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
         uid = request.data.get('voter')
-        votes = request.data.get('votes')           
+        vote = request.data.get('vote')
+        # question_id = request.data.get('question')              
 
-        if not vid or not uid or not votes:
+        if not vid or not uid or not vote:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
         # validating voter
@@ -61,21 +62,24 @@ class StoreView(generics.ListAPIView):
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
         sexType=request.user.sex
-        for i in votes:
-            a = i.get("a")
-            b = i.get("b")
-            c = i.get("c")
-            d = i.get("d")
-
-            defs = { "a": a, "b": b, "c": c, "d": d }
-
-            v = Vote(voting_id=vid, voter_id=uid,sex=sexType)
+        a = ""
+        b = ""
+        for opt in vote:
+            a = a + opt['a'] + ','
+            b = b + opt['b'] + ','
             
-            v.a = a
-            v.b = b
-            v.c = c
-            v.d = d
-            
-            v.save()
+        a = a[:-1]
+        b = b[:-1]
+        
+        # print(question_id)
+        print(a)
+        print(b)
+
+        v = Vote(voting_id=vid, voter_id=uid,sex=sexType)
+                
+        v.a = a
+        v.b = b
+        
+        v.save()
 
         return  Response({})

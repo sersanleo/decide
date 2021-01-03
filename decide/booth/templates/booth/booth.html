@@ -69,7 +69,7 @@
                             name="question"
                             button
                             size="lg"
-                            :value="opt.number">
+                            :value="[opt.number]">
                     [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
@@ -171,22 +171,35 @@
                     });
             },
             decideEncrypt() {
-                var bigmsg = BigInt.fromJSONObject(this.selected.toString());
-                var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
+                var cipher = [];
+                if (this.selected != []){
+                    for(let i =0; i<this.selected.length;i++){
+                        var voto = this.selected[i];
+                        var bigmsg = BigInt.fromJSONObject(voto.toString());
+                        var element = ElGamal.encrypt(this.bigpk, bigmsg);
+                        cipher.push(element);
+                    }
+                }
                 return cipher;
+                
             },
             decideSend(evt) {
                 evt.preventDefault();
                 var v = this.decideEncrypt();
+                var votes = [];
+                for(let i =0; i<v.length;i++){ 
+                    votes.push({a: v[i].alpha.toString(), b: v[i].beta.toString()});
+                }
                 var data = {
-                    vote: {a: v.alpha.toString(), b: v.beta.toString()},
+                    vote: votes,
                     voting: this.voting.id,
+                    // question: this.voting.question[0].id,
                     voter: this.user.id,
                     token: this.token
                 }
                 this.postData("{% url "gateway" "store" "/" %}", data)
                     .then(data => {
-                        this.showAlert("success", '{% trans "Enhorabuena. Tu voto ha sido enviado" %}');
+                        this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
                     })
                     .catch(error => {
                         this.showAlert("danger", '{% trans "Error: " %}' + error);
