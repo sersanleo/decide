@@ -13,7 +13,7 @@
     {% for votacion in vot_dis %}
         <ul style="list-style-type:none;">
             <a href="{% url 'votacion' votacion.id %}"><li>{{votacion.name}}</li></a>
-        </ul>    
+        </ul>
     {% endfor %}
     {% if no_vot_dis %}
         <p>No tiene votaciones disponibles</p>
@@ -77,7 +77,7 @@
           backgroundColor: '#007bff',
           label: 'Votaciones'
         }],
-        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+        labels: {{months}}
       },
       options: {
         responsive: true
