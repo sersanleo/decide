@@ -3,6 +3,7 @@
     background-color: blueviolet;
 }
 
+
 body,h3,a{
     font-size:1em;
 }
@@ -24,5 +25,41 @@ font-size:1.1428em;
     color:white;
 
 }
+
+.colMS {
+    background-color:#b7dee4 !important;
+}
+
+h1{
+    color: #0a1b2b !important;
+    font-family: serif !important;
+}
+.dashboard #header{ 
+    background-color: #185471 !important;
+}
+
+.module caption{
+    background: #185471 !important;
+}
+
+#container{
+    background-color: #b7dee4 !important ;
+}
+
+
+footer{
+    background-color: #b7dee4 !important ;
+}
+html, body{
+    background-color:#b7dee4 !important;
+}
+.login #container{
+    background-color: whitesmoke !important;
+}
+.object-tools .addlink{
+    background-color: #c0e22a !important;
+}
+
+
 
 //completar

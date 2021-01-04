@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+<link type="text/css" rel="stylesheet"
+        href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet"
+        href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+{% endblock %}
+
+{% block content %}
+<div id="app-index">
+    <!-- Navbar -->
+  <b-navbar toggleable="lg" type="dark" variant="primary">
+    <b-navbar-brand href="/">
+      <img src="{% static 'styles/LOGODecide.png' %}" />
+      Decide
+    </b-navbar-brand>
+
+    <!-- Responsive navbar button -->
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <b-nav-item href="#">Link 1</b-nav-item>
+        <b-nav-item href="#">Link 2</b-nav-item>
+      </b-navbar-nav>
+
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto">
+        <b-button variant="danger" href="#" v-on:click="decideLogout" v-if="token != null">
+          {% trans "Logout" %}
+        </b-button>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+
+  <!-- Alerts -->
+  <b-alert :variant="alertLvl" dismissible v-model="alertShow">
+    [[ alertMsg ]]
+  </b-alert>
+
+  <b-container class="pt-3">
+    <b-row>
+      <b-col>TEXTO INTRODUCTORIO EN INGLÉS</b-col>
+    </b-row>
+    <!-- Login -->
+    <b-row v-if="token == null" align-h="center">
+      <b-col cols="4" class="text-center">
+        <h1>Login</h1>
+        <b-form @submit="onSubmitLogin">
+          <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
+              <b-form-input
+                  id="username"
+                  type="text"
+                  v-model="form.username"
+                  autocomplete="username"
+                  required />
+          </b-form-group>
+          <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
+              <b-form-input
+                  id="password"
+                  type="password"
+                  autocomplete="current-password"
+                  v-model="form.password"
+                  required />
+          </b-form-group>
+          <b-button class="mt-3" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
+      </b-form>
+      </b-col>
+    </b-row>
+    <!-- Dashboard -->
+    <b-row v-if="token != null">
+      <b-col sm="12" md="6">
+        <h1>Pending votings</h1>
+        <b-list-group>
+          <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">No pending votings</b-list-group-item>
+          <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
+        </b-list-group>
+      </b-col>
+      <b-col sm="12" md="6">
+        <h1>Past votings results</h1>
+        <b-list-group>
+          <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">No results</b-list-group-item>
+          <b-list-group-item v-for="voting in past_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
+        </b-list-group>
+      </b-col>
+    </b-row>
+    <b-row class="pt-5">
+      <b-col>FOOTER FEO</b-col>
+    </b-row>
+  </b-container>
+</div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+      var app = new Vue({
+          delimiters: ['[[', ']]'],
+          el: '#app-index',
+          data: {
+              token: null,
+              user: null,
+              alertShow: false,
+              alertMsg: "",
+              alertLvl: "info",
+              form: {
+                  username: '',
+                  password: ''
+              },
+              pending_votings: {{ pending_votings|safe }},
+              past_votings: {{ past_votings|safe }}
+          },
+          beforeMount() {
+              this.init()
+          },
+          methods: {
+              init() {
+                  var cookies = document.cookie.split("; ");
+                  cookies.forEach((c) => {
+                      var cs = c.split("=");
+                      if (cs[0] == 'decide' && cs[1]) {
+                          this.token = cs[1];
+                          this.getUser();
+                      }
+                  });
+              },
+              postData(url, data) {
+                  // Default options are marked with *
+                  var fdata = {
+                      body: JSON.stringify(data),
+                      headers: {
+                          'content-type': 'application/json',
+                      },
+                      method: 'POST',
+                  };
+
+                  if (this.token) {
+                      fdata.headers['Authorization'] = 'Token ' + this.token;
+                  }
+
+                  return fetch(url, fdata)
+                      .then(response => {
+                          if (response.status === 200) {
+                              return response.json();
+                          } else {
+                              return Promise.reject(response.statusText);
+                          }
+                      });
+              },
+              onSubmitLogin(evt) {
+                  evt.preventDefault();
+                  this.postData("/gateway/authentication/login/", this.form)
+                      .then(data => {
+                          document.cookie = 'decide='+data.token+'; path=/;';
+                          this.token = data.token;
+                          this.getUser();
+                      })
+                      .catch(error => {
+                          this.showAlert("danger", 'Error: ' + error);
+                      });
+              },
+              getUser(evt) {
+                  var data = {token: this.token};
+                  this.postData("/gateway/authentication/getuser/", data)
+                      .then(data => {
+                          this.user = data;
+                          this.signup = false;
+                      }).catch(error => {
+                          this.showAlert("danger", 'Error: ' + error);
+                      });
+              },
+              decideLogout(evt) {
+                  evt.preventDefault();
+                  var data = {token: this.token};
+                  this.postData("/gateway/authentication/logout/", data);
+                  this.token = null;
+                  this.user = null;
+                  document.cookie = 'decide=; path=/;';
+                  this.signup = true;
+              },
+              showAlert(lvl, msg) {
+                  this.alertLvl = lvl;
+                  this.alertMsg = msg;
+                  this.alertShow = true;
+              }
+          },
+      })
+  </script>
+</body>
+{% endblock %}

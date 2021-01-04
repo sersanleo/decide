@@ -1,3 +1,4 @@
+
 body,h3,a{
     font-size:1em;
 }
@@ -17,5 +18,45 @@ font-size:1.1428em;
     background-color:deepskyblue;
     border-color: deepskyblue;
     color:white;
+
+}
+.colMS {
+    background-color:#f8b679 !important;
+}
+
+h1{
+    color: black !important;
+    font-family: serif !important;
+}
+.dashboard #header{ 
+    background-color: #e7901f !important;
+}
+
+.module caption{
+    background: #e7901f !important;
+}
+
+#container{
+    background-color: #f8b679 !important ;
+}
+
+
+footer{
+    background-color: #f8b679 !important ;
+}
+
+.object-tools .addlink{
+    background-color: #e7901f !important;
+}
+
+#content-main a{
+    color: black !important;
+}
+.breadcrumbs{
+    background-color: #e7901f !important;
+
+}
+.app-authtoken #header{
+    background-color: #e7901f !important;
 
 }
