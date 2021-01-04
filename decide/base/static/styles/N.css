@@ -11,14 +11,16 @@ h1{
     color: #0a1b2b !important;
     font-family: serif !important;
 }
+.dashboard #header{ 
+    background-color: #185471 !important;
+}
 
 .module caption{
     background: #185471 !important;
 }
 
-img{
-    margin-left: 110px !important;
-}
+
+
 
 #container{
     background-color: #b7e4cd !important ;
@@ -26,5 +28,11 @@ img{
 
 footer{
     background-color: #b7e4cd !important ;
+}
+html, body{
+    background-color:#b7e4cd !important;
+}
+.login #container{
+    background-color: whitesmoke !important;
 }
 //completar
