@@ -15,9 +15,10 @@ h2{
 font-size:1.1428em;
 }
  p,td,span{
-     font-size:0.9285;
+     font-size:0.9285em;
  }
- #zoomIn,#zoomOut{
+
+#zoomIn,#zoomOut{
     border-radius: .3rem;
     background-color:deepskyblue;
     border-color: deepskyblue;
@@ -58,6 +59,23 @@ html, body{
 .object-tools .addlink{
     background-color: #c0e22a !important;
 }
+#branding{
+    display:inline-flex;
+}
+.required{
+    font-size: 0.875em;
+}
+#id_username,#id_password{
+    font-size: 1em;
+}
+#buttons_zoom{
+    margin:auto;
+}
+.d-block{
+    font-size: 1.36em;
+}
+#username,#password{
+    font-size:1em;
 
 #asistente_instalacion,#asistente_uso2 {
     width: 1000px;
