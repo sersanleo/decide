@@ -128,6 +128,8 @@ def dashboard_details(voter_id):
     votings_by_month = []
     months = []
     votings_by_type = []
+    approved_suggestions = []
+    recent_suggestions = []
     context['no_censo'], context['no_vot_dis'] = False, False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
