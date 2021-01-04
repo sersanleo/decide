@@ -39,14 +39,19 @@ def tally(ModelAdmin, request, queryset):
 
 def give_message(v):
     mensj=""
-    for i,j in zip(v.votes_info_opciones(),v.votes_info_votos()):
-        if(i==v.votes_info_opciones()[-1] and j==v.votes_info_votos()[-1]):
-            mensj=mensj+" in "+i+" it has got "+j+"."
-        else:
-            mensj=mensj+" in "+i+" it has got "+j+"," 
-
-    respuesta="For voting:"+str(v.get_info().name)+mensj
-    return respuesta
+    votos = v.votes_info_votos()
+    for voto in votos:
+        pregunta = voto['pregunta']
+        mensj = mensj + "for question " + pregunta
+        for o in voto['opciones']:
+            opcion = o['option']
+            vots = o['votes']
+            mensj = mensj + " for option " + str(opcion) +" it has " + str(vots) + " votes, "
+    mensj = "For voting " + v.name + ": " + mensj   
+    mensj = mensj[:-2]
+    mensj = mensj + "."
+    respuesta=v
+    return mensj
 
 
 class QuestionOptionInline(admin.TabularInline):
