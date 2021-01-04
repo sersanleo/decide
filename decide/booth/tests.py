@@ -33,7 +33,6 @@ class SuggestingFormTests(TestCase):
         session = self.client.session
         session['voter_id'] = 1
         session.save()
-        User(username = "UserTest", email='', sex='M' , password='UserTest').save()
 
     def tearDown(self):
         super().tearDown()
@@ -168,3 +167,86 @@ class LoginInterfaceTests(StaticLiveServerTestCase):
         alert = self.driver.find_element_by_id('loginFail')
         self.assertEquals(alert.text,'El usuario no está registrado en el sistema.')
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
+
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------TEST DE INTERFAZ DE SUGGESTION------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+
+class SuggestionInterfaceTests(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.base.tearDown()
+        self.driver.quit()
+
+    def test_interface_create_suggestion_success(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Sugerencias").click()
+        self.driver.find_element(By.ID, "suggestingTitle").send_keys("test1")
+        self.driver.find_element(By.ID, "suggestingDate").send_keys("2022-01-29")
+        self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
+
+    
+    def test_interface_create_suggestion_fail_date_before_now(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Sugerencias").click()
+        self.driver.find_element(By.ID, "suggestingTitle").send_keys("test1")
+        self.driver.find_element(By.ID, "suggestingDate").send_keys("2020-01-29")
+        self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        self.assertEquals(alert.text,'La fecha seleccionada ya ha pasado. Debe seleccionar una posterior al día de hoy.')
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
+
+
+    def test_interface_create_suggestion_fail_empty_suggestingTitle(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Sugerencias").click()
+        self.driver.find_element(By.ID, "suggestingDate").send_keys("2022-01-29")
+        self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
+
+    def test_interface_create_suggestion_fail_empty_suggestingDate(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Sugerencias").click()
+        self.driver.find_element(By.ID, "suggestingTitle").send_keys("test1")
+        self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
+
+     def test_interface_create_suggestion_fail_empty_suggestingContent(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Sugerencias").click()
+        self.driver.find_element(By.ID, "suggestingTitle").send_keys("test1")
+        self.driver.find_element(By.ID, "suggestingDate").send_keys("2022-01-29")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
+
