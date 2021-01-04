@@ -1,3 +1,25 @@
+
+body,h3,a{
+    font-size:1em;
+}
+
+h1{
+    font-size:1.4285em;
+}
+
+h2{
+font-size:1.1428em;
+}
+ p,td,span{
+     font-size:0.9285;
+ }
+ #zoomIn,#zoomOut{
+    border-radius: .3rem;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
+    color:white;
+
+}
 .colMS {
     background-color:#f8b679 !important;
 }
@@ -36,4 +58,5 @@ footer{
 }
 .app-authtoken #header{
     background-color: #e7901f !important;
+
 }
