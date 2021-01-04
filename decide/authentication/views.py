@@ -13,6 +13,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .serializers import UserSerializer
 
+from base import mods
+
 
 class GetUserView(APIView):
     def post(self, request):
@@ -31,6 +33,28 @@ class LogoutView(APIView):
             pass
 
         return Response({})
+
+
+class ChangeStyleView(APIView):
+    def post(self, request):
+        # validating token
+        token = request.auth.key
+        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user_id = user.get('id', None)
+
+        if not user_id or user_id != request.data.get('user'):
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # validating style
+        newstyle = request.data.get('style')
+        if not newstyle in [i[0] for i in UserProfile.styles]:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        u = UserProfile.objects.get(id=user_id)
+        u.style = newstyle
+        u.save(update_fields=['style'])
+
+        return  Response({})
 
 
 class RegisterView(APIView):

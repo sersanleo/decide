@@ -124,15 +124,15 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}" />
     {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}" />{% endif %}
-    {% if user.is_authenticated %}
-        {% with 'styles/'|add:user.style|add:'.css' as style_url %}
-            <link type="text/css" rel="stylesheet" href="{% static style_url %}" />
-        {% endwith %}
-    {% else %}
-        <link type="text/css" rel="stylesheet" href="{% static 'styles/N.css' %}" />
-    {% endif %}
 {% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+{% if user.is_authenticated %}
+    {% with 'styles/'|add:user.style|add:'.css' as style_url %}
+        <link type="text/css" rel="stylesheet" href="{% static style_url %}" />
+    {% endwith %}
+{% else %}
+    <link type="text/css" rel="stylesheet" href="{% static 'styles/N.css' %}" />
+{% endif %}
 </head>
 {% load i18n %}
 
