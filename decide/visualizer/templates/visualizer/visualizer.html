@@ -6,9 +6,7 @@
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-    <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
-    
-    
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
 {% endblock %}
 
 {% block content %}
@@ -19,16 +17,13 @@
         </b-navbar>
 
         <div class="voting container">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            <h1>[[ voting.id ]] - [[ voting.name ]] </h1>
+            <h5>[[ voting.desc ]]</h5>
 
-            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso - {{voting.start_date}}</h2>
             <div v-else>
-
-                <h2 class="heading">Inicio: {{voting.start_date}} - Finalización: {{voting.end_date}}</h2>
-
+                <p></p>
                 <h2 class="heading">Resultados:</h2>
-
+                <p></p>
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
@@ -39,9 +34,9 @@
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
-                            <th>[[opt.option]]</th>
+                            <td>[[opt.option]]</td>
                             <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
+                            <td>[[opt.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
@@ -57,17 +52,32 @@
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc / voting.postproc]]</td>
-                            <td class="text-muted">[[opt.votes / voting.votes]]</td>
-                            <td class="text-muted">[[opt.votes_men / opt.votes]]</td>
-                            <td class="text-muted">[[opt.votes_women / opt.votes]]</td>
-                            <td class="text-muted">[[opt.votes_men / voting.votes]]</td>
-                            <td class="text-muted">[[opt.votes_women / voting.votes]]</td>
+                            <td>[[opt.option]]</td>
+                            <td>[[(opt.postproc/stats.votes)*100]]%</td>
+                            <td>[[(opt.votes/stats.votes)*100]]%</td>
                         </tr>
                     </tbody>
                 </table>
 
+                <h2 class="heading">Estadísticas totales:</h2>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Numero de Votos</th>
+                            <th>Porcentaje de Voto</th>
+                            <th>Numero de Personas sin Votar</th>
+                            <th>Porcentaje de Abstención</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.votes]]</td>
+                            <td>[[(stats.votes/stats.census)*100]]%</td>
+                            <td>[[stats.census-stats.votes]]</td>
+                            <td>[[((stats.votes/stats.census)-1)*(-100)]]%</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
         </div>
@@ -80,14 +90,15 @@
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
 
-
     <script>
         var voting = {{voting|safe}};
+        var stats = {{stats|safe}};
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
             data: {
-                voting: voting
+                voting: voting,
+                stats: stats
             }
         })
     </script>
