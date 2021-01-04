@@ -3,16 +3,6 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-
-def inserta_datos(apps, schema_editor):
-    fields = ['IDENTITY', 'BORDA', 'HONDT', 'EQUALITY', 'SAINTE_LAGUE', 'DROOP', 'IMPERIALI', 'HARE']
-    TypeVoting = apps.get_model("voting", "TypeVoting")
-
-    for f in fields:
-        t = TypeVoting(name=f)
-        t.save()
-
-
 class Migration(migrations.Migration):
     dependencies = [
         ('voting', '0015_auto_20201226_1223'),
@@ -32,6 +22,5 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='voting',
                                     to='voting.TypeVoting'),
             preserve_default=False,
-        ),
-        migrations.RunPython(inserta_datos)
+        ),        
     ]
