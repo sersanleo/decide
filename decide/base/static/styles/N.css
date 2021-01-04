@@ -4,7 +4,7 @@
 }
 
 .colMS {
-    background-color:#b7e4cd !important;
+    background-color:#b7dee4 !important;
 }
 
 h1{
@@ -19,20 +19,23 @@ h1{
     background: #185471 !important;
 }
 
-
-
-
 #container{
-    background-color: #b7e4cd !important ;
+    background-color: #b7dee4 !important ;
 }
+
 
 footer{
-    background-color: #b7e4cd !important ;
+    background-color: #b7dee4 !important ;
 }
 html, body{
-    background-color:#b7e4cd !important;
+    background-color:#b7dee4 !important;
 }
 .login #container{
     background-color: whitesmoke !important;
 }
+.object-tools .addlink{
+    background-color: #c0e22a !important;
+}
+
+
 //completar
