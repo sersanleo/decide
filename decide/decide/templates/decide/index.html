@@ -6,6 +6,7 @@
         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
 <link type="text/css" rel="stylesheet"
         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+<script src="{% static 'js/zoom.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -24,6 +25,10 @@
       <b-navbar-nav>
         <b-nav-item href="#">Link 1</b-nav-item>
         <b-nav-item href="#">Link 2</b-nav-item>
+        <div id="buttons_zoom"> 
+          <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+          <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+      </div>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
