@@ -3,4 +3,10 @@
     background-color: blueviolet;
 }
 
-//completar
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
+}
+
+#asistente_movil {
+    width: 400px;
+}
