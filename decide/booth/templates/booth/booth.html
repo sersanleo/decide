@@ -181,13 +181,12 @@
                     }
                 }
                 return cipher;
-                
             },
             decideSend(evt) {
                 evt.preventDefault();
                 var v = this.decideEncrypt();
                 var votes = [];
-                for(let i =0; i<v.length;i++){ 
+                for(let i =0; i<v.length;i++){
                     votes.push({a: v[i].alpha.toString(), b: v[i].beta.toString()});
                 }
                 var data = {
