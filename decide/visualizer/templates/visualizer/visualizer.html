@@ -6,7 +6,9 @@
          href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+    
+    
 {% endblock %}
 
 {% block content %}
@@ -58,6 +60,10 @@
                             <th>[[opt.option]]</th>
                             <td>[[opt.postproc / voting.postproc]]</td>
                             <td class="text-muted">[[opt.votes / voting.votes]]</td>
+                            <td class="text-muted">[[opt.votes_men / opt.votes]]</td>
+                            <td class="text-muted">[[opt.votes_women / opt.votes]]</td>
+                            <td class="text-muted">[[opt.votes_men / voting.votes]]</td>
+                            <td class="text-muted">[[opt.votes_women / voting.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
@@ -73,6 +79,7 @@
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
 
     <script>
         var voting = {{voting|safe}};
