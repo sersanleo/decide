@@ -1,99 +1,107 @@
-body {
+/*------------------------------------------------------------------*/
+/*-------------------- DEUTERANOPIA Y PROTANOPIA -------------------*/
+/*------------------------------------------------------------------*/
+
+.body.dp{
+    height:100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
     background-color: black!important;
     color:white;
 }
 
-/* Barra de navegación */
-
-.navbar {
+nav.navbar.navbar-dark.bg-primary.navbar-expand-lg.dp{
     background-color: #52ACFF!important;
 }
 
-.navbar-brand {
+.navbar-brand.dp {
     color: black!important;
     font-size: x-large!important;
 }
 
-.d-lg-none {
-    color: transparent !important;
-}
-
-.dropdown-toggle {
-    color: black!important;
+.nav-item.b-nav-dropdown.dropdown.mr-5.dp a {
+    color: black!important; 
     font-size: larger;
 }
 
-.dropdown-menu {
+.dropdown-menu.dp {
     background-color: whitesmoke!important;
     width: max-content;
     padding: unset;
     margin: unset;
 }
 
-.radio-dalt {
-    margin: unset!important;
-    border-color: whitesmoke!important;
-    text-align: left!important;
-    font-size: larger;
-}
-
-.submit-dalt {
-    font-size: larger;
-    border-color: whitesmoke!important;
-    margin: unset!important;
-}
-
-.alert {
-    color: black!important;
-    background-color: white!important;
-    border-color:white!important;
-}
-
-
-/* Votación */
-
-.btn-login {
+li.di-visualizacion.dp a {
     background-color: #52ACFF!important;
     border-color: #52ACFF!important;
     color: black!important;
 }
 
-.btn-white {
-    font-size: large;
+li.di-visualizacion.dp a:hover {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color: black!important;
+}
+
+.btn.btn-primary.dp{
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.btn.btn-primary.dp:hover{
     background-color: white!important;
     border-color: white!important;
     color: black!important;
 }
 
-.choice-question {
+.choice-question .dp{
     width: 100%;
 }
 
-.choice-question label {
+.choice-question.dp label {
     width: 100%;
     background-color: #52ACFF!important;
     border-color: #52ACFF!important;
     color: black!important;
 }
 
-.choice-question label.active {
+.choice-question.dp label:hover {
+    width: 100%;
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color: black!important;
+}
+
+.choice-question.dp label.active {
     background-color: #E3CA26!important;
     border-color: #E3CA26!important;
     color:black!important;
 } 
 
-.choice-question label.active:before {
-    content:  "\2192"!important;
+.alert.dp {
+    color: black!important;
+    background-color: white!important;
+    border-color:white!important;
 }
 
-.choice-question label.active:after {
-    content:  "\2190"!important;
+.btn.btn-danger.dp {
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
 }
 
-p{
-    font-size: large;
+.btn.btn-danger.dp:hover {
+    background-color: black!important;
+    border-color: black!important;
+    color: white!important;
 }
 
-label{
-    font-size: x-large;
+.table.dp {
+    color: white;
+}
+
+.chart.dp {
+    background-color: white;
 }

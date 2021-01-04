@@ -10,11 +10,13 @@
         <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
         <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
+        <link type="text/css" rel="stylesheet" href="{% static 'booth/deuteranopia_protanopia.css' %}" />
+        <link type="text/css" rel="stylesheet" href="{% static 'booth/tritanopia.css' %}" />
         
     </head>
-    <body>
+    <body id="html-body">
         <div id="app-booth">
-            <div class="body" v-bind:class="{dp: csspd, trit: csstrit}">
+            <div class="pb-5 body" v-bind:class="{dp: csspd, trit: csstrit}">
                 <!-- Navbar -->
                 <b-navbar v-bind:class="{dp: csspd, trit: csstrit}" type="dark" variant="primary" toggleable="lg">
                     <b-navbar-brand v-bind:class="{dp: csspd, trit: csstrit}" tag="h1">Decide</b-navbar-brand>
@@ -42,13 +44,14 @@
                 
                 <div class="container-fluid pt-5 mt-xl-4">
                     <div class="row">
-                        <div class="col-md-8 offset-md-2">
+                        <div class="col-md-8 offset-md-2 text-center">
                             {% block content %}{% endblock %}
                         </div>
                     </div>
-                </div>    
+                </div>  
             </div>
         </div>
+        
         <!-- needed to generate big random -->
         <script src="{% static "crypto/sjcl.js" %}"></script>
         
