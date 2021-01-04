@@ -250,3 +250,93 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------TEST DE INTERFAZ DE VOTACION------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+def create_votings(self):
+        qUnique = Question(desc='test question unique', option_types=1)
+        qMulti = Question(desc='test question multiple', option_types=2)
+        #FALTA AÑADIR A LA DE RANGO EL TYPE BORDA
+        qRank = Question(desc='test question rank', option_types=3)
+        qUnique.save()
+        qMulti.save()
+        qRank.save()
+        for i in range(5):
+            optUnique = QuestionOption(question=qUnique, option='option {}'.format(i+1))
+            optMulti = QuestionOption(question=qMulti, option='option {}'.format(i+1))
+            optRank = QuestionOption(question=qRank, option='option {}'.format(i+1))
+            optUnique.save()
+            optMulti.save()
+            optRank.save()
+        vUnique = Voting(name='test voting unique')
+        vMult = Voting(name='test voting multiple')
+        vRank = Voting(name='test voting rank')
+        vUnique.save()
+        vMult.save()
+        vRank.save()
+        vUnique.question.add(qUnique)
+        vMult.question.add(qMulti)
+        vRank.question.add(qRank)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        vUnique.auths.add(a)
+        vMult.auth.add(a)
+        vRank.auth.add(a)
+
+class SuggestionInterfaceTests(StaticLiveServerTestCase):
+     def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        self.create_votings()
+
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.base.tearDown()
+        self.driver.quit()
+
+    def test_interface_vote_question_unique_sucess(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting unique").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
+    
+    def test_interface_vote_question_multi_sucess(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting multiple").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__21 .btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
+    
+    def test_interface_vote_question_rank_sucess(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting rank").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__21 .btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__23 .btn").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__25 .btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
+
