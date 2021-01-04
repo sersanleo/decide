@@ -1,14 +1,31 @@
 import datetime
 
 from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.utils import timezone
 from django.urls import reverse
 
+from base.tests import BaseTestCase
 from .models import SuggestingForm
 from .views import check_unresolved_post_data, is_future_date
 
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+
+import time
+
+
 NOW_DATE = timezone.now().date()
 S_DATE = NOW_DATE + datetime.timedelta(weeks=1)
+
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#-----------------------------TEST DEL CONTROLADOR DE SUGERENCIAS-----------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 
 class SuggestingFormTests(TestCase):
     def setUp(self):
@@ -107,11 +124,47 @@ class SuggestingFormTests(TestCase):
     def test_is_future_date_with_future_date(self):
         date = timezone.now().date() + datetime.timedelta(weeks=1)
         self.assertEqual(is_future_date(date), True)
-#---------------------------------------------------------------
-#--------------------TEST DE INTERFAZ --------------------------
-#--------------------------------------------------------------- 
 
-    def test_login_sucess(self):
-        
-        
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------TEST DE INTERFAZ DE LOGIN-----------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 
+class LoginInterfaceTests(StaticLiveServerTestCase):
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.base.tearDown()
+        self.driver.quit()
+
+    def test_interface_login_success(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element_by_id('username').send_keys("noadmin")
+        self.driver.find_element_by_id('password').send_keys("qwerty",Keys.ENTER)
+        
+        print(self.driver.current_url)
+        #Cuando el login es correcto, se redirige a la página de dashboard
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
+
+    def test_interface_login_fail(self):
+        #Se loguea con un usuario inexistente
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element_by_id('username').send_keys("badvoter1")
+        self.driver.find_element_by_id('password').send_keys("badpass1",Keys.ENTER)
+        
+        print(self.driver.current_url)
+        print(self.driver.find_element_by_id('loginFail').text)
+        #Cuando el login es incorrecto, se mantiene en la página y aparece una alerta
+        alert = self.driver.find_element_by_id('loginFail')
+        self.assertEquals(alert.text,'El usuario no está registrado en el sistema.')
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
