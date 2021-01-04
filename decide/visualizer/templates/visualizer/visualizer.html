@@ -19,7 +19,36 @@
         <div class="voting container">
             <h1>[[ voting.id ]] - [[ voting.name ]] </h1>
             <h5>[[ voting.desc ]]</h5>
+            <div v-if="!voting.start_date">
+            <h4>La votación aun no ha comenzado. Hasta ahora hay [[stats.census]] personas censadas.</h4>
 
+
+            </div>
+            <div v-else-if="!voting.end_date">
+                <p></p>
+                <h4>Votación en curso. La votación esta sujeta a cambios.</h4>
+                <p></p>
+                <h2 class="heading">Progreso de la votación:</h2>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Numero de Votos</th>
+                            <th>Porcentaje de Voto</th>
+                            <th>Numero de Personas sin Votar</th>
+                            <th>Porcentaje de Personas sin Votar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.votes]]</td>
+                            <td>[[(stats.votes/stats.census)*100]]%</td>
+                            <td>[[stats.census-stats.votes]]</td>
+                            <td>[[((stats.votes/stats.census)-1)*(-100)]]%</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
             <div v-else>
                 <p></p>
                 <h2 class="heading">Resultados:</h2>
@@ -68,7 +97,8 @@
                             <th>Numero de Personas sin Votar</th>
                             <th>Porcentaje de Abstención</th>
                         </tr>
-                    </thead>
+                    </
+thead>
                     <tbody>
                         <tr>
                             <td>[[stats.votes]]</td>
