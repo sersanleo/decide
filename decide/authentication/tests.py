@@ -129,6 +129,7 @@ class AuthTestCase(APITestCase):
         data = {'username': 'admin', 'password': 'admin'}
         response = self.client.post('/authentication/login/', data, format='json')
         self.assertEqual(response.status_code, 200)
+        token = response.json()
 
         token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'M'})
         response = self.client.post('/authentication/register/', token, format='json')
