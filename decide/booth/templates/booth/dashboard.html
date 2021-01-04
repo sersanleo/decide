@@ -1,0 +1,78 @@
+{% extends "booth/base.html" %}
+{% load i18n static %}
+
+{% block logout %}
+<a class="btn btn-danger" href="{% url 'logout' %}">Cerrar Sesión</a>
+{% endblock %}
+
+{% block content %}
+{% if no_censo %}
+    <p>No has sido añadido al censo de alguna votación</p>
+{% else %}
+    <h2>Votaciones disponibles:</h2>
+    {% for votacion in vot_dis %}
+        <ul style="list-style-type:none;">
+            <a href="{% url 'votacion' votacion.id votacion.question.first.id%}"><li>{{votacion.name}}</li></a>
+        </ul>
+    {% endfor %}
+    {% if no_vot_dis %}
+        <p>No tiene votaciones disponibles</p>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block extrabody %}
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app-booth',
+        data: {
+            alertShow: false,
+            alertMsg: "",
+            alertLvl: "info",
+            csspd: false,
+            csstrit: false
+        },
+        beforeMount() {
+            this.checkDaltCookie();
+        },
+        methods: {
+            checkDaltCookie() {
+                var cookies = document.cookie.split("; ");
+                cookies.forEach((c) => {
+                    var cs = c.split("=");
+                    if (cs[0] == 'cssMode' && cs[1]) {
+                        if (cs[1] == 'pd') {
+                            this.csspd = true;
+                            this.csstrit = false;
+                        } else if (cs[1] == 'trit') {
+                            this.csspd = false;
+                            this.csstrit = true;
+                        }
+                    }
+                });
+            },
+            change_css(v1,v2) {
+                if (v1 & !v2) {
+                    this.csspd = true;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=pd; path=/;';
+                } else if (!v1 & v2) {
+                    this.csspd = false;
+                    this.csstrit = true;
+                    document.cookie = 'cssMode=trit; path=/;';
+                } else {
+                    this.csspd = false;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                }
+            },
+            showAlert(lvl, msg) {
+                this.alertLvl = lvl;
+                this.alertMsg = msg;
+                this.alertShow = true;
+            }
+        }
+    });
+</script>
+{% endblock %}

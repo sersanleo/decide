@@ -6,7 +6,7 @@ from rest_framework.status import (
 )
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
+from .models import UserProfile
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
@@ -41,12 +41,13 @@ class RegisterView(APIView):
             return Response({}, status=HTTP_401_UNAUTHORIZED)
 
         username = request.data.get('username', '')
+        sex = request.data.get('sex', '')
         pwd = request.data.get('password', '')
-        if not username or not pwd:
+        if not username or not pwd or not sex:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
         try:
-            user = User(username=username)
+            user = UserProfile(username=username, sex=sex)
             user.set_password(pwd)
             user.save()
             token, _ = Token.objects.get_or_create(user=user)
