@@ -11,37 +11,53 @@
     <body>
         <div id="help-voice-assistant">
         {% block content %}
-        <h2>Ayuda con los asistentes de voz</h2>
+        <!-- Ayuda con los asistentes de voz-->
+        <h2>Help with voice assistants</h2>
             <p>
-                Bienvenido a la página de ayuda con los asistentes de voz. En esta página indicaremos algunos asistentes de voz
-                recomendados por nosotros, que hemos utilizado para comprobar que nuestra página es legible por estos.
+                Welcome to the help page with voice assistants. On this page we will indicate some voice assistants recommended by us,
+                which we have used to check that our page is readable by them.
+                <!-- Bienvenido a la página de ayuda con los asistentes de voz. En esta página indicaremos algunos asistentes de voz
+                recomendados por nosotros, que hemos utilizado para comprobar que nuestra página es legible por estos. -->
             </p>
             <p>
-                Nuestra página queremos que sea lo más adecuada posible para cada persona, ayudando a aquellas personas que tienen
+                We want our page be as suitable as possible for each person, helping those who have
+                some kind of vision problem with the support of a voice assistant. In addition, with the voice assistants indicated in
+                this page, you will be able to hear information that is not explicitly written on the page, such as by
+                example an explanation of an image or a graph.
+                <!-- Queremos que nuestra página sea lo más adecuada posible para cada persona, ayudando a aquellas personas que tienen
                 algún tipo de problema de vista con el apoyo de un asistente de voz. Además, con los asistentes de voz que se
                 indican a continuación, se podrá escuchar información que no viene explícitamente escrita en la página, como por
-                ejemplo una explicación de una imagen o una gráfica.
+                ejemplo una explicación de una imagen o una gráfica. -->
             </p>
             <p>
-                Asistentes de voz recomendados:
+                Recommended voice assistants:
+                <!-- Asistentes de voz recomendados: -->
                 <ul>
-                    <li>En cualquier ordenador: Extensión Read Aloud para navegadores.<br>
-                        Hemos elegido esta extensión, al ser muy fácil tanto de instalar como utilizar. En prácticamente un solo minuto, puede instalarla
-                        y aprender como utilizarla. Simplemente con pulsar el boton de "Añadir a Chrome" (o "Añadir a Firefox"), ya
-                        estaría listo para su uso.<br>
-                        <img id="asistente_instalacion" src="{% static 'styles/asistente_voz_instalacion.png' %}" alt="Imagen instalacion asistente"><br>
-                        Y para utilizarlo, simplemente tenemos que ir a la página que queremos escuchar a través del ordenador y pulsar el
-                        siguiente botón.<br>
-                        <img id="asistente_uso" src="{% static 'styles/asistente_voz_uso.png' %}" alt="Imagen uso asistente"><br>
-                        A continuación dejamos varios enlaces para su descarga:
+                    <!-- En cualquier ordenador: Extensión Read Aloud para navegadores.-->
+                    <li>On computer: "Read Aloud" extension for browsers.<br>
+                        <!--Hemos elegido esta extensión, al ser muy fácil tanto de instalar como utilizar. En prácticamente un solo minuto, 
+                        puede instalarla y aprender como utilizarla. Simplemente con pulsar el boton de "Añadir a Chrome" (o "Añadir a 
+                        Firefox"), ya estaría listo para su uso.-->
+                        We have chosen this extension, because it is very easy to install and use. In almost a minute, you can install 
+                        it and learn how to use it. Simply clicking the "Add to Chrome" button (or "Add to Firefox"), 
+                        would be ready for use.<br>
+                        <img id="asistente_instalacion" src="{% static 'styles/asistente_voz_instalacion.png' %}" alt="Image of voice assistant installation"><br>
+                        <!--Y para utilizarlo, simplemente tenemos que ir a la página que queremos escuchar a través del ordenador y 
+                        pulsar el símbolo de la extensión (megáfono), y pulsar el siguiente botón.-->
+                        And to use it, we simply have to go to the page that we want to hear through 
+                        the computer and press the symbol of extension (megaphone), and press the next button to play<br>
+                        <img id="asistente_uso" src="{% static 'styles/asistente_voz_uso.png' %}" alt="Image of voice assistant usage"><br>
+                        <!--Enlaces para descargar la extension:-->
+                        Links to download the extension:
                         <ul>
-                        <li>Chrome: <a href="https://chrome.google.com/webstore/detail/read-aloud-a-text-to-spee/hdhinadidafjejdhmfkjgnolgimiaplp?hl=es" target="_blank">Pinche aquí para instalar</a></li>
-                        <li>Firefox: <a href="https://addons.mozilla.org/es/firefox/addon/read-aloud/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search" target="_blank">Pinche aquí para instalar</a></li>
+                        <li>Chrome: <a href="https://chrome.google.com/webstore/detail/read-aloud-a-text-to-spee/hdhinadidafjejdhmfkjgnolgimiaplp?hl=es" target="_blank">Click here to install</a></li>
+                        <li>Firefox: <a href="https://addons.mozilla.org/es/firefox/addon/read-aloud/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search" target="_blank">Click here to install</a></li>
                         </ul>
                     </li>
                     <li>
-                        En dispositivos móviles: Instalar google assistant desde la Play Store (Android) o App Store (iOS)<br>
-                        <img id="asistente_movil" src="{% static 'styles/asistente_voz_movil.jpeg' %}" alt="Imagen asistente movil">
+                        <!--En dispositivos móviles: Instalar google assistant desde la Play Store (Android) o App Store (iOS)-->
+                        On mobile: Install the google assistant from the Play Store (Android) o App Store (iOS) <br>
+                        <img id="asistente_movil" src="{% static 'styles/asistente_voz_movil.jpeg' %}" alt="Image voice assistant for mobile">
                     </li>
                 </ul>
             </p>
