@@ -11,7 +11,6 @@ from census.models import Census
 from voting.models import Voting
 from store.models import Vote
 from django.contrib.auth.models import User
-from datetime import datetime
 from django.db.models.functions import ExtractMonth
 from django.db.models import Count
 from .models import SuggestingForm
@@ -62,9 +61,9 @@ def last_12_months_votings_user(list_vid):
     str_months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
     try:
-        today = datetime.now()
-        last_month = today.month - 1    # 0
-        if last_month == 0: last_month = 12  # 11
+        today = datetime.datetime.now()
+        last_month = today.month - 1
+        if last_month == 0: last_month = 12
 
         start = today.replace(minute=0, hour=0, second=0, microsecond=0, year=today.year-1, day=1)
         end = today.replace(minute=0, hour=0, second=0, microsecond=0, day=1)
@@ -110,6 +109,10 @@ def votings_user_by_type(list_vid):
     votings_by_type.append(rank)
     return votings_by_type
 
+def suggestions_approved(voter_id):
+    suggestions = SuggestingForm.objects.filter(user_id=voter_id).filter(is_approved=True)
+    return suggestions
+
 def dashboard_details(voter_id):
     context={}
     available_votings = []
@@ -130,11 +133,13 @@ def dashboard_details(voter_id):
         available_votings = available_votings_user(list_vid, voter_id)
         votings_by_month, months = last_12_months_votings_user(list_vid)
         votings_by_type = votings_user_by_type(list_vid)
+        approved_suggestions = suggestions_approved(voter_id)
 
     context['vot_dis'] = available_votings
     context['votaciones_por_meses'] = votings_by_month
     context['months'] = months
     context['tipo_votaciones'] = votings_by_type
+    context['approved_suggestions'] = approved_suggestions
 
     if len(available_votings) == 0:
         context['no_vot_dis'] = True
@@ -158,14 +163,14 @@ def authentication_login(request):
             context['username'] = username
             return render(request, 'booth/dashboard.html', context)
     else:
-        if 'username' in request.session:
-            context['username'] = request.session['username']
         token = request.session.get('user_token', None)
         if token == None:
             return render(request, 'booth/login.html')
         else:
             voter_id = request.session.get('voter_id', None)
             context = dashboard_details(voter_id)
+            if 'username' in request.session:
+                context['username'] = request.session['username']
             return render(request, 'booth/dashboard.html', context)
 
 

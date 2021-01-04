@@ -34,6 +34,28 @@
       <p>No tiene votaciones disponibles</p>
     {% endif %}
     <div class="row">
+      <h2 class="col-md-8">Realice sus sugerencias:</h2>
+      <a class="btn btn-primary col-md-4" href="{% url 'suggesting-form' %}">Sugerencias</a>
+    </div>
+    <div class="row">
+      <table class="table col-md-6">
+        <thead>
+          <tr>
+            <th scope="col">Título</th>
+            <th scope="col">Fecha de sugerencia</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for sugerencia in approved_suggestions %}
+          <tr>
+            <td><a href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+            <td>{{sugerencia.suggesting_date}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
       <div class="col-md-6">
         <h2>Votaciones por meses del año</h2>
         <div id="container1">
