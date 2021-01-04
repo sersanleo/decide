@@ -11,7 +11,7 @@
 
 {% block content %}
 <div id="app-index">
-    <!-- Navbar -->
+  <!-- Navbar -->
   <b-navbar toggleable="lg" type="dark" variant="primary">
     <b-navbar-brand href="/">
       <img src="{% static 'styles/LOGODecide.png' %}" />
@@ -32,8 +32,13 @@
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto">
-        <b-button variant="danger" href="#" v-on:click="decideLogout" v-if="token != null">
+      <b-navbar-nav class="ml-auto" v-if="user != null">
+        <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+          {% for style in user_styles %}
+            <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
+          {% endfor %}
+        </b-nav-item-dropdown>
+        <b-button variant="danger" v-on:click="decideLogout">
           {% trans "Logout" %}
         </b-button>
       </b-navbar-nav>
@@ -47,10 +52,16 @@
 
   <b-container class="pt-3">
     <b-row>
-      <b-col>TEXTO INTRODUCTORIO EN INGLÉS</b-col>
+      <b-col>Welcome to Decide, the online voting platform. This is the main page. Here, you can press booth to go voting or press visualizer to see the results.</b-col>
     </b-row>
+    <div>
+      <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Booth</b-button></b-col>
+    </div>
+    <div>
+      <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Visualizer</b-button></b-col>
+    </div>
     <!-- Login -->
-    <b-row v-if="token == null" align-h="center">
+    <b-row v-if="user == null" align-h="center">
       <b-col cols="4" class="text-center">
         <h1>Login</h1>
         <b-form @submit="onSubmitLogin">
@@ -75,24 +86,24 @@
       </b-col>
     </b-row>
     <!-- Dashboard -->
-    <b-row v-if="token != null">
+    <b-row v-if="user != null">
       <b-col sm="12" md="6">
-        <h1>Pending votings</h1>
+        <h1>{% trans "My pending votings" %}</h1>
         <b-list-group>
-          <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">No pending votings</b-list-group-item>
+          <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">{% trans "No pending votings" %}</b-list-group-item>
           <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
         </b-list-group>
       </b-col>
       <b-col sm="12" md="6">
-        <h1>Past votings results</h1>
+        <h1>{% trans "My votings results" %}</h1>
         <b-list-group>
-          <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">No results</b-list-group-item>
+          <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">{% trans "No results" %}</b-list-group-item>
           <b-list-group-item v-for="voting in past_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
         </b-list-group>
       </b-col>
     </b-row>
     <b-row class="pt-5">
-      <b-col>FOOTER FEO</b-col>
+      <b-img src={% static 'styles/footer.png' %}>FOOTER FEO</b-img>
     </b-row>
   </b-container>
 </div>
@@ -111,15 +122,15 @@
           data: {
               token: null,
               user: null,
-              alertShow: false,
-              alertMsg: "",
-              alertLvl: "info",
               form: {
                   username: '',
                   password: ''
               },
               pending_votings: {{ pending_votings|safe }},
-              past_votings: {{ past_votings|safe }}
+              past_votings: {{ past_votings|safe }},
+              alertShow: false,
+              alertMsg: "",
+              alertLvl: "info"
           },
           beforeMount() {
               this.init()
@@ -162,7 +173,7 @@
                   evt.preventDefault();
                   this.postData("/gateway/authentication/login/", this.form)
                       .then(data => {
-                          document.cookie = 'decide='+data.token+'; path=/;';
+                          document.cookie = 'decide='+data.token+'; path=/; max-age=7200;';
                           this.token = data.token;
                           this.getUser();
                       })
@@ -175,9 +186,22 @@
                   this.postData("/gateway/authentication/getuser/", data)
                       .then(data => {
                           this.user = data;
-                          this.signup = false;
+                          if(this.user.style == 'C')
+                            setUserStyle("{% static 'styles/C.css' %}");
+                          else
+                            setUserStyle("{% static 'styles/N.css' %}");
                       }).catch(error => {
                           this.showAlert("danger", 'Error: ' + error);
+                      });
+              },
+              onChangeStyle(newstyle) {
+                  var data = {token: this.token, user: this.user.id, style: newstyle};
+                  this.postData("{% url "gateway" "authentication" "/changestyle/" %}", data)
+                      .then(data => {
+                          this.getUser();
+                      })
+                      .catch(error => {
+                          this.showAlert("danger", '{% trans "Error: " %}' + error);
                       });
               },
               decideLogout(evt) {
@@ -187,7 +211,6 @@
                   this.token = null;
                   this.user = null;
                   document.cookie = 'decide=; path=/;';
-                  this.signup = true;
               },
               showAlert(lvl, msg) {
                   this.alertLvl = lvl;

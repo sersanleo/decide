@@ -3,7 +3,6 @@
     background-color: blueviolet;
 }
 
-
 body,h3,a{
     font-size:1em;
 }
@@ -77,7 +76,57 @@ html, body{
 }
 #username,#password{
     font-size:1em;
+
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
 }
 
+#asistente_movil {
+    width: 400px;
+}
 
 //completar
+/*
+ESTO FUE LO K AÑADIO MOISES AL ESTILO DE CABINA SIN QUERER. POR SI HACE FALTA
+
+.choice-question {
+    width: 100%;
+}
+
+.choice-question label {
+    width: 100%;
+}
+
+.choice-question label.active {
+    background-color: #03ad03!important;
+} 
+
+p{
+    font-size: 1.25em;
+}
+
+label{
+
+    font-size: 1.25em;
+}
+
+h1{
+   font-size: 2.25em;
+}
+.navar-brand{
+    font-size:1.25em;
+}
+.btn-lg{
+    font-size: 1.25em;
+}
+.form-control{
+    font-size: 1em;
+}
+#zoomIn,#zoomOut{
+    border-radius: .3rem;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
+    color:white;
+
+}
+*/

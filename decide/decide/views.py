@@ -8,6 +8,7 @@ from census.models import Census
 from voting.models import Voting
 from voting.serializers import MinimalVotingSerializer
 from store.models import Vote
+from authentication.models import UserProfile
 
 from base import mods
 
@@ -36,4 +37,5 @@ class IndexView(TemplateView):
 
         context['pending_votings'] = json.dumps(MinimalVotingSerializer(pending_votings, many=True).data)
         context['past_votings'] = json.dumps(MinimalVotingSerializer(past_votings, many=True).data)
+        context['user_styles'] = UserProfile.styles;
         return context
