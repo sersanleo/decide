@@ -21,18 +21,21 @@
         {% endif %}
         {% if multiple_option %}
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
+                {% for opt in question.options.all %}
                 <b-form-checkbox v-model="selected"
-                            :id="'q' + opt.number"
+                            id="'q' + {{opt.number}}"
                             class="choice-question pb-3"
                             v-bind:class="{dp: csspd, trit: csstrit}"
                             name="question"
                             button
                             size="lg"
-                            :value="opt.number">
-                    [[ opt.option ]]
+                            value={{opt.number}}>
+                    {{opt.option}}
                 </b-form-checkbox>
+                {% endfor %}
             </b-form-group>
+            [[selected]]
             <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
