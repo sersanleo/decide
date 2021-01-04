@@ -132,8 +132,10 @@ class VotingTestCase(BaseTestCase):
 
     def test_multi_voting(self):
         v1 = self.create_voting_multi()
-        print(v1.question)
+        for q in v1.question.all()
+            self.assertEqual(q.options.all(), )
 
+        
 
     def test_update_voting(self):
         voting = self.create_voting()
