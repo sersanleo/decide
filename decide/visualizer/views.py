@@ -7,7 +7,7 @@ from django.http import Http404
 from base import mods
 
 from voting.models import Voting
-
+from store.models import Vote
 from census.models import Census
 
 
@@ -20,13 +20,20 @@ class VisualizerView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
-            print(r)
+            census = Census.objects.filter(voting_id=vid).all()
+            votes = Vote.objects.filter(voting_id=vid).all()
+
+            c=census.count()
+            v=votes.count()
+            stat = {"census":c}
+            stat["votes"] = v
+
             context['voting'] = json.dumps(r[0])
+            context['stats'] = json.dumps(stat)
         except:
             raise Http404
 
         return context
-
 
 def get_list_votings(request):
     filter = request.GET.get('filter')
@@ -59,4 +66,3 @@ def get_list_votings(request):
     else:
         user = True
     return render(request, 'visualizer/listVisualizer.html', {'votings': list, 'user': user})
-
