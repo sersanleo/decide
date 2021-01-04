@@ -3,7 +3,6 @@
     background-color: blueviolet;
 }
 
-
 body,h3,a{
     font-size:1em;
 }
@@ -60,7 +59,13 @@ html, body{
     background-color: #c0e22a !important;
 }
 
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
+}
 
+#asistente_movil {
+    width: 400px;
+}
 
 //completar
 /*
