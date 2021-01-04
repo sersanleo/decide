@@ -21,13 +21,13 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto" v-if="token != null">
+      <b-navbar-nav class="ml-auto" v-if="user != null">
         <b-nav-item-dropdown text="{% trans "Change style" %}" right>
           {% for style in user_styles %}
-            <b-dropdown-item href="#" v-on:click="onChangeStyle('{% trans style.0 %}')">{% trans style.1 %}</b-dropdown-item>
+            <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
           {% endfor %}
         </b-nav-item-dropdown>
-        <b-button variant="danger" href="#" v-on:click="decideLogout">
+        <b-button variant="danger" v-on:click="decideLogout">
           {% trans "Logout" %}
         </b-button>
       </b-navbar-nav>
@@ -50,7 +50,7 @@
       <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Visualizer</b-button></b-col>
     </div>
     <!-- Login -->
-    <b-row v-if="token == null" align-h="center">
+    <b-row v-if="user == null" align-h="center">
       <b-col cols="4" class="text-center">
         <h1>Login</h1>
         <b-form @submit="onSubmitLogin">
@@ -75,7 +75,7 @@
       </b-col>
     </b-row>
     <!-- Dashboard -->
-    <b-row v-if="token != null">
+    <b-row v-if="user != null">
       <b-col sm="12" md="6">
         <h1>{% trans "My pending votings" %}</h1>
         <b-list-group>
@@ -179,7 +179,6 @@
                             setUserStyle("{% static 'styles/C.css' %}");
                           else
                             setUserStyle("{% static 'styles/N.css' %}");
-                          this.signup = false;
                       }).catch(error => {
                           this.showAlert("danger", 'Error: ' + error);
                       });
@@ -201,7 +200,6 @@
                   this.token = null;
                   this.user = null;
                   document.cookie = 'decide=; path=/;';
-                  this.signup = true;
               },
               showAlert(lvl, msg) {
                   this.alertLvl = lvl;
