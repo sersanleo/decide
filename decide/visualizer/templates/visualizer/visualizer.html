@@ -33,11 +33,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
+                     {% for dict in postproc %}
+                        <tr>
+                            <th>{{ dict.option }}</th>
+                            <td>{{ dict.postproc }}</td>
+                            <td class="text-muted">{{ dict.votes }}</td>
                         </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>
