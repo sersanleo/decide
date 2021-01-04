@@ -113,6 +113,15 @@ def suggestions_approved(voter_id):
     suggestions = SuggestingForm.objects.filter(user_id=voter_id).filter(is_approved=True)
     return suggestions
 
+def suggestions_recent(voter_id):
+    recent_suggestions = []
+    suggestions = SuggestingForm.objects.filter(user_id=voter_id)
+    for s in suggestions:
+        if s.was_published_recently() == True:
+            recent_suggestions.append(s)
+            
+    return recent_suggestions
+
 def dashboard_details(voter_id):
     context={}
     available_votings = []
@@ -134,16 +143,24 @@ def dashboard_details(voter_id):
         votings_by_month, months = last_12_months_votings_user(list_vid)
         votings_by_type = votings_user_by_type(list_vid)
         approved_suggestions = suggestions_approved(voter_id)
+        recent_suggestions = suggestions_recent(voter_id)
 
     context['vot_dis'] = available_votings
     context['votaciones_por_meses'] = votings_by_month
     context['months'] = months
     context['tipo_votaciones'] = votings_by_type
     context['approved_suggestions'] = approved_suggestions
+    context['recent_suggestions'] = recent_suggestions
 
     if len(available_votings) == 0:
         context['no_vot_dis'] = True
 
+    if len(approved_suggestions) == 0:
+        context['no_approved_suggs'] = True
+    
+    if len(recent_suggestions) == 0:
+        context['no_recents_suggs'] = True
+        
     return context
 
 def authentication_login(request):

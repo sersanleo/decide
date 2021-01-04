@@ -11,51 +11,90 @@
 {% if no_censo %}
     <p>No has sido añadido al censo de alguna votación</p>
 {% else %}
-    <h2>Votaciones disponibles</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Votación</th>
-            <th scope="col">Descripción</th>
-            <th scope="col">Fecha de inicio</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for votacion in vot_dis %}
-          <tr>
-            <td><a href="{% url 'votacion' votacion.id %}">{{votacion.name}}</a></td>
-            <td>{{votacion.desc}}</td>
-            <td>{{votacion.start_date}}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    {% if no_vot_dis %}
-      <p>No tiene votaciones disponibles</p>
-    {% endif %}
-    <div class="row">
-      <h2 class="col-md-8">Realice sus sugerencias:</h2>
-      <a class="btn btn-primary col-md-4" href="{% url 'suggesting-form' %}">Sugerencias</a>
+    <div class="row mt-5">
+      <div class="col-12">
+        <h2>Votaciones disponibles</h2>
+        {% if not no_vot_dis %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Votación</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Fecha de inicio</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for votacion in vot_dis %}
+              <tr>
+                <td><a href="{% url 'votacion' votacion.id %}">{{votacion.name}}</a></td>
+                <td>{{votacion.desc}}</td>
+                <td>{{votacion.start_date}}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No tiene votaciones disponibles</p>
+        {% endif %}
+      </div>
     </div>
-    <div class="row">
-      <table class="table col-md-6">
-        <thead>
-          <tr>
-            <th scope="col">Título</th>
-            <th scope="col">Fecha de sugerencia</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for sugerencia in approved_suggestions %}
-          <tr>
-            <td><a href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
-            <td>{{sugerencia.suggesting_date}}</td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+    <div class="row mt-5 align-items-center">
+      <div class="col-sm-9">
+        <h2 >Sugerencias de votaciones</h2>
+      </div>
+      <div class="col-sm-3">
+        <a class="btn btn-primary float-md-right float-sm-left" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
+      </div>
+    </div>      
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <h3>Tus sugerencias mas recientes</h3>
+        {% if not no_recents_suggs %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Título</th>
+              <th scope="col">Fecha de sugerencia</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for sugerencia in recent_suggestions %}
+            <tr>
+              <td><a href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+              <td>{{sugerencia.suggesting_date}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No tienes sugerencias recientes</p>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <h3>Tus sugerencias aprobadas</h3>
+        {% if not no_approved_suggs %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Título</th>
+              <th scope="col">Fecha de sugerencia</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for sugerencia in approved_suggestions %}
+            <tr>
+              <td><a href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+              <td>{{sugerencia.suggesting_date}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No tienes votaciones aprobadas</p>
+        {% endif %}
+      </div>
     </div>
-    <div class="row">
+    <div class="row mt-5">
       <div class="col-md-6">
         <h2>Votaciones por meses del año</h2>
         <div id="container1">
