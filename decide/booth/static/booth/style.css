@@ -17,3 +17,29 @@ p{
 label{
     font-size: x-large;
 }
+
+
+.navbar-brand{
+    color: rgb(240, 234, 234) !important;
+    font-family: fantasy !important;
+}
+
+
+#app-booth{
+    background-color: #b7e4cd !important;
+}
+
+.navbar{
+    background: #185471 !important;
+}
+button{
+    background: #185471 !important;
+}
+.row h1, p{
+    color: rgb(0, 0, 0) !important;
+    font-family: fantasy !important;
+}
+.d-block{
+    color: rgb(0, 0, 0) !important;
+    font-family: fantasy !important;
+}

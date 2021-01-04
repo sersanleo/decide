@@ -9,7 +9,7 @@
 
 h1{
     color: #0a1b2b !important;
-    font: small-caps 150%/200% serif !important;
+    font-family: serif !important;
 }
 
 .module caption{
