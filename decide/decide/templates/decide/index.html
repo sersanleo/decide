@@ -10,7 +10,7 @@
 
 {% block content %}
 <div id="app-index">
-    <!-- Navbar -->
+  <!-- Navbar -->
   <b-navbar toggleable="lg" type="dark" variant="primary">
     <b-navbar-brand href="/">
       <img src="{% static 'styles/LOGODecide.png' %}" />
@@ -27,8 +27,13 @@
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav class="ml-auto">
-        <b-button variant="danger" href="#" v-on:click="decideLogout" v-if="token != null">
+      <b-navbar-nav class="ml-auto" v-if="token != null">
+        <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+          {% for style in user_styles %}
+            <b-dropdown-item href="#" v-on:click="onChangeStyle('{% trans style.0 %}')">{% trans style.1 %}</b-dropdown-item>
+          {% endfor %}
+        </b-nav-item-dropdown>
+        <b-button variant="danger" href="#" v-on:click="decideLogout">
           {% trans "Logout" %}
         </b-button>
       </b-navbar-nav>
@@ -72,16 +77,16 @@
     <!-- Dashboard -->
     <b-row v-if="token != null">
       <b-col sm="12" md="6">
-        <h1>Pending votings</h1>
+        <h1>{% trans "My pending votings" %}</h1>
         <b-list-group>
-          <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">No pending votings</b-list-group-item>
+          <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">{% trans "No pending votings" %}</b-list-group-item>
           <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
         </b-list-group>
       </b-col>
       <b-col sm="12" md="6">
-        <h1>Past votings results</h1>
+        <h1>{% trans "My votings results" %}</h1>
         <b-list-group>
-          <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">No results</b-list-group-item>
+          <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">{% trans "No results" %}</b-list-group-item>
           <b-list-group-item v-for="voting in past_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
         </b-list-group>
       </b-col>
@@ -106,15 +111,15 @@
           data: {
               token: null,
               user: null,
-              alertShow: false,
-              alertMsg: "",
-              alertLvl: "info",
               form: {
                   username: '',
                   password: ''
               },
               pending_votings: {{ pending_votings|safe }},
-              past_votings: {{ past_votings|safe }}
+              past_votings: {{ past_votings|safe }},
+              alertShow: false,
+              alertMsg: "",
+              alertLvl: "info"
           },
           beforeMount() {
               this.init()
@@ -157,7 +162,7 @@
                   evt.preventDefault();
                   this.postData("/gateway/authentication/login/", this.form)
                       .then(data => {
-                          document.cookie = 'decide='+data.token+'; path=/;';
+                          document.cookie = 'decide='+data.token+'; path=/; max-age=7200;';
                           this.token = data.token;
                           this.getUser();
                       })
@@ -170,9 +175,23 @@
                   this.postData("/gateway/authentication/getuser/", data)
                       .then(data => {
                           this.user = data;
+                          if(this.user.style == 'C')
+                            setUserStyle("{% static 'styles/C.css' %}");
+                          else
+                            setUserStyle("{% static 'styles/N.css' %}");
                           this.signup = false;
                       }).catch(error => {
                           this.showAlert("danger", 'Error: ' + error);
+                      });
+              },
+              onChangeStyle(newstyle) {
+                  var data = {token: this.token, user: this.user.id, style: newstyle};
+                  this.postData("{% url "gateway" "authentication" "/changestyle/" %}", data)
+                      .then(data => {
+                          this.getUser();
+                      })
+                      .catch(error => {
+                          this.showAlert("danger", '{% trans "Error: " %}' + error);
                       });
               },
               decideLogout(evt) {
