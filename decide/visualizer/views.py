@@ -5,6 +5,7 @@ from django.http import Http404
 
 from base import mods
 from census.models import Census
+from store.models import Vote
 
 
 class VisualizerView(TemplateView):
@@ -17,8 +18,15 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             census = Census.objects.filter(voting_id=vid).all()
+            votes = Vote.objects.filter(voting_id=vid).all()
             c=census.count()
+            v=votes.count()
             stat = {"census":c}
+            stat["votes"] = v
+            if v>0:
+                stat["percentage"] = round(v/c*100,2);
+            else:
+                stat["percentage"] = 0;
             context['voting'] = json.dumps(r[0])
             context['stats'] = json.dumps(stat)
         except:

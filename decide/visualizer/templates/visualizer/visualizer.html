@@ -44,15 +44,16 @@
             <h2 class="heading">Estadísticas:</h2>
             <div>
             <p>[[ stats.census ]] personas censadas en esta votación</p>
+
             </div>
             <div v-if="!voting.start_date">
                 <p>estadisticas sin empezar</p>
             </div>
             <div v-else-if="!voting.end_date">
-                <p>estadisticas en progreso</p>
+                <p>Ha votado el [[ stats.percentage ]]% del censo</p>
             </div>
             <div v-else>
-                <p>estadisticas votacion finalizada</p>
+                <p>Ha votado el [[ stats.percentage ]]% del censo</p>
             </div>
             </div>
         </div>
@@ -76,6 +77,7 @@
                 stats: stats
             }
         })
+
     </script>
 </body>
 {% endblock %}
