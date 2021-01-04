@@ -64,17 +64,13 @@ class StoreView(generics.ListAPIView):
         for i in votes:
             a = i.get("a")
             b = i.get("b")
-            c = i.get("c")
-            d = i.get("d")
 
-            defs = { "a": a, "b": b, "c": c, "d": d }
+            defs = { "a": a, "b": b}
 
             v = Vote(voting_id=vid, voter_id=uid,sex=sexType)
             
             v.a = a
             v.b = b
-            v.c = c
-            v.d = d
             
             v.save()
 
