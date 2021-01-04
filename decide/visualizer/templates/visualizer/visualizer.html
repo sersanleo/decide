@@ -20,8 +20,11 @@
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
 
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
+            <h2 v-else-if="!voting.end_date">Votación en curso - {{voting.start_date}}</h2>
             <div v-else>
+
+                <h2 class="heading">Inicio: {{voting.start_date}} - Finalización: {{voting.end_date}}</h2>
+
                 <h2 class="heading">Resultados:</h2>
 
                 <table class="table table-bordered table-striped">
@@ -40,6 +43,25 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <h2 class="heading">Estadísticas porcentuales:</h2>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Opción</th>
+                            <th>Porcentaje de Puntuación</th>
+                            <th>Porcentaje de Votos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="opt in voting.postproc" :key="opt.number">
+                            <th>[[opt.option]]</th>
+                            <td>[[opt.postproc / voting.postproc]]</td>
+                            <td class="text-muted">[[opt.votes / voting.votes]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+
             </div>
 
         </div>
