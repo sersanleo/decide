@@ -17,7 +17,8 @@
         {% if multiple_option %}
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options">
-                <b-form-checkbox v-model="selected"
+                <b-form-checkbox :disabled="voteSuccess"
+                            v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
                             v-bind:class="{dp: csspd, trit: csstrit}"
@@ -25,21 +26,18 @@
                             button
                             size="lg"
                             :value="opt.number">
-                    [[opt.option]][[opt.number]]
+                    [[ opt.option ]]
                 </b-form-checkbox>
             </b-form-group>
-            <b-button disabled v-if="voteSuccess == true" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
-            <b-button v-else class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
-                {% trans "Enviar" %}
-            </b-button>
-            [[selected]]
         {% elif rank_order_scale %}
             <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
             <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options" :key="opt.number">
-                <b-form-checkbox v-model="selected"
+                <b-form-checkbox :disabled="voteSuccess"
+                                v-model="selected"
                                 :id="'q' + opt.number"
                                 class="choice-question pb-3"
                                 v-bind:class="{dp: csspd, trit: csstrit}"
@@ -47,8 +45,8 @@
                                 button
                                 size="lg"
                                 :value="opt.number">
-                        [[ opt.option ]][[ opt.number ]]
-                    </b-form-checkbox>
+                        [[ opt.option ]]
+                </b-form-checkbox>
             </b-form-group>
             <div class="pb-3 col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
                 <h3 v-if="selected.length > 0">El orden seleccionado es:</h3>
@@ -60,17 +58,14 @@
                     </ol>
                 </h4>
             </div>
-            <b-button disabled v-if="voteSuccess == true" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button :disabled="voteSuccess" v-if="selected.length == question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
-            <b-button v-else-if="selected.length == question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
-                {% trans "Enviar" %}
-            </b-button>
-            [[selected]]
         {% else %}
         <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
         <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options" :key="opt.number">
-                <b-form-radio v-model="selected"
+                <b-form-radio :disabled="voteSuccess"
+                            v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
                             v-bind:class="{dp: csspd, trit: csstrit}"
@@ -78,16 +73,12 @@
                             button
                             size="lg"
                             :value="[opt.number]">
-                    [[ opt.option ]][[ opt.number ]]
+                    [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
-            <b-button disabled v-if="voteSuccess == true" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
-            <b-button v-else class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
-                {% trans "Enviar" %}
-            </b-button>
-            [[selected]]
         {% endif %}
         {% if not last_question %}
             <a class="btn-lg btn-success" v-if="voteSuccess == true" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'votacion' voting_id next_question_id%}" role="button">Siguiente pregunta >></a>

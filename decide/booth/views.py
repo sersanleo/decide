@@ -102,6 +102,24 @@ def get_user(self):
     voter_id = voter.get('id', None)
     return json.dumps(token.get('token', None)), json.dumps(voter), voter_id
 
+def check_next_question(context, current_question_position, number_of_questions, r):
+    if current_question_position == number_of_questions-1:
+        context['last_question']=True
+    else:
+        next_question_id = r[0]['question'][current_question_position+1]['id']
+        context['next_question_id'] = next_question_id
+
+def store_voting_and_question(context, current_question_position, r):
+    context['voting'] = json.dumps(r[0])
+    context['question'] = json.dumps(r[0]['question'][current_question_position])
+    context['multiple_option'] = int(r[0]['question'][current_question_position]['option_types']) == 2
+    context['rank_order_scale'] = int(r[0]['question'][current_question_position]['option_types']) == 3
+
+def check_user_has_voted_question(context, voting_id, question_id, voter_id):
+    number_of_votes = Vote.objects.filter(voting_id=voting_id, question_id=question_id, voter_id=voter_id).count()
+    if number_of_votes !=0:
+        context['voted'] = True
+
 class BoothView(TemplateView):
     template_name = 'booth/booth.html'
 
@@ -122,30 +140,17 @@ class BoothView(TemplateView):
             for k, v in r[0]['pub_key'].items():
                 r[0]['pub_key'][k] = str(v)
 
-            print(r[0])
-            print(r[0]['question'])
-
             number_of_questions = len(r[0]['question'])
             current_question_position = question_position_by_id(r[0]['question'], question_id)
 
-            if current_question_position == number_of_questions-1:
-                context['last_question']=True
-            else:
-                next_question_id = r[0]['question'][current_question_position+1]['id']
-                context['next_question_id'] = next_question_id
+            check_next_question(context, current_question_position, number_of_questions, r)
 
-            context['voting'] = json.dumps(r[0])
-            context['question'] = json.dumps(r[0]['question'][current_question_position])
-            context['multiple_option'] = int(r[0]['question'][current_question_position]['option_types']) == 2
-            context['rank_order_scale'] = int(r[0]['question'][current_question_position]['option_types']) == 3
+            store_voting_and_question(context, current_question_position, r)
 
-            number_of_votes = Vote.objects.filter(voting_id=voting_id, question_id=question_id, voter_id=voter_id).count()
-            if number_of_votes !=0:
-                context['voted'] = True
+            check_user_has_voted_question(context, voting_id, question_id, voter_id)
 
         except:
             raise Http404
-
 
         return context
 
