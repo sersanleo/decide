@@ -43,7 +43,7 @@ class StoreView(generics.ListAPIView):
 
         uid = request.data.get('voter')
         vote = request.data.get('vote')
-        # question_id = request.data.get('question')
+        question_id = request.data.get('question_id')
 
         if not vid or not uid or not vote:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
@@ -70,11 +70,8 @@ class StoreView(generics.ListAPIView):
 
         a = a[:-1]
         b = b[:-1]
-        print(a)
-        print(b)
-        # print(question_id)
 
-        v = Vote(voting_id=vid, voter_id=uid,sex=sexType)
+        v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,sex=sexType, question_id=question_id)
 
         v.a = a
         v.b = b

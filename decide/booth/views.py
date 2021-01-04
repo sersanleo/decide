@@ -6,11 +6,11 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User
 from base import mods
 from census.models import Census
 from voting.models import Voting, Question
 from store.models import Vote
-from django.contrib.auth.models import User
 from .models import SuggestingForm
 
 class LoginView(TemplateView):
@@ -64,13 +64,13 @@ def dashboard_details(request,voter_id):
     return context
 
 def authentication_login(request):
-
     if request.method == 'POST':
 
         username = request.POST['username']
         password = request.POST['password']
         # Autenticacion
         voter, voter_id = autenticacion(request, username, password)
+
         if not voter:
             return render(request, 'booth/login.html', {'no_user':True})
         else:
@@ -86,7 +86,7 @@ def authentication_login(request):
             context = dashboard_details(request, voter_id)
             return render(request, 'booth/dashboard.html', context)
 
-def posicion_question_by_id(questions_list, question_id):
+def question_position_by_id(questions_list, question_id):
     i=0
     for question in questions_list:
         if int(question['id']) == question_id:
@@ -96,6 +96,12 @@ def posicion_question_by_id(questions_list, question_id):
 
     return i
 
+def get_user(self):
+    token = self.request.session.get('user_token', None)
+    voter = mods.post('authentication', entry_point='/getuser/', json=token)
+    voter_id = voter.get('id', None)
+    return json.dumps(token.get('token', None)), json.dumps(voter), voter_id
+
 class BoothView(TemplateView):
     template_name = 'booth/booth.html'
 
@@ -104,11 +110,10 @@ class BoothView(TemplateView):
         voting_id = kwargs.get('voting_id', 0)
         context['voting_id'] = voting_id
         question_id = kwargs.get('question_id', 0)
-        token = self.request.session.get('user_token', None)
-        context['token']= json.dumps(token.get('token', None))
-        voter = mods.post('authentication', entry_point='/getuser/', json=token)
-        context['voter']= json.dumps(voter)
-        voter_id = voter.get('id', None)
+        context['question_id']=question_id
+
+        context['token'], context['voter'], voter_id = get_user(self)
+        context['KEYBITS'] = settings.KEYBITS
 
         try:
             r = mods.get('voting', params={'id': voting_id})
@@ -117,32 +122,30 @@ class BoothView(TemplateView):
             for k, v in r[0]['pub_key'].items():
                 r[0]['pub_key'][k] = str(v)
 
+            print(r[0])
+            print(r[0]['question'])
+
             number_of_questions = len(r[0]['question'])
-            print(number_of_questions)
-            posicion_question = posicion_question_by_id(r[0]['question'], question_id)
-            print(posicion_question)
-            if number_of_questions > posicion_question:
-                if posicion_question == number_of_questions-1:
-                    context['last_question']=True
-                else:
-                    next_question_id = r[0]['question'][posicion_question+1]['id']
-                    context['next_question_id'] = next_question_id
-                    print(next_question_id)
-                question = Question.objects.get(id=question_id)
-                context['voting'] = json.dumps(r[0])
-                context['question'] = question
-                context['multiple_option'] = question.option_types == 2
-                context['rank_order_scale'] = question.option_types == 3
-                # if Vote.objects.filter(voting_id=vid, voter_id=voter_id).count()==number_of_questions:
-                #     context['voted'] = True
+            current_question_position = question_position_by_id(r[0]['question'], question_id)
+
+            if current_question_position == number_of_questions-1:
+                context['last_question']=True
             else:
-                request.session['number_of_questions'] = 0
-                context['voting_finished']=True
+                next_question_id = r[0]['question'][current_question_position+1]['id']
+                context['next_question_id'] = next_question_id
+
+            context['voting'] = json.dumps(r[0])
+            context['question'] = json.dumps(r[0]['question'][current_question_position])
+            context['multiple_option'] = int(r[0]['question'][current_question_position]['option_types']) == 2
+            context['rank_order_scale'] = int(r[0]['question'][current_question_position]['option_types']) == 3
+
+            number_of_votes = Vote.objects.filter(voting_id=voting_id, question_id=question_id, voter_id=voter_id).count()
+            if number_of_votes !=0:
+                context['voted'] = True
 
         except:
             raise Http404
 
-        context['KEYBITS'] = settings.KEYBITS
 
         return context
 
