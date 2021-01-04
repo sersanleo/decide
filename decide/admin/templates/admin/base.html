@@ -4,6 +4,119 @@
 <head>
 <title>{% block title %}{% endblock %}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<script>
+
+    var fontSizeBody = 1;
+    var fontSizeH1 = 1.4285;
+    var fontSizeH2 = 1.1428;
+    var fontSizeP = 0.9285;
+    
+            
+        function disableZoomIn(){
+            var elem = document.getElementsByTagName("body")[0];
+            var bodyFontSize = window.getComputedStyle(elem,null).getPropertyValue("font-size");
+            if(bodyFontSize == "21.76px"){
+            document.getElementById("zoomIn").setAttribute("disabled","disabled");
+            }else{
+                document.getElementById("zoomIn").removeAttribute("disabled");
+
+            }
+
+        }
+        function disableZoomOut(){
+            var elem = document.getElementsByTagName("body")[0];
+            var bodyFontSize = window.getComputedStyle(elem,null).getPropertyValue("font-size");
+            if(bodyFontSize == "16px"){
+            document.getElementById("zoomOut").setAttribute("disabled","disabled");
+            }else{
+                document.getElementById("zoomOut").removeAttribute("disabled");
+
+            }
+
+        }
+    
+
+    // Funcion para aumentar la fuente
+
+    function zoomIn() {
+        fontSizeBody += 0.04;
+        fontSizeH1 += 0.04;
+        fontSizeH2 += 0.04;
+        fontSizeP += 0.04;
+        
+        for (var i=0; i<document.getElementsByTagName("body").length && fontSizeBody >=1 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("body")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("h1").length && fontSizeH1 >=1.4285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("h1")[i].style.fontSize= fontSizeH1 + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("h2").length && fontSizeH2 >=1.1428 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("h2")[i].style.fontSize= fontSizeH2 + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("h3").length && fontSizeBody >=1 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("h3")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("a").length && fontSizeBody >=1 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("a")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("p").length && fontSizeP >=0.9285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("p")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("td").length && fontSizeP >=0.9285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("td")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("span").length && fontSizeP >=0.9285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("span")[i].style.fontSize= fontSizeBody + "em";
+        }
+       
+        disableZoomIn();
+        disableZoomOut();
+
+
+
+    }
+
+
+
+    // Funcion para disminuir la fuente
+
+    function zoomOut() {
+        fontSizeBody -= 0.04;
+        fontSizeH1 -= 0.04;
+        fontSizeH2 -= 0.04;
+        fontSizeP -= 0.04;
+
+        for (var i=0; i<document.getElementsByTagName("body").length && fontSizeBody >=1 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("body")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("h1").length && fontSizeH1 >=1.4285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("h1")[i].style.fontSize= fontSizeH1 + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("h2").length && fontSizeH2 >=1.1428 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("h2")[i].style.fontSize= fontSizeH2 + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("h3").length && fontSizeBody >=1 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("h3")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("a").length && fontSizeBody >=1 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("a")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("p").length && fontSizeP >=0.9285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("p")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("td").length && fontSizeP >=0.9285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("td")[i].style.fontSize= fontSizeBody + "em";
+        }
+        for (var i=0; i<document.getElementsByTagName("span").length && fontSizeP >=0.9285 && fontSizeBody <= 1.4; i++){
+            document.getElementsByTagName("span")[i].style.fontSize= fontSizeBody + "em";
+        }
+        
+        disableZoomIn();
+        disableZoomOut();
+
+    }
+
+</script>
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 {% block extrahead %}{% endblock %}
@@ -11,21 +124,21 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}" />
     {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}" />{% endif %}
-    {% if user.is_authenticated %}
-        {% with 'styles/'|add:user.style|add:'.css' as style_url %}
-            <link type="text/css" rel="stylesheet" href="{% static style_url %}" />
-        {% endwith %}
-    {% else %}
-        <link type="text/css" rel="stylesheet" href="{% static 'styles/N.css' %}" />
-    {% endif %}
 {% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+{% if user.is_authenticated %}
+    {% with 'styles/'|add:user.style|add:'.css' as style_url %}
+        <link type="text/css" rel="stylesheet" href="{% static style_url %}" />
+    {% endwith %}
+{% else %}
+    <link type="text/css" rel="stylesheet" href="{% static 'styles/N.css' %}" />
+{% endif %}
 </head>
 {% load i18n %}
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
   data-admin-utc-offset="{% now "Z" %}">
-  
+
 <!-- Container -->
 <div id="container">
 
@@ -37,6 +150,7 @@
         </div>
         {% block usertools %}
         {% if has_permission %}
+        
         <div id="user-tools">
             {% block welcome-msg %}
                 {% trans 'Welcome,' %}
@@ -55,9 +169,13 @@
                 {% if user.has_usable_password %}
                 <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
                 {% endif %}
-                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                <a href="{% url 'admin:logout' %}" onclick="return logoutmessage();">{% trans 'Log out' %}</a>
             {% endblock %}
         </div>
+
+        <button id="zoomIn" onclick="zoomIn()" >Zoom<br>In</button> 
+        <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+   
         {% endif %}
         {% endblock %}
         {% block nav-global %}{% endblock %}
@@ -97,4 +215,20 @@
 <!-- END Container -->
 
 </body>
+     <footer>
+            <center><img src="{% static 'styles/footer.png' %}"" alt="footer"></center>
+    </footer>
 </html>
+
+<script>
+function logoutmessage(){
+    var opcion = confirm("Are you sure you want to log out?");
+    if (opcion == true) {
+        alert ("You have successfully logged out");
+        return true;
+	} else {
+        return false;
+    }
+}
+
+</script>

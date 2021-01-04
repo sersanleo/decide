@@ -11,9 +11,31 @@
 } 
 
 p{
-    font-size: large;
+    font-size: 1.25em;
 }
 
 label{
-    font-size: x-large;
+
+    font-size: 1.25em;
 }
+
+h1{
+   font-size: 2.25em;
+}
+.navar-brand{
+    font-size:1.25em;
+}
+.btn-lg{
+    font-size: 1.25em;
+}
+.form-control{
+    font-size: 1em;
+}
+#zoomIn,#zoomOut{
+    border-radius: .3rem;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
+    color:white;
+
+}
+
