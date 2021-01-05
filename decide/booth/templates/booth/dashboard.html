@@ -2,11 +2,13 @@
 {% load i18n static %}
 
 {% block logout %}
-<a class="btn btn-danger" href="{% url 'logout' %}">Cerrar Sesión</a>
+<a aria-labelledby="logoutHelp" class="btn btn-danger" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'logout' %}">Cerrar Sesión</a>
+<div id="logoutHelp" style="display: none">Botón para cerrar la sesión en la página</div>
 {% endblock %}
 
 {% block content %}
-<h1>Dashboard</h1>
+<h1 aria-describedby="dashInfo">Dashboard</h1>
+<div id="dashInfo" style="display: none">Página principal del módulo de cabina en la que puedes consultar las votaciones que tienes disponibles, el acceso al formulario de sugerencias y las sugerencias pendientes y aceptadas y dos gráficas con datos sobre votaciones realizadas</div>
 <p class="lead">¡Te damos la bienvenida a Decide, {{username}}!</p>
 {% if no_censo %}
     <p>No has sido añadido al censo de alguna votación</p>
@@ -15,7 +17,8 @@
       <div class="col-12">
         <h2>Votaciones disponibles</h2>
         {% if not no_vot_dis %}
-          <table class="table">
+          <table class="table" v-bind:class="{dp: csspd, trit: csstrit}" aria-describedby="votingsInfo">
+            <div id="votingsInfo" style="display: none">Tabla en la que se pueden observar las votaciones en las que estás incluido en el censo y todavía puedes enviar tu voto</div>
             <thead>
               <tr>
                 <th scope="col">Votación</th>
@@ -43,14 +46,16 @@
         <h2 >Sugerencias de votaciones</h2>
       </div>
       <div class="col-sm-3">
-        <a class="btn btn-primary float-md-right float-sm-left" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
+        <a aria-labelledby="newSugBtn" class="btn btn-primary float-md-right float-sm-left" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
+        <div id="newSugBtn" style="display: none">Botón para ir al formulario de envío de sugerencias</div>
       </div>
     </div>      
     <div class="row mt-4">
       <div class="col-md-6">
         <h3>Tus sugerencias mas recientes</h3>
         {% if not no_recents_suggs %}
-        <table class="table">
+        <table class="table" v-bind:class="{dp: csspd, trit: csstrit}" aria-describedby="recSugInfo">
+          <div id="recSugInfo" style="display: none">Tabla donde aparecen las sugerencias enviadas recientemente</div>
           <thead>
             <tr>
               <th scope="col">Título</th>
@@ -73,7 +78,8 @@
       <div class="col-md-6">
         <h3>Tus sugerencias aprobadas</h3>
         {% if not no_approved_suggs %}
-        <table class="table">
+        <table class="table" v-bind:class="{dp: csspd, trit: csstrit}" aria-describedby="aceSugInfo">
+          <div id="aceSugInfo" style="display: none">Tabla donde aparecen tus sugerencias que han sido confirmadas por los administradores del sistema</div>
           <thead>
             <tr>
               <th scope="col">Título</th>
@@ -96,15 +102,16 @@
     </div>
     <div class="row mt-5">
       <div class="col-md-6">
-        <h2>Votaciones por meses del año</h2>
-        <div id="container1">
-          <canvas id="vot_por_mes_chart"></canvas>
+        <h2 aria-labelledby="chartsInfo">Votaciones por meses del año</h2>        
+        <div id="chartsInfo" style="display: none">A continuación aparecen dos gráficas con información acerca de votaciones que has realizado</div>
+          <div id="container1" class="chart" v-bind:class="{dp: csspd, trit: csstrit}">
+          <canvas id="vot_por_mes_chart" aria-label="Imagen con un gráfico de barras con el número de votaciones por mes realizadas en el último año" role="img"></canvas>
         </div>
       </div>
       <div class="col-md-6">
         <h2>Votaciones de cada tipo</h2>
-        <div id="container2">
-          <canvas id="tipos_vot_chart"></canvas>
+        <div id="container2" class="chart" v-bind:class="{dp: csspd, trit: csstrit}">
+          <canvas id="tipos_vot_chart" aria-label="Imagen con un gráfico de barras con el número de votaciones realizadas agrupadas por tipo" role="img"></canvas>
         </div>
       </div>
     </div>

@@ -2,19 +2,22 @@
 {% load i18n static %}
 
 {% block logout %}
-<a class="btn btn-danger" href="{% url 'dashboard' %}">Salir de la votación</a>
+<a aria-labelledby="salirHelp" class="btn btn-danger" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'dashboard' %}">Salir de la votación</a>
+<div id="salirHelp" style="display: none">Botón para salir de la votación y volver a la página del dashboard</div>
 {% endblock %}
 
 {% block content %}
 {% if voted %}
-<p class="lead">Usted ya ha votado</p>
+    <p class="lead">Usted ya ha votado</p>
 {% else %}
-<div class="row py-3 py-xl-5">
     <div class="col-12 pb-2">
-        <h1>[[ voting.name ]]</h1>
+        <div aria-describedby="votingHelp">
+            <h1>[[ voting.name ]]</h1>
+        </div>
         <p class="lead">[[ voting.desc ]]</p>
         <h3>[[ voting.question.desc ]]</h3>
         {% if multiple_option %}
+            <div id="votingHelp" style="display: none">Votación de elección múltiple con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
                 <b-form-checkbox v-model="selected"
@@ -32,6 +35,7 @@
                 {% trans "Enviar" %}
             </b-button>
         {% elif rank_order_scale %}
+        <div id="votingHelp" style="display: none">Votación de ordenación con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
             <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
             <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
@@ -47,7 +51,7 @@
                     </b-form-checkbox>
             </b-form-group>
             <div class="pb-3 col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
-                <h3 v-if="selected.length > 0">El orden seleccionado es:</h3> 
+                <h3 v-if="selected.length > 0">El orden seleccionado es:</h3>
                 <h4>
                     <ol>
                         <li class="py-2" v-for="opt in selected">
@@ -60,6 +64,7 @@
                 {% trans "Enviar" %}
             </b-button>
         {% else %}
+        <div id="votingHelp" style="display: none">Votación de una elección con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
         <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
         <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
                 <b-form-radio v-model="selected"
@@ -78,14 +83,9 @@
             </b-button>
         {% endif %}
     </div>
-</div>
-<div class="row">
-    <div class="mb-5 col-6 offset-3"></div>
-</div>
-</div>
-</div>
 {% endif %}
 {% endblock %}
+
 
 {% block extrabody %}
 <script>
@@ -213,3 +213,4 @@
     })
 </script>
 {% endblock %}
+</div>

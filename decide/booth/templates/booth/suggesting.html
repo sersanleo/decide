@@ -2,7 +2,8 @@
 {% load i18n static %}
 
 {% block logout %}
-<a class="btn btn-danger" href="{% url 'dashboard' %}">Volver al Dashboard</a>
+<a aria-labelledby="dashbHelp" class="btn btn-danger" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'dashboard' %}">Volver al Dashboard</a>
+<div id="dashbHelp" style="display: none">Botón para volver a la página del dashboard</div>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +16,8 @@
 {% else %}
 <h2>Sugerencia de votación {{suggesting.id}}</h2>
 {% endif %}
-<form action="{% url 'suggesting-send' %}" method="POST">
+<form action="{% url 'suggesting-send' %}" method="POST" aria-describedby="formHelp">
+<div id="formHelp" style="display: none">Formulario para enviar a los administradores del sistema una sugerencia de votación. Debes introducir un título para la votación, la fecha que propones y tus argumentos y razones para incluirla</div>
     {% csrf_token %}
     <div class="form-group">
         <label for="suggestingTitle">Título</label>
@@ -42,7 +44,7 @@
     {% if suggesting %}
         {{suggesting_state}}
     {% else %}
-    <button type="submit" class="btn btn-primary">Enviar</button>
+    <button type="submit" class="btn btn-primary" v-bind:class="{dp: csspd, trit: csstrit}">Enviar</button>
     {% endif %}
 </form>
 {% endif %}
