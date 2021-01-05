@@ -193,87 +193,6 @@
                 }
                 return cipher;
 
-<<<<<<< HEAD
-                    return fetch(url, fdata)
-                        .then(response => {
-                            if (response.status === 200) {
-                                return response.json();
-                            } else {
-                                return Promise.reject(response.statusText);
-                            }
-                        });
-                },
-                onSubmitLogin(evt) {
-                    evt.preventDefault();
-                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
-                        .then(data => {
-                            document.cookie = 'decide='+data.token+';';
-                            this.token = data.token;
-                            this.getUser();
-                        })
-                        .catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                getUser(evt) {
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
-                        .then(data => {
-                            this.user = data;
-                            this.signup = false;
-                        }).catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                decideLogout(evt) {
-                    evt.preventDefault();
-                    var data = {token: this.token};
-                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
-                    this.token = null;
-                    this.user = null;
-                    document.cookie = 'decide=;';
-                    this.signup = true;
-                },
-                decideEncrypt() {
-                    var bigmsg = BigInt.fromJSONObject(this.selected.toString());
-                    var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
-                    return cipher;
-                },
-                decideCheck() {
-                    var data = {
-                        voting: this.voting.id,
-                        voter: this.user.id
-                    }
-                    this.postData("{% url "gateway" "booth" "/check_user_vote/" %}", data)
-                        .then(data => {
-                            alert("Puedes votar, crack")
-                        })
-                        .catch(error  => {
-                            alert("ERROR")
-                        })
-                },
-                decideSend(evt) {
-                    evt.preventDefault();
-                    var v = this.decideEncrypt();
-                    var data = {
-                        vote: {a: v.alpha.toString(), b: v.beta.toString()},
-                        voting: this.voting.id,
-                        voter: this.user.id,
-                        token: this.token
-                    }
-                    this.postData("{% url "gateway" "store" "/" %}", data)
-                        .then(data => {
-                            this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
-                        })
-                        .catch(error => {
-                            this.showAlert("danger", '{% trans "Error: " %}' + error);
-                        });
-                },
-                showAlert(lvl, msg) {
-                    this.alertLvl = lvl;
-                    this.alertMsg = msg;
-                    this.alertShow = true;
-=======
             },
             decideSend(evt) {
                 evt.preventDefault();
@@ -288,7 +207,6 @@
                     question_id: this.question.id,
                     voter: this.user.id,
                     token: this.token
->>>>>>> origin/cabina-019
                 }
                 this.postData("{% url "gateway" "store" "/" %}", data)
                     .then(data => {

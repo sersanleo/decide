@@ -2,20 +2,11 @@ import json
 import datetime
 from django.views.generic import TemplateView
 from django.conf import settings
-<<<<<<< HEAD
-from django.http import Http404
-from rest_framework import status
-from rest_framework.response import Response
-from store.models import Vote
-from django.shortcuts import get_object_or_404
-
-=======
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth.models import User
->>>>>>> origin/cabina-019
 from base import mods
 from census.models import Census
 from voting.models import Voting, Question
