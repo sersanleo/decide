@@ -24,25 +24,7 @@
             <div v-else>
                 <h2 class="heading">Resultados:</h2>
 
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                     {% for dict in postproc %}
-                        <tr>
-                            <th>{{ dict.option }}</th>
-                            <td>{{ dict.postproc }}</td>
-                            <td class="text-muted">{{ dict.votes }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                <divclass="chart-container" style="position: relative; height:40vh; width:80vw">
+                <div class="chart-container" style="position: relative; height:40vh; width:80vw">
                     <canvas id="grafica"></canvas>
                 </div>
                 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
@@ -54,8 +36,8 @@
                         data: {
                             labels: {{labels|safe}},
                             datasets:[{
-                                label: 'Grafico de tal',
-                                backgroundColor: ['black', 'grey', 'brown', 'red', 'purple', 'white'],
+                                label: 'Resultados',
+                                backgroundColor: ['black', 'grey', 'brown'],
                                 borderColor: 'black',
                                 data: {{data|safe}}
                             }]
@@ -66,6 +48,7 @@
                     });
 
                 </script>
+
             </div>
 
         </div>
