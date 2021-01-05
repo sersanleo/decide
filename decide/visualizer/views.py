@@ -1,14 +1,14 @@
 import json
-from django.views.generic import TemplateView
+
 from django.shortcuts import render
-from django.conf import settings
+from django.views.generic import TemplateView
 from django.http import Http404
-from census.models import Census
-from store.models import Vote
-from voting.models import Voting
+
 from base import mods
 from census.models import Census
 from store.models import Vote
+
+from voting.models import Voting
 
 
 
@@ -25,9 +25,8 @@ class VisualizerView(TemplateView):
             context['postproc'] = r[0]["postproc"][0]
             print(context)
         except:
-            
             raise Http404
-        
+
         return context
 
 class StatisticsView(TemplateView):
@@ -60,6 +59,41 @@ def get_list_votings(request):
     filter = request.GET.get('filter')
     busqueda = request.GET.get('nombre')
     list = None
+    try:
+        if filter == 'F':
+            list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=False).all()
+        elif filter == 'A':
+            list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=True).all()
+        elif filter == 'S':
+            list = Voting.objects.filter(start_date__isnull=True, end_date__isnull=True).all()
+        else:
+            if busqueda is None:
+                list = Voting.objects.all()
+            else:
+                list = Voting.objects.filter(name__contains=busqueda).all()
+    except:
+        raise Http404
+    #Si no soy superuser solo veo las votaciones en las que estoy censado
+    if not request.user.is_superuser:
+        census = Census.objects.filter(voter_id=request.user.id).all()
+        new_list = []
+        for c in census:
+            for voting in list:
+                if voting.id == c.voting_id:
+                    new_list.append(voting)
+        list = new_list
+        user = False
+    else:
+        user = True
+    return render(request, 'visualizer/listVisualizer.html', {'votings': list, 'user': user})
+
+
+def get_global_view(request):
+
+    vt = 0
+    ct = 0
+    nvs = 0
+
     try:
         votings = Voting.objects.all()
         abstm = 0
