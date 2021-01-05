@@ -110,3 +110,20 @@ li.di-visualizacion.trit a:hover {
 .chart.trit {
     background-color: white;
 }
+
+a.trit {
+    color: #FF6666;
+}
+
+small.trit {
+    color: white!important;
+}
+
+.alert.alert-danger.sug.trit {
+    background-color: #FF6666!important;
+    border-color: #FF6666!important;
+}
+
+p.dp {
+    color: white!important;
+}
