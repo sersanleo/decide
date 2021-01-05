@@ -1,4 +1,4 @@
-// cabecera (administración)
+//editar
 #header {
     background-color: blueviolet;
 }
@@ -85,7 +85,68 @@ html, body{
     width: 400px;
 }
 
-//completar
+.btn-abrir-popup {
+	padding: 0 20px;
+	margin-bottom: 20px;
+	height: 40px;
+	line-height: 40px;
+	border: none;
+	color: #fff;
+	background: #5E7DE3;
+	border-radius: 3px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: .3s ease all;
+	cursor: pointer;
+}
+
+.overlay {
+	background: rgba(0,0,0,.3) !important;
+	position: fixed !important;
+	top: 0 !important;
+	bottom: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	align-items: center !important;
+    justify-content: center !important;
+    /*display: flex;
+	visibility: hidden;*/
+    
+}
+.overlay.is_active {
+	visibility: visible;
+}
+
+.popuphelp{
+    background: #F8F8F8;
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	border-radius: 3px;
+	padding: 20px;
+	text-align: center;
+	width: 600px;
+	
+	transition: .3s ease all;
+	transform: scale(0.7);
+	opacity: 0;
+}
+
+.btn-cerrar-popup{
+    font-size: 16px;
+	line-height: 16px;
+	display: block;
+	text-align: right;
+	transition: .3s ease all;
+	color: #BBBBBB;
+}
+
+.btn-cerrar-popup:hover {
+	color: #000 !important;
+}
+
+
+
+
+
 /*
 ESTO FUE LO K AÑADIO MOISES AL ESTILO DE CABINA SIN QUERER. POR SI HACE FALTA
 
