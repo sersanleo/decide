@@ -4,7 +4,9 @@
 <head>
 <title>{% block title %}{% endblock %}</title>
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 <script src="{% static 'js/zoom.js' %}"></script>
+<script src="{% static 'js/popup.js' %}"></script>
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 {% block extrahead %}{% endblock %}
@@ -100,16 +102,26 @@
         {% block sidebar %}{% endblock %}
         <br class="clear" />
     </div>
-    <!-- END Content -->
 
-    {% block footer %}<div id="footer"></div>{% endblock %}
+    
+    
+
+</div>
+
 </div>
 <!-- END Container -->
 
+</div>
+
+
 </body>
+{% block footer %}
+    <div id="footer">
      <footer>
             <center><img src="{% static 'styles/footer.png' %}"" alt="footer"></center>
     </footer>
+    </div>
+{% endblock %}
 </html>
 
 <script>
