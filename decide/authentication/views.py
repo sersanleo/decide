@@ -42,7 +42,7 @@ class ChangeStyleView(APIView):
         user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
-        if not user_id or user_id != request.data.get('user'):
+        if not user_id:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
         # validating style
