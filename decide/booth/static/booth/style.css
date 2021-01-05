@@ -13,6 +13,8 @@ html, body{
     height: 100%;
 }
 
+/* Barra de navegación */
+
 .navbar-brand {
     font-size: x-large!important;
 }
@@ -72,7 +74,7 @@ li.di-visualizacion a:hover {
     background-color: #dc3545!important;
     border-color: #dc3545!important;
     color: white!important;
-} 
+}
 
 .choice-question label.active:before {
     content:  "\2192"!important;
