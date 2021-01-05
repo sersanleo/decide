@@ -2,14 +2,21 @@ import datetime
 import time
 
 from django.test import TestCase
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from rest_framework.test import APIClient
+from rest_framework.test import APITestCase
+
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
 
 from base.tests import BaseTestCase
 from .models import SuggestingForm
-from voting.models import Question, QuestionOption, Voting
+
+from voting.models import Voting, Question, QuestionOption
+from mixnet.models import Auth
+from authentication.models import UserProfile
 from census.models import Census
 from .views import check_unresolved_post_data, is_future_date
 # from voting.tests import VotingTestCase
@@ -23,6 +30,8 @@ from selenium.webdriver.common.keys import Keys
 
 import time
 
+
+from base import mods
 
 NOW_DATE = timezone.now().date()
 S_DATE = NOW_DATE + datetime.timedelta(weeks=1)
@@ -170,3 +179,73 @@ class LoginInterfaceTests(StaticLiveServerTestCase):
         alert = self.driver.find_element_by_id('loginFail')
         self.assertEquals(alert.text,'El usuario no está registrado en el sistema.')
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
+        
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#--------------------------------------TEST DE BOOTH------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------        
+        
+class BoothTests(TestCase):
+    def setUp(self):
+        #Create user
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u = UserProfile(id=1, username='voter1', sex='M')
+        u.set_password('123')
+        u.save()
+        token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
+        #Add session token
+        session = self.client.session
+        session['user_token'] = token
+        session.save()
+        #Create voting
+
+        #Create question 1
+        q1 = Question(id=1,desc='Unique option question', option_types=1)
+        q1.save()
+        for i in range(3):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt.save()
+
+        #Create question 2
+        q2 = Question(id=2,desc='Multiple option question', option_types=2)
+        q2.save()
+        for i in range(4):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
+
+        #Create question 3
+        q3 = Question(id=3,desc='Rank order scale question', option_types=3)
+        q3.save()
+        for i in range(5):
+            opt = QuestionOption(question=q3, option='option {}'.format(i+1))
+            opt.save()
+
+        v = Voting(id=1, name='Single question voting',desc='Single question voting...', points=1, start_date=timezone.now())
+        v.save()
+        v.question.add(q1), v.question.add(q2), v.question.add(q3)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'base'})
+        a.save()
+        v.auths.add(a)
+        Voting.create_pubkey(v)
+        #Add user to census
+        census = Census(voting_id=v.id, voter_id=u.id)
+        census.save()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def test_get_multiple_question_voting_success(self):
+        response = self.client.get(reverse('voting', args=(1,1,)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('voting', args=(1,2,)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('voting', args=(1,3,)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        #TODO more asserts
+
+    def test_get_multiple_question_voting_not_found(self):
+        response = self.client.get(reverse('voting', args=(2,2,)), follow=True)
+        self.assertEqual(response.status_code, 404)

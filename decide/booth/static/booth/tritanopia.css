@@ -26,7 +26,7 @@ nav.navbar.navbar-dark.bg-primary.navbar-expand-lg.trit{
 }
 
 .nav-item.b-nav-dropdown.dropdown.mr-5.trit a {
-    color: black!important; 
+    color: black!important;
     font-size: larger;
 }
 
@@ -101,6 +101,12 @@ li.di-visualizacion.trit a:hover {
     background-color: black!important;
     border-color: black!important;
     color: white!important;
+}
+
+.btn-success.trit {
+    background-color: #FA70C1!important;
+    border-color: #FA70C1!important;
+    color: black!important;
 }
 
 .table.trit {

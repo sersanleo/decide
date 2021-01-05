@@ -11,16 +11,13 @@
     <p class="lead">Usted ya ha votado</p>
 {% else %}
     <div class="col-12 pb-2">
-        <div aria-describedby="votingHelp">
-            <h1>[[ voting.name ]]</h1>
-        </div>
-        <p class="lead">[[ voting.desc ]]</p>
-        <h3>[[ voting.question.desc ]]</h3>
+        <h1>[[ question.desc ]]</h1>
         {% if multiple_option %}
             <div id="votingHelp" style="display: none">Votación de elección múltiple con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
-                <b-form-checkbox v-model="selected"
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options">
+                <b-form-checkbox :disabled="voteSuccess"
+                            v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
                             v-bind:class="{dp: csspd, trit: csstrit}"
@@ -31,15 +28,16 @@
                     [[ opt.option ]]
                 </b-form-checkbox>
             </b-form-group>
-            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% elif rank_order_scale %}
         <div id="votingHelp" style="display: none">Votación de ordenación con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
             <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
             <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
-                <b-form-checkbox v-model="selected"
+            <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options" :key="opt.number">
+                <b-form-checkbox :disabled="voteSuccess"
+                                v-model="selected"
                                 :id="'q' + opt.number"
                                 class="choice-question pb-3"
                                 v-bind:class="{dp: csspd, trit: csstrit}"
@@ -48,26 +46,28 @@
                                 size="lg"
                                 :value="opt.number">
                         [[ opt.option ]]
-                    </b-form-checkbox>
+                </b-form-checkbox>
             </b-form-group>
             <div class="pb-3 col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4">
                 <h3 v-if="selected.length > 0">El orden seleccionado es:</h3>
                 <h4>
                     <ol>
                         <li class="py-2" v-for="opt in selected">
-                            [[ voting.question[0].options[opt-1].option ]]
+                            [[ question.options[opt-1].option ]]
                         </li>
                     </ol>
                 </h4>
             </div>
-            <b-button v-if="selected.length == voting.question[0].options.length" id = "rankSendButton" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+
+            <b-button id="rankSendButton" :disabled="voteSuccess" v-if="selected.length == question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% else %}
         <div id="votingHelp" style="display: none">Votación de una elección con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
         <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
-        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in voting.question[0].options" :key="opt.number">
-                <b-form-radio v-model="selected"
+        <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options" :key="opt.number">
+                <b-form-radio :disabled="voteSuccess"
+                            v-model="selected"
                             :id="'q' + opt.number"
                             class="choice-question pb-3"
                             v-bind:class="{dp: csspd, trit: csstrit}"
@@ -78,9 +78,14 @@
                     [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
-            <b-button class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
+        {% endif %}
+        {% if not last_question %}
+            <a class="btn-lg btn-success" v-if="voteSuccess == true" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'voting' voting_id next_question_id%}" role="button">Siguiente pregunta >></a>
+        {% else %}
+            <a class="btn-lg btn-success" v-if="voteSuccess == true" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'dashboard' %}" role="button">Finalizar votación</a>
         {% endif %}
     </div>
 {% endif %}
@@ -90,6 +95,7 @@
 {% block extrabody %}
 <script>
     var voting = {{voting|safe}};
+    var question = {{question|safe}};
     var user = {{voter|safe}};
     var token = {{token|safe}};
     var app = new Vue({
@@ -98,6 +104,7 @@
         data: {
             keybits: {{ KEYBITS }},
             voting: voting,
+            question: question,
             selected: [],
             alertShow: false,
             alertMsg: "",
@@ -109,6 +116,7 @@
                 g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
                 y: BigInt.fromJSONObject(voting.pub_key.y.toString()),
             },
+            voteSuccess: false,
             csspd: false,
             csstrit: false
         },
@@ -192,13 +200,14 @@
                 var data = {
                     vote: votes,
                     voting: this.voting.id,
-                    // question: this.voting.question[0].id,
+                    question_id: this.question.id,
                     voter: this.user.id,
                     token: this.token
                 }
                 this.postData("{% url "gateway" "store" "/" %}", data)
                     .then(data => {
                         this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
+                        this.voteSuccess = true;
                     })
                     .catch(error => {
                         this.showAlert("danger", '{% trans "Error: " %}' + error);
@@ -213,4 +222,3 @@
     })
 </script>
 {% endblock %}
-</div>

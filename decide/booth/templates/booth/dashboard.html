@@ -29,7 +29,7 @@
             <tbody>
             {% for votacion in vot_dis %}
               <tr>
-                <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'votacion' votacion.id %}">{{votacion.name}}</a></td>
+                <td><a href="{% url 'voting' votacion.id votacion.question.first.id%}">{{votacion.name}}</a></td>
                 <td>{{votacion.desc}}</td>
                 <td>{{votacion.start_date}}</td>
               </tr>
@@ -49,7 +49,7 @@
         <a id="sugBtn" aria-labelledby="newSugBtn" class="btn btn-primary float-md-right float-sm-left" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
         <div id="newSugBtn" style="display: none">Botón para ir al formulario de envío de sugerencias</div>
       </div>
-    </div>      
+    </div>
     <div class="row mt-4">
       <div class="col-md-6">
         <h3>Tus sugerencias mas recientes</h3>
@@ -103,7 +103,7 @@
     <div aria-labelledby="chartsInfo" class="row mt-5">
       <div id="chartsInfo" style="display: none">A continuación aparecen dos gráficas con información acerca de votaciones que has realizado</div>
       <div class="col-md-6">
-        <h2>Votaciones de los últimos meses</h2>        
+        <h2>Votaciones de los últimos meses</h2>
           <div id="container1" class="chart" v-bind:class="{dp: csspd, trit: csstrit}">
           <canvas id="vot_por_mes_chart" aria-label="Imagen con un gráfico de barras con el número de votaciones por mes realizadas en el último año" role="img"></canvas>
         </div>

@@ -21,7 +21,7 @@ nav.navbar.navbar-dark.bg-primary.navbar-expand-lg.dp{
 }
 
 .nav-item.b-nav-dropdown.dropdown.mr-5.dp a {
-    color: black!important; 
+    color: black!important;
     font-size: larger;
 }
 
@@ -55,6 +55,11 @@ li.di-visualizacion.dp a:hover {
     border-color: white!important;
     color: black!important;
 }
+a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.btn-primary.btn-lg.btn-block.dp:hover{
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
 
 .choice-question .dp{
     width: 100%;
@@ -78,7 +83,7 @@ li.di-visualizacion.dp a:hover {
     background-color: #E3CA26!important;
     border-color: #E3CA26!important;
     color:black!important;
-} 
+}
 
 .alert.dp {
     color: black!important;
@@ -96,6 +101,12 @@ li.di-visualizacion.dp a:hover {
     background-color: black!important;
     border-color: black!important;
     color: white!important;
+}
+
+.btn-success.dp {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color:black!important;
 }
 
 .table.dp {
