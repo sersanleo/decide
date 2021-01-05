@@ -240,12 +240,46 @@ class BoothTests(TestCase):
     def test_get_multiple_question_voting_success(self):
         response = self.client.get(reverse('voting', args=(1,1,)), follow=True)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['next_question_id'], 2)
         response = self.client.get(reverse('voting', args=(1,2,)), follow=True)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['next_question_id'], 3)
         response = self.client.get(reverse('voting', args=(1,3,)), follow=True)
         self.assertEqual(response.status_code, 200)
+        self.assertIs(response.context['last_question'], True)
         #TODO more asserts
 
     def test_get_multiple_question_voting_not_found(self):
         response = self.client.get(reverse('voting', args=(2,2,)), follow=True)
         self.assertEqual(response.status_code, 404)
+
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------TEST LOGIN-----------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+class LoginTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u = UserProfile(id=1, username='voter1', sex='M')
+        u.set_password('123')
+        u.save()
+        token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
+        #Add session token
+        session = self.client.session
+        session['user_token'] = token
+        session['voter_id']=u.id
+        session['username']=u.username
+        session.save()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def test_get_logout(self):
+        session = self.client.session
+        response = self.client.get(reverse('logout'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual('user_token' in session, False)
+        self.assertEqual('voter_id' in session, False)
+        self.assertEqual('username' in session, False)
