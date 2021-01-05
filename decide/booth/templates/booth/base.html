@@ -34,7 +34,7 @@
                     </b-collapse>
                 </b-navbar>
         
-                <b-alert aria-labelledby="alertMsg" v-bind:class="{dp: csspd, trit: csstrit}" :variant="alertLvl" dismissible v-model="alertShow">
+                <b-alert aria-labelledby="alertMsg" id = "alertVoteMessage" v-bind:class="{dp: csspd, trit: csstrit}" :variant="alertLvl" dismissible v-model="alertShow">
                     [[ alertMsg ]]
                     <div id="alertMsg" style="display: none">Mensaje de alerta lanzado por la ocurrencia de un error</div>
                 </b-alert>

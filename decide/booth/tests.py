@@ -8,6 +8,7 @@ from django.urls import reverse
 from base.tests import BaseTestCase
 from .models import SuggestingForm
 from .views import check_unresolved_post_data, is_future_date
+from voting.tests import VotingTestCase
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -213,6 +214,7 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "suggestingDate").send_keys("2020-01-29")
         self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
         self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
+        alert = self.driver.find_element_by_class_name('alert alert-danger')
         self.assertEquals(alert.text,'La fecha seleccionada ya ha pasado. Debe seleccionar una posterior al día de hoy.')
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
@@ -252,14 +254,17 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
-#---------------------------------TEST DE INTERFAZ DE VOTACION------------------------------
+#---------------------------------TEST DE INTERFAZ DE BOOTH-----------------------------------
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
-def create_votings(self):
+
+class BoothInterfaceTests(StaticLiveServerTestCase):
+
+    def create_votings(self):
         qUnique = Question(desc='test question unique', option_types=1)
         qMulti = Question(desc='test question multiple', option_types=2)
         #FALTA AÑADIR A LA DE RANGO EL TYPE BORDA
-        qRank = Question(desc='test question rank', option_types=3)
+        qRank = Question(desc='test question rank', option_types=3, TYPE = 'BORDA')
         qUnique.save()
         qMulti.save()
         qRank.save()
@@ -286,8 +291,7 @@ def create_votings(self):
         vMult.auth.add(a)
         vRank.auth.add(a)
 
-class SuggestionInterfaceTests(StaticLiveServerTestCase):
-     def setUp(self):
+    def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
 
@@ -304,6 +308,36 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
         self.base.tearDown()
         self.driver.quit()
 
+     def test_interface_vote_question_unique_no_vote_failure(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting unique").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        alert = self.driver.find_elements_by_id('alertVoteMessage')
+        self.assertTrue(len(alert)<1)
+    
+    def test_interface_vote_question_multi_no_vote_failure(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting multiple").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        alert = self.driver.find_elements_by_id('alertVoteMessage')
+        self.assertTrue(len(alert)<1)
+
+    
+    def test_interface_vote_question_rank_no_vote_failure(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting rank").click()
+        button = self.driver.find_elements_by_id('rankSendButton')
+        self.assertTrue(len(button)<1)
+
     def test_interface_vote_question_unique_sucess(self):
         self.driver.get(f'{self.live_server_url}/booth/')
         self.driver.find_element(By.ID, "username").send_keys("noadmin")
@@ -312,6 +346,7 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.LINK_TEXT, "test voting unique").click()
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        alert = self.driver.find_element_by_id('alertVoteMessage')
         self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
     
     def test_interface_vote_question_multi_sucess(self):
@@ -324,6 +359,7 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .btn").click()
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__21 .btn").click()
         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        alert = self.driver.find_element_by_id('alertVoteMessage')
         self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
     
     def test_interface_vote_question_rank_sucess(self):
@@ -337,6 +373,77 @@ class SuggestionInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__21 .btn").click()
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__23 .btn").click()
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__25 .btn").click()
-        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()  
+        alert = self.driver.find_element_by_id('alertVoteMessage')
         self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
 
+
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------TEST DE INTERFAZ DE ACCESIBILIDAD---------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+
+class AccesibilityInterfaceTests(StaticLiveServerTestCase):
+     def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        self.voting1 = VotingTestCase().create_voting()
+
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.base.tearDown()
+        self.driver.quit()
+
+    def test_accesibility_dalt_deutera_protan_succes(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__7__BV_toggle_ > span").click()
+        self.driver.find_element(By.LINK_TEXT, "Deuteranopia y protanopia").click()
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
+        option_selected = self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn")
+        self.assertEquals(option_selected.value_of_css_property('background-color'),'#E3CA26')
+
+    def test_accesibility_dalt_tritan_succes(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__7__BV_toggle_ > span").click()
+        self.driver.find_element(By.LINK_TEXT, "Tritanopia").click()
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
+        option_selected = self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn")
+        self.assertEquals(option_selected.value_of_css_property('background-color'),'#6E95F7')
+
+    def test_accesibility_dalt_normal_succes(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__7__BV_toggle_ > span").click()
+        self.driver.find_element(By.LINK_TEXT, "Normal").click()
+        self.driver.find_element(By.ID, "username").send_keys("noadmin")
+        self.driver.find_element(By.ID, "password").send_keys("qwerty")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "test voting").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn").click()
+        option_selected = self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__17 .btn")
+        self.assertEquals(option_selected.value_of_css_property('background-color'),'#dc3545')
+
+
+
+
+
+
+
+
+
+   
