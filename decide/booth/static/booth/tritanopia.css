@@ -1,6 +1,12 @@
-/*TRITANOPIA*/
+/*------------------------------------------------------------------*/
+/*---------------------------- TRITANOPIA --------------------------*/
+/*------------------------------------------------------------------*/
+
 .body.trit{
-    height: 100%;
+    height:100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
     background-color: black!important;
     color:white;
 }
@@ -20,7 +26,7 @@ nav.navbar.navbar-dark.bg-primary.navbar-expand-lg.trit{
 }
 
 .nav-item.b-nav-dropdown.dropdown.mr-5.trit a {
-    color: black!important; 
+    color: black!important;
     font-size: larger;
 }
 
@@ -49,27 +55,15 @@ li.di-visualizacion.trit a:hover {
     border-color:white!important;
 }
 
-button.btn.mt-3.btn-login.btn-primary.btn-lg.trit{
+.btn.btn-primary.trit{
     background-color: #4DA9FF!important;
     border-color: #4DA9FF!important;
     color: black!important;
 }
 
-button.btn.mt-3.btn-login.btn-primary.btn-lg.trit:hover{
+.btn.btn-primary.trit:hover{
     background-color: white!important;
     border-color: white!important;
-    color: black!important;
-}
-
-a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.btn-primary.btn-lg.btn-block.trit{
-    background-color: white!important;
-    border-color: white!important;
-    color: black!important;
-}
-
-a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.btn-primary.btn-lg.btn-block.trit:hover{
-    background-color: #4DA9FF!important;
-    border-color: #4DA9FF!important;
     color: black!important;
 }
 
@@ -97,13 +91,13 @@ a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.bt
     color:black!important;
 }
 
-.btn-white.mt-3.mt-lg-0.btn-danger.trit {
+.btn.btn-danger.trit {
     background-color: white!important;
     border-color: white!important;
     color: black!important;
 }
 
-.btn-white.mt-3.mt-lg-0.btn-danger.trit:hover {
+.btn.btn-danger.trit:hover {
     background-color: black!important;
     border-color: black!important;
     color: white!important;
@@ -113,4 +107,29 @@ a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.bt
     background-color: #FA70C1!important;
     border-color: #FA70C1!important;
     color: black!important;
+}
+
+.table.trit {
+    color: white;
+}
+
+.chart.trit {
+    background-color: white;
+}
+
+a.trit {
+    color: #FF6666;
+}
+
+small.trit {
+    color: white!important;
+}
+
+.alert.alert-danger.sug.trit {
+    background-color: #FF6666!important;
+    border-color: #FF6666!important;
+}
+
+p.dp {
+    color: white!important;
 }

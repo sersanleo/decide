@@ -12,11 +12,10 @@
         <link type="text/css" rel="stylesheet" href="{% static 'booth/style.css' %}" />
         <link type="text/css" rel="stylesheet" href="{% static 'booth/deuteranopia_protanopia.css' %}" />
         <link type="text/css" rel="stylesheet" href="{% static 'booth/tritanopia.css' %}" />
-
     </head>
-    <body>
+    <body id="html-body">
         <div id="app-booth">
-            <div class="body" v-bind:class="{dp: csspd, trit: csstrit}">
+            <div class="pb-5 body" v-bind:class="{dp: csspd, trit: csstrit}">
                 <!-- Navbar -->
                 <b-navbar v-bind:class="{dp: csspd, trit: csstrit}" type="dark" variant="primary" toggleable="lg">
                     <b-navbar-brand v-bind:class="{dp: csspd, trit: csstrit}" tag="h1">Decide</b-navbar-brand>
@@ -30,13 +29,14 @@
                                         <b-dropdown-item class="di-visualizacion" v-bind:class="{dp: csspd, trit: csstrit}" @click="change_css(false,true)">Tritanopía</b-dropdown-item>
                                         <b-dropdown-item class="di-visualizacion" v-bind:class="{dp: csspd, trit: csstrit}" @click="change_css(false,false)">Normal</b-dropdown-item>
                                     </b-nav-item-dropdown>
+                                    <div id="daltHelp" style="display: none">Menú desplegable con las opciones de visualización adaptables a personas con daltonismo</div>
                                 </div>
                         </b-navbar-nav>
                         {% block logout %}{% endblock %}
                     </b-collapse>
                 </b-navbar>
 
-                <b-alert aria-labelledby="alertMsg" v-bind:class="{dp: csspd, trit: csstrit}" :variant="alertLvl" dismissible v-model="alertShow">
+                <b-alert aria-labelledby="alertMsg" id = "alertVoteMessage" v-bind:class="{dp: csspd, trit: csstrit}" :variant="alertLvl" dismissible v-model="alertShow">
                     [[ alertMsg ]]
                     <div id="alertMsg" style="display: none">Mensaje de alerta lanzado por la ocurrencia de un error</div>
                 </b-alert>
@@ -50,6 +50,7 @@
                 </div>
             </div>
         </div>
+
         <!-- needed to generate big random -->
         <script src="{% static "crypto/sjcl.js" %}"></script>
 
