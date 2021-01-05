@@ -12,7 +12,7 @@
     <h2>Votaciones disponibles:</h2>
     {% for votacion in vot_dis %}
         <ul style="list-style-type:none;">
-            <a href="{% url 'votacion' votacion.id votacion.question.first.id%}"><li>{{votacion.name}}</li></a>
+            <a href="{% url 'voting' votacion.id votacion.question.first.id%}"><li>{{votacion.name}}</li></a>
         </ul>
     {% endfor %}
     {% if no_vot_dis %}

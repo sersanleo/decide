@@ -27,6 +27,7 @@ class StoreView(generics.ListAPIView):
         """
          * voting: id
          * voter: id
+         * question_id: id
          * vote: [{ "a": int, "b": int }, { "a": int, "b": int }, ...]
         """
 

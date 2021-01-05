@@ -150,7 +150,7 @@ class BoothView(TemplateView):
             check_user_has_voted_question(context, voting_id, question_id, voter_id)
 
         except:
-            raise Http404
+            raise Http404("This voting does not exist")
 
         return context
 

@@ -81,7 +81,7 @@
             </b-button>
         {% endif %}
         {% if not last_question %}
-            <a class="btn-lg btn-success" v-if="voteSuccess == true" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'votacion' voting_id next_question_id%}" role="button">Siguiente pregunta >></a>
+            <a class="btn-lg btn-success" v-if="voteSuccess == true" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'voting' voting_id next_question_id%}" role="button">Siguiente pregunta >></a>
         {% else %}
             <a class="btn-lg btn-success" v-if="voteSuccess == true" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'dashboard' %}" role="button">Finalizar votación</a>
         {% endif %}
