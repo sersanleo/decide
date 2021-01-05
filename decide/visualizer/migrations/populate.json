@@ -1,0 +1,1819 @@
+[
+  {
+    "model": "authentication.UserProfile",
+    "pk": 10,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest1",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 11,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest2",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 12,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest3",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 13,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest4",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 14,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest5",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 15,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest6",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 16,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest7",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 17,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest8",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 18,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest9",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 19,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest10",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 20,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest11",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 21,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest12",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 22,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest13",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 23,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest14",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 24,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest15",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 25,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest16",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 26,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest17",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 27,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest18",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 28,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest19",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 29,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest20",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 30,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest21",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 31,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest22",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 32,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest23",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 33,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest24",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "M",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 34,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest25",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
+    "pk": 35,
+    "fields": {
+      "first_name": "Primer nombre",
+      "last_name": "Segundo",
+      "is_superuser": false,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "UsuarioTest26",
+      "email": "algo@algo.com",
+      "is_staff": false,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "voting.question",
+    "pk": 10,
+    "fields": {
+      "option_types": 1,
+      "desc": "1234567890"
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 10,
+    "fields": {
+      "number": 1,
+      "option": "Opcion 1",
+      "question": 10
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 11,
+    "fields": {
+      "number": 2,
+      "option": "Opcion 2",
+      "question": 10
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 12,
+    "fields": {
+      "number": 3,
+      "option": "Opcion 3",
+      "question": 10
+    }
+  },
+  {
+    "model": "voting.question",
+    "pk": 11,
+    "fields": {
+      "option_types": 1,
+      "desc": "1234567891"
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 13,
+    "fields": {
+      "number": 1,
+      "option": "Opcion 1",
+      "question": 11
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 14,
+    "fields": {
+      "number": 2,
+      "option": "Opcion 2",
+      "question": 11
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 15,
+    "fields": {
+      "number": 3,
+      "option": "Opcion 3",
+      "question": 11
+    }
+  },
+  {
+    "model": "voting.question",
+    "pk": 12,
+    "fields": {
+      "option_types": 1,
+      "desc": "1234567892"
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 16,
+    "fields": {
+      "number": 1,
+      "option": "Opcion 1",
+      "question": 12
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 17,
+    "fields": {
+      "number": 2,
+      "option": "Opcion 2",
+      "question": 12
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 18,
+    "fields": {
+      "number": 3,
+      "option": "Opcion 3",
+      "question": 12
+    }
+  },
+  {
+    "model": "voting.question",
+    "pk": 13,
+    "fields": {
+      "option_types": 1,
+      "desc": "1233567800"
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 19,
+    "fields": {
+      "number": 1,
+      "option": "Rojo",
+      "question": 13
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 20,
+    "fields": {
+      "number": 2,
+      "option": "Verde",
+      "question": 13
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 21,
+    "fields": {
+      "number": 3,
+      "option": "Amarillo",
+      "question": 13
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 22,
+    "fields": {
+      "number": 4,
+      "option": "Azul",
+      "question": 13
+    }
+  },
+  {
+    "model": "base.auth",
+    "pk": 10,
+    "fields": {
+      "name": "Autenticacion populate",
+      "url": "http://localhost:8000",
+      "me": false
+    }
+  },
+  {
+    "model": "base.key",
+    "pk": 10,
+    "fields": {
+      "p": 2539,
+      "g": 2,
+      "y": 403,
+      "x": 51
+    }
+  },
+  {
+    "model": "base.key",
+    "pk": 11,
+    "fields": {
+      "p": 2539,
+      "g": 2,
+      "y": 403,
+      "x": 51
+    }
+  },
+  {
+    "model": "base.key",
+    "pk": 12,
+    "fields": {
+      "p": 2539,
+      "g": 2,
+      "y": 403,
+      "x": 51
+    }
+  },
+  {
+    "model": "base.key",
+    "pk": 13,
+    "fields": {
+      "p": 2539,
+      "g": 2,
+      "y": 403,
+      "x": 51
+    }
+  },
+  {
+    "model": "voting.voting",
+    "pk": 20,
+    "fields": {
+      "name": "[popultate]Votacion finalizada",
+      "desc": "desc de prueba",
+      "question": [10],
+      "start_date": "2020-11-11T22:00:00Z",
+      "end_date": "2020-11-15T22:00:00Z",
+      "started_by": "decide",
+      "pub_key": 10,
+      "tally": [1, 3, 2, 3, 2, 2, 1, 3, 1, 2, 3],
+      "postproc": [
+        [
+          {"votes": 4,
+            "number": 2,
+            "option": "Opcion 2",
+            "postproc": 4
+          },
+          {"votes": 4,
+           "number": 3,
+           "option": "Opcion 3",
+           "postproc": 4
+          },
+          {"votes": 3,
+           "number": 1,
+           "option": "Opcion 1",
+           "postproc": 3
+          }]
+      ],
+      "auths": [10]
+    }
+  },
+  {
+    "model": "voting.voting",
+    "pk": 21,
+    "fields": {
+      "name": "[popultate]Votacion empezada",
+      "desc": "desc de prueba",
+      "question": [11],
+      "start_date": "2020-11-11T22:00:00Z",
+      "started_by": "decide",
+      "pub_key": 11,
+      "auths": [10]
+    }
+  },
+  {
+    "model": "voting.voting",
+    "pk": 22,
+    "fields": {
+      "name": "[popultate]Votacion sin empezar",
+      "desc": "desc de prueba",
+      "question": [12],
+      "pub_key": 12,
+      "auths": [10]
+    }
+  },
+  {
+    "model": "voting.voting",
+    "pk": 23,
+    "fields": {
+      "name": "[popultate]Votacion colores finalizada",
+      "desc": "desc de prueba",
+      "question": [13],
+      "start_date": "2020-11-11T22:00:00Z",
+      "started_by": "decide",
+      "end_date": "2020-11-15T22:00:00Z",
+      "pub_key": 13,
+      "tally": [1, 1, 4, 3, 3, 1, 2, 1, 2, 4, 4, 1, 3, 4, 4, 1, 3, 4, 1, 4, 1, 2, 2, 4, 1],
+      "postproc": [
+        [
+          {"votes": 9,
+            "number": 1,
+            "option": "Rojo",
+            "postproc": 9
+          },
+          {"votes": 8,
+           "number": 4,
+           "option": "Azul",
+           "postproc": 8
+          },
+          {"votes": 4,
+           "number": 2,
+           "option": "Verde",
+           "postproc":4
+          },
+          {"votes": 4,
+           "number": 3,
+           "option": "Amarillo",
+           "postproc":4
+          }]
+      ],
+      "auths": [10]
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 10,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 10,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 11,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 11,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 12,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 12,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 13,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 13,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 14,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 14,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 15,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 15,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 16,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 16,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 17,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 17,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 18,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 18,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 19,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 19,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 20,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 20,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 21,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 10,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 22,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 11,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 23,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 12,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 24,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 13,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 25,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 14,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 26,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 15,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 27,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 16,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 28,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 17,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 29,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 18,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 30,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 19,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 31,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 20,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 32,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 10,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 33,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 11,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 34,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 12,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 35,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 13,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 36,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 14,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 37,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 15,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 38,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 16,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 39,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 17,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 40,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 18,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 41,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 19,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 42,
+    "fields": {
+      "voting_id": 22,
+      "voter_id": 20,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 43,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 21,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 44,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 22,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 45,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 20,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 46,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 21,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 47,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 22,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 48,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 23,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 49,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 24,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 50,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 25,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 51,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 26,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 52,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 27,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 53,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 28,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 54,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 29,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 55,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 30,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 56,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 31,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 57,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 32,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 58,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 33,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 59,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 34,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 60,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 10,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 61,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 11,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 62,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 12,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 63,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 13,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 64,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 14,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 65,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 15,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 66,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 16,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 67,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 17,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 68,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 18,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "census.census",
+    "pk": 69,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 19,
+      "adscripcion": "Descripcion populate censo"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 10,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 10,
+      "question_id": 10,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 11,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 11,
+      "question_id": 10,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 12,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 12,
+      "question_id": 10,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 13,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 13,
+      "question_id": 10,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 14,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 14,
+      "question_id": 10,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 15,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 15,
+      "question_id": 10,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 16,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 16,
+      "question_id": 10,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 17,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 17,
+      "question_id": 10,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 18,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 18,
+      "question_id": 10,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 19,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 19,
+      "question_id": 10,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 20,
+    "fields": {
+      "voting_id": 20,
+      "voter_id": 20,
+      "question_id": 10,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 21,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 23,
+      "question_id": 11,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 22,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 30,
+      "question_id": 11,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 23,
+    "fields": {
+      "voting_id": 21,
+      "voter_id": 26,
+      "question_id": 11,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 24,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 20,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 25,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 21,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 26,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 22,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 27,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 23,
+      "question_id": 13,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 28,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 24,
+      "question_id": 13,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 29,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 25,
+      "question_id": 13,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 30,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 26,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 31,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 27,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 32,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 28,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 33,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 29,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 34,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 30,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 35,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 31,
+      "question_id": 13,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 36,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 32,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 37,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 33,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 38,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 34,
+      "question_id": 13,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 39,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 10,
+      "question_id": 13,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 40,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 11,
+      "question_id": 13,
+      "a": 1,
+      "b": 3,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 41,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 12,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 42,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 13,
+      "question_id": 13,
+      "a": 1,
+      "b": 1,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 43,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 14,
+      "question_id": 13,
+      "a": 1,
+      "b": 2,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 44,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 15,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 45,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 16,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 46,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 17,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 47,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 18,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "store.vote",
+    "pk": 48,
+    "fields": {
+      "voting_id": 23,
+      "voter_id": 19,
+      "question_id": 13,
+      "a": 1,
+      "b": 4,
+      "voted": "2020-11-12T22:00:00Z"
+    }
+  },
+  {
+    "model": "mixnet.mixnet",
+    "pk": 10,
+    "fields": {
+      "voting_id": 20,
+      "auth_position": 0,
+      "auths": [10],
+      "key": 10,
+      "pubkey": 11
+    }
+  },
+  {
+    "model": "mixnet.mixnet",
+    "pk": 11,
+    "fields": {
+      "voting_id": 23,
+      "auth_position": 0,
+      "auths": [10],
+      "key": 12,
+      "pubkey": 13
+    }
+  }
+]

@@ -21,7 +21,8 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = json.dumps(r[0])
-            context['postproc'] = r[0]["postproc"][0]
+            if not r[0]["postproc"] is None:
+                context['postproc'] = r[0]["postproc"][0]
             print(context)
         except:
             raise Http404
