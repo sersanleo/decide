@@ -19,21 +19,30 @@
         <div class="statistics container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
             <h2 class="heading">Estadísticas:</h2>
-            <div class="statistics container">
-            <div>
-            <p>[[ stats.census ]] personas censadas en esta votación</p>
 
-            </div>
-            <div v-if="!voting.start_date">
-                <p>estadisticas sin empezar</p>
-            </div>
-            <div v-else-if="!voting.end_date">
-                <p>Ha votado el [[ stats.percentage ]]% del censo</p>
-            </div>
-            <div v-else>
-                <p>Ha votado el [[ stats.percentage ]]% del censo</p>
-            </div>
-            </div>
+
+            <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Personas censadas</th>
+                            <th>Votos totales</th>
+                            <th>Porcentaje del censo que ha votado</th>
+                            <th v-if="!voting.start_date">Estado</th>
+                            <th v-else-if="!voting.end_date">Votos restantes</th>
+                            <th v-else>Absentismo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.census]]</td>
+                            <td>[[stats.votes]]</td>
+                            <td>[[stats.percentage]]%</td>
+                            <td v-if="!voting.start_date">Sin iniciar</td>
+                            <td v-else-if="!voting.end_date">[[stats.census-stats.votes]]</td>
+                            <td v-else>[[100-stats.percentage]]%</td>
+                        </tr>
+                    </tbody>
+                </table>
         </div>
     </div>
 {% endblock %}
