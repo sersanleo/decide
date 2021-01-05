@@ -124,7 +124,35 @@ class VotingTestCase(BaseTestCase):
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
 
-    def test_duplicate_voting_name(self):
+    #Test Unitarios para la task 001
+
+    def create_voting_prueba(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting 2')
+        
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    #Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+
+    def test_duplicate_voting_name_positive(self):
+        v1 = self.create_voting()
+        v2 = self.create_voting_prueba()
+        self.assertNotEqual(v1, v2)
+
+    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+
+    def test_duplicate_voting_name_negative(self):
         v1 = self.create_voting()
         with self.assertRaises(Exception) as raised:
             v2 = self.create_voting()
@@ -132,7 +160,7 @@ class VotingTestCase(BaseTestCase):
 
     def test_multi_voting(self):
         v1 = self.create_voting_multi()
-        for q in v1.question.all()
+        for q in v1.question.all():
             self.assertEqual(q.options.all(), )
 
         
