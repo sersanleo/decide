@@ -165,7 +165,7 @@ class LoginInterfaceTests(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/booth/')
         self.driver.find_element_by_id('username').send_keys("noadmin")
         self.driver.find_element_by_id('password').send_keys("qwerty",Keys.ENTER)
-        
+
         #Cuando el login es correcto, se redirige a la página de dashboard
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
 
@@ -174,18 +174,18 @@ class LoginInterfaceTests(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/booth/')
         self.driver.find_element_by_id('username').send_keys("badvoter1")
         self.driver.find_element_by_id('password').send_keys("badpass1",Keys.ENTER)
-        
+
         #Cuando el login es incorrecto, se mantiene en la página y aparece una alerta
         alert = self.driver.find_element_by_id('loginFail')
         self.assertEquals(alert.text,'El usuario no está registrado en el sistema.')
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
-        
+
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
 #--------------------------------------TEST DE BOOTH------------------------------------------
 #---------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------        
-        
+#---------------------------------------------------------------------------------------------
+
 class BoothTests(TestCase):
     def setUp(self):
         #Create user

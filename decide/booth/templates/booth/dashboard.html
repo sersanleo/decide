@@ -9,11 +9,13 @@
 {% block content %}
 <h1 aria-describedby="dashInfo">Dashboard</h1>
 <div id="dashInfo" style="display: none">Página principal del módulo de cabina en la que puedes consultar las votaciones que tienes disponibles, el acceso al formulario de sugerencias y las sugerencias pendientes y aceptadas y dos gráficas con datos sobre votaciones realizadas</div>
-<p class="lead">¡Te damos la bienvenida a Decide, {{username}}!</p>
+<p class="lead">¡Te damos la bienvenida a la cabina, {{username}}!</p>
 {% if no_censo %}
-    <p>No has sido añadido al censo de alguna votación</p>
+  <div class="text-left">
+    <p>No has sido añadido al censo de ninguna votación</p>
+  </div>
 {% else %}
-    <div class="row mt-5">
+    <div class="row mt-5 text-left">
       <div class="col-12">
         <h2>Votaciones disponibles</h2>
         {% if not no_vot_dis %}
@@ -29,7 +31,7 @@
             <tbody>
             {% for votacion in vot_dis %}
               <tr>
-                <td><a href="{% url 'voting' votacion.id votacion.question.first.id%}">{{votacion.name}}</a></td>
+                <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'voting' votacion.id votacion.question.first.id%}">{{votacion.name}}</a></td>
                 <td>{{votacion.desc}}</td>
                 <td>{{votacion.start_date}}</td>
               </tr>
@@ -41,16 +43,16 @@
         {% endif %}
       </div>
     </div>
-    <div class="row mt-5 align-items-center">
+    <div class="row mt-5 align-items-center text-left">
       <div class="col-sm-9">
-        <h2 class="text-left">Sugerencias de votaciones</h2>
+        <h2>Sugerencias de votaciones</h2>
       </div>
       <div class="col-sm-3">
         <a id="sugBtn" aria-labelledby="newSugBtn" class="btn btn-primary float-md-right float-sm-left" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
         <div id="newSugBtn" style="display: none">Botón para ir al formulario de envío de sugerencias</div>
       </div>
     </div>
-    <div class="row mt-4">
+    <div class="row mt-4 text-left">
       <div class="col-md-6">
         <h3>Tus sugerencias mas recientes</h3>
         {% if not no_recents_suggs %}
@@ -100,7 +102,7 @@
         {% endif %}
       </div>
     </div>
-    <div aria-labelledby="chartsInfo" class="row mt-5">
+    <div aria-labelledby="chartsInfo" class="row mt-5 text-left">
       <div id="chartsInfo" style="display: none">A continuación aparecen dos gráficas con información acerca de votaciones que has realizado</div>
       <div class="col-md-6">
         <h2>Votaciones de los últimos meses</h2>

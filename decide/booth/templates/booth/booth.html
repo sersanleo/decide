@@ -11,9 +11,11 @@
     <p class="lead">Usted ya ha votado</p>
 {% else %}
     <div class="col-12 pb-2">
-        <h1>[[ question.desc ]]</h1>
+        <div aria-describedby="questionHelp">
+            <h1>[[ question.desc ]]</h1>
+        </div>
         {% if multiple_option %}
-            <div id="votingHelp" style="display: none">Votación de elección múltiple con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
+            <div id="questionHelp" style="display: none">Pregunta de elección múltiple con [[ question.options.length ]] opciones. A continuación se presenta la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
             <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options">
                 <b-form-checkbox :disabled="voteSuccess"
@@ -32,7 +34,7 @@
                 {% trans "Enviar" %}
             </b-button>
         {% elif rank_order_scale %}
-        <div id="votingHelp" style="display: none">Votación de ordenación con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
+        <div id="questionHelp" style="display: none">Pregunta de ordenación con [[ question.options.length ]] opciones. A continuación se presenta la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
             <p class="text-center pt-1">Seleccione todas las opciones en orden de preferencia de mayor a menor. El orden seleccionado aparece en la parte inferior en forma de lista.</p>
             <p class="text-center pb-1">Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
             <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options" :key="opt.number">
@@ -53,17 +55,18 @@
                 <h4>
                     <ol>
                         <li class="py-2" v-for="opt in selected">
-                            [[ question.options[opt-1].option ]]
+                            <div v-for="option in question.options">
+                                <h4 v-if="option.number == opt">[[option.option]]</h4>
+                            </div>
                         </li>
                     </ol>
                 </h4>
             </div>
-
             <b-button id="rankSendButton" :disabled="voteSuccess" v-if="selected.length == question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% else %}
-        <div id="votingHelp" style="display: none">Votación de una elección con [[ voting.question[0].options.length ]] opciones. A continuación se presenta la descripción de la votación, la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
+        <div id="questionHelp" style="display: none">Pregunta de una elección con [[ question.options.length ]] opciones. A continuación se presenta la pregunta que has de responder, las instrucciones para el voto y las opciones.</div>
         <p class="text-center py-1">La opción elegida aparece señalada entre dos flechas. Pulse el botón "Enviar" para confirmar su selección y efectuar el voto.</p>
         <b-form-group class="col-10 offset-1 col-sm-8 offset-sm-2 col-xl-4 offset-xl-4" v-for="opt in question.options" :key="opt.number">
                 <b-form-radio :disabled="voteSuccess"
