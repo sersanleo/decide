@@ -44,7 +44,7 @@
     {% if suggesting %}
         <p v-bind:class="{dp: csspd, trit: csstrit}">{{suggesting_state}}</p>
     {% else %}
-    <button type="submit" class="btn btn-primary" v-bind:class="{dp: csspd, trit: csstrit}">Enviar</button>
+    <button id="submitSugForm" type="submit" class="btn btn-primary" v-bind:class="{dp: csspd, trit: csstrit}">Enviar</button>
     {% endif %}
 </form>
 {% endif %}

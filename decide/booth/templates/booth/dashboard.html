@@ -43,10 +43,10 @@
     </div>
     <div class="row mt-5 align-items-center">
       <div class="col-sm-9">
-        <h2 >Sugerencias de votaciones</h2>
+        <h2 class="text-left">Sugerencias de votaciones</h2>
       </div>
       <div class="col-sm-3">
-        <a aria-labelledby="newSugBtn" class="btn btn-primary float-md-right float-sm-left" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
+        <a id="sugBtn" aria-labelledby="newSugBtn" class="btn btn-primary float-md-right float-sm-left" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
         <div id="newSugBtn" style="display: none">Botón para ir al formulario de envío de sugerencias</div>
       </div>
     </div>

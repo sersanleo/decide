@@ -58,7 +58,8 @@
                     </ol>
                 </h4>
             </div>
-            <b-button :disabled="voteSuccess" v-if="selected.length == question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+
+            <b-button id="rankSendButton" :disabled="voteSuccess" v-if="selected.length == question.options.length" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% else %}
