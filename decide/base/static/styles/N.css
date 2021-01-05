@@ -92,7 +92,7 @@ html, body{
 	line-height: 40px;
 	border: none;
 	color: #fff;
-	background: #5E7DE3;
+	background-color: #5E7DE3 !important;
 	border-radius: 3px;
 	font-size: 16px;
 	cursor: pointer;
@@ -113,11 +113,11 @@ html, body{
 	visibility: hidden;*/
     
 }
-.overlay.is_active {
+.overlay.active {
 	visibility: visible;
 }
 
-.popuphelp{
+.popup{
     background: #F8F8F8;
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	border-radius: 3px;

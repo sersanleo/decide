@@ -6,7 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 <script src="{% static 'js/zoom.js' %}"></script>
-<script src="{% static 'js/popuphelp.js' %}"></script>
+<script src="{% static 'js/popup.js' %}"></script>
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 {% block extrahead %}{% endblock %}
@@ -104,14 +104,12 @@
     </div>
 
 
-
+    <button id="btn-abrir-popup" class="btn-abrir-popup">?</button>
 
     <!-- END Content -->
     {% block popuphelp %}
     <div class="overlay active" id="overlay">
-
-        <button id="btn-abrir-popup" class="btn-abrir-popup">?</button>
-            <div class="popuphelp" id="popuphelp">
+            <div class="popup" id="popup">
                  <a href="#" id="btn-cerrar-popup" class="btn-cerrar-popup"><i class="fas fa-times"></i></a>
                  <h3>Do you need something?</h3>
                  <p>Contenido</p>
