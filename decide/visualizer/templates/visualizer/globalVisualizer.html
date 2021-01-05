@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+    <div id="app-visualizer">
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+        </b-navbar>
+
+        <div class="voting container">
+
+            <div>
+                <p></p>
+                <h2 class="heading">Estadisticas Globales:</h2>
+                <p>Estas estadisticas muestran los datos totales que tenemos registrados en la plataforma, contemplando unicamente las votaciones finalizadas</p>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Número total de votaciones</th>
+                            <th>Total de votos</th>
+                            <th>Total de personas censadas</th>
+                            <th>Media de porcentaje de votación total</th>
+                            <th>Media de porcentaje de abstención total</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <td>[[nvoting]]</td>
+                            <td>[[votes]]</td>
+                            <td>[[census]]</td>
+                            <td>[[porvot/nvoting]]%</td>
+                            <td>[[abst/nvoting]]%</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mayor número de votos en una votación</th>
+                            <th>Menor número de votos en una votación</th>
+                            <th>Mayor número de censo en una votación</th>
+                            <th>Menor número de censo en una votación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <td>[[votesm]]</td>
+                            <td>[[votesr]]</td>
+                            <td>[[censusm]]</td>
+                            <td>[[censusr]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mayor porcentaje de voto</th>
+                            <th>Menor porcentaje de voto</th>
+                            <th>Mayor porcentaje de abstencion</th>
+                            <th>Menor porcentaje de abstencion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <td>[[porvotm]]%</td>
+                            <td>[[porvotr]]%</td>
+                            <td>[[abstm]]%</td>
+                            <td>[[abstr]]%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+        var votes = {{votes|safe}};
+        var votesm = {{votesm|safe}};
+        var votesr = {{votesr|safe}};
+        var census = {{census|safe}};
+        var censusm = {{censusm|safe}};
+        var censusr = {{censusr|safe}};
+        var nvoting = {{nvoting|safe}};
+        var abst = {{abst|safe}};
+        var abstm = {{abstm|safe}};
+        var abstr = {{abstr|safe}};
+        var porvot = {{porvot|safe}};
+        var porvotm = {{porvotm|safe}};
+        var porvotr = {{porvotr|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-visualizer',
+            data: {
+                votes: votes,
+                votesm: votesm,
+                votesr: votesr,
+                census: census,
+                censusm: censusm,
+                censusr: censusr,
+                nvoting: nvoting,
+                abst: abst,
+                abstm: abstm,
+                abstr: abstr,
+                porvot: porvot,
+                porvotm: porvotm,
+                porvotr: porvotr
+            }
+        })
+    </script>
+</body>
+{% endblock %}
