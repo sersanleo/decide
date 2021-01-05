@@ -17,6 +17,21 @@ class VisualizerView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
+            context['voting'] = json.dumps(r[0])
+        except:
+            raise Http404
+
+        return context
+
+class StatisticsView(TemplateView):
+    template_name = 'visualizer/statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vid = kwargs.get('voting_id', 0)
+
+        try:
+            r = mods.get('voting', params={'id': vid})
             census = Census.objects.filter(voting_id=vid).all()
             votes = Vote.objects.filter(voting_id=vid).all()
             c=census.count()
