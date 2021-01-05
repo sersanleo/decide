@@ -105,3 +105,20 @@ li.di-visualizacion.dp a:hover {
 .chart.dp {
     background-color: white;
 }
+
+a.dp {
+    color: #E3CA26;
+}
+
+small.dp {
+    color: white!important;
+}
+
+.alert.alert-danger.sug.dp {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+}
+
+p.dp {
+    color: white!important;
+}

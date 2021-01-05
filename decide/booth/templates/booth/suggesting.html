@@ -30,9 +30,9 @@
         <input name="suggesting-date" type="date" class="form-control" id="suggestingDate" required
         {% if suggesting %} value="{{suggesting.suggesting_date|date:"Y-m-d"}}" readonly {% endif %}
         {% if post_data %} value="{{post_data.suggesting_date}}" {% endif %}>
-        {% if not suggesting and not post_data %}<small class="form-text text-muted">Debe elegir una fecha futura</small>{% endif %}
+        {% if not suggesting and not post_data %}<small class="form-text text-muted" v-bind:class="{dp: csspd, trit: csstrit}">Debe elegir una fecha futura</small>{% endif %}
         {% if post_data %}
-        <p class="alert alert-danger">{{post_data.errors}}</p>
+        <p class="alert alert-danger sug" v-bind:class="{dp: csspd, trit: csstrit}">{{post_data.errors}}</p>
         {% endif %}
     </div>
     <div class="form-group">
@@ -42,7 +42,7 @@
             {% if suggesting %} readonly {% endif %}>{% if suggesting %}{{suggesting.content}}{% endif %}{% if post_data %}{{post_data.content}}{% endif %}</textarea>
     </div>
     {% if suggesting %}
-        {{suggesting_state}}
+        <p v-bind:class="{dp: csspd, trit: csstrit}">{{suggesting_state}}</p>
     {% else %}
     <button type="submit" class="btn btn-primary" v-bind:class="{dp: csspd, trit: csstrit}">Enviar</button>
     {% endif %}
