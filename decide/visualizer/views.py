@@ -7,6 +7,8 @@ from census.models import Census
 from store.models import Vote
 from voting.models import Voting
 from base import mods
+from census.models import Census
+from store.models import Vote
 
 
 
@@ -28,12 +30,36 @@ class VisualizerView(TemplateView):
         
         return context
 
-def get_global_view(request):
+class StatisticsView(TemplateView):
+    template_name = 'visualizer/statistics.html'
 
-    vt = 0
-    ct = 0
-    nvs = 0
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vid = kwargs.get('voting_id', 0)
 
+        try:
+            r = mods.get('voting', params={'id': vid})
+            census = Census.objects.filter(voting_id=vid).all()
+            votes = Vote.objects.filter(voting_id=vid).all()
+            c=census.count()
+            v=votes.count()
+            stat = {"census":c}
+            stat["votes"] = v
+            if v>0:
+                stat["percentage"] = round(v/c*100,2);
+            else:
+                stat["percentage"] = 0;
+            context['voting'] = json.dumps(r[0])
+            context['stats'] = json.dumps(stat)
+        except:
+            raise Http404
+
+        return context
+
+def get_list_votings(request):
+    filter = request.GET.get('filter')
+    busqueda = request.GET.get('nombre')
+    list = None
     try:
         votings = Voting.objects.all()
         abstm = 0
