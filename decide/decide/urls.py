@@ -17,7 +17,6 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
-from base import views as baseviews
 from decide import views
 
    
@@ -27,7 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
-    path('helpvoiceassistant/',baseviews.helpvoiceassistant),
+    path('helpvoiceassistant/', views.helpvoiceassistant),
     path('', views.IndexView.as_view(), name="index")
 ]
 

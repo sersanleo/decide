@@ -23,8 +23,6 @@
 
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item href="#">Link 1</b-nav-item>
-        <b-nav-item href="#">Link 2</b-nav-item>
         <div id="buttons_zoom"> 
           <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
           <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
@@ -122,12 +120,12 @@
           data: {
               token: null,
               user: null,
+              pending_votings: null,
+              past_votings: null,
               form: {
                   username: '',
                   password: ''
               },
-              pending_votings: {{ pending_votings|safe }},
-              past_votings: {{ past_votings|safe }},
               alertShow: false,
               alertMsg: "",
               alertLvl: "info"
@@ -147,7 +145,6 @@
                   });
               },
               postData(url, data) {
-                  // Default options are marked with *
                   var fdata = {
                       body: JSON.stringify(data),
                       headers: {
@@ -171,7 +168,7 @@
               },
               onSubmitLogin(evt) {
                   evt.preventDefault();
-                  this.postData("/gateway/authentication/login/", this.form)
+                  this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
                       .then(data => {
                           document.cookie = 'decide='+data.token+'; path=/; max-age=7200;';
                           this.token = data.token;
@@ -183,19 +180,30 @@
               },
               getUser(evt) {
                   var data = {token: this.token};
-                  this.postData("/gateway/authentication/getuser/", data)
+                  this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
                       .then(data => {
                           this.user = data;
                           if(this.user.style == 'C')
                             setUserStyle("{% static 'styles/C.css' %}");
                           else
                             setUserStyle("{% static 'styles/N.css' %}");
-                      }).catch(error => {
+
+                          this.getVotings();
+                      })
+                      .catch(error => {
                           this.showAlert("danger", 'Error: ' + error);
                       });
               },
+              getVotings(evt) {
+                  var data = {token: this.token};
+                  this.postData("{% url "gateway" "voting" "/getuser/" %}", data)
+                      .then(data => {
+                          this.pending_votings = data['pending_votings'];
+                          this.past_votings = data['past_votings'];
+                      })
+              },
               onChangeStyle(newstyle) {
-                  var data = {token: this.token, user: this.user.id, style: newstyle};
+                  var data = {token: this.token, style: newstyle};
                   this.postData("{% url "gateway" "authentication" "/changestyle/" %}", data)
                       .then(data => {
                           this.getUser();
@@ -207,7 +215,7 @@
               decideLogout(evt) {
                   evt.preventDefault();
                   var data = {token: this.token};
-                  this.postData("/gateway/authentication/logout/", data);
+                  this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
                   this.token = null;
                   this.user = null;
                   document.cookie = 'decide=; path=/;';
