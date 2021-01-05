@@ -65,7 +65,7 @@
           <tbody>
           {% for sugerencia in recent_suggestions %}
             <tr>
-              <td><a href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+              <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
               <td>{{sugerencia.suggesting_date}}</td>
             </tr>
           {% endfor %}
@@ -89,7 +89,7 @@
           <tbody>
           {% for sugerencia in approved_suggestions %}
             <tr>
-              <td><a href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+              <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
               <td>{{sugerencia.suggesting_date}}</td>
             </tr>
           {% endfor %}
@@ -100,10 +100,10 @@
         {% endif %}
       </div>
     </div>
-    <div class="row mt-5">
+    <div aria-labelledby="chartsInfo" class="row mt-5">
+      <div id="chartsInfo" style="display: none">A continuación aparecen dos gráficas con información acerca de votaciones que has realizado</div>
       <div class="col-md-6">
-        <h2 aria-labelledby="chartsInfo">Votaciones por meses del año</h2>
-        <div id="chartsInfo" style="display: none">A continuación aparecen dos gráficas con información acerca de votaciones que has realizado</div>
+        <h2>Votaciones de los últimos meses</h2>
           <div id="container1" class="chart" v-bind:class="{dp: csspd, trit: csstrit}">
           <canvas id="vot_por_mes_chart" aria-label="Imagen con un gráfico de barras con el número de votaciones por mes realizadas en el último año" role="img"></canvas>
         </div>

@@ -116,3 +116,20 @@ a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.bt
 .chart.dp {
     background-color: white;
 }
+
+a.dp {
+    color: #E3CA26;
+}
+
+small.dp {
+    color: white!important;
+}
+
+.alert.alert-danger.sug.dp {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+}
+
+p.dp {
+    color: white!important;
+}
