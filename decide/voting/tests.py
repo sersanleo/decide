@@ -77,10 +77,6 @@ class VotingTestCase(BaseTestCase):
 
     #     return v
     
-    def create_question(self):
-        q = Question(desc='test question')
-        q.save()
-        return q
 
     def create_voters(self, v):
         for i in range(100):
@@ -120,12 +116,7 @@ class VotingTestCase(BaseTestCase):
                     mods.post('store', json=data)
         return clear
    
-    
-    # def test_question_unique(self):
-    #     v = self.create_question()
-    #     with self.assertRaises(Exception) as raised:
-    #         self.create_question()
-    #     self.assertEqual(IntegrityError, type(raised.exception))
+
 
     # def test_duplicate_voting_name(self):
     #     v1 = self.create_voting()
@@ -327,3 +318,21 @@ class VotingTestCase(BaseTestCase):
     #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
     #     self.assertEqual(response.status_code, 400)
     #     self.assertEqual(response.json(), 'Voting already tallied')
+
+
+    # Test Unitarios para la task 005
+
+    def create_question(self):
+        q = Question(desc='test question')
+        q.save()
+        return q
+
+        # Caso positivo: se crean dos Question con descripciones distintas y no surgen errores
+
+    def test_question_unique_pos(self):
+        v = self.create_question()
+        q = Question(desc='test question2')
+        q.save()
+        self.assertEqual(q.desc, 'test question2')
+
+        
