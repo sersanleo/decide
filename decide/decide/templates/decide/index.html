@@ -31,6 +31,11 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto" v-if="user != null">
+        <b-navbar-brand v-if="user != null">
+          <strong>
+          Welcome [[this.user.username]]!
+          </strong>
+        </b-navbar-brand>
         <b-nav-item-dropdown text="{% trans "Change style" %}" right>
           {% for style in user_styles %}
             <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
@@ -39,6 +44,11 @@
         <b-button variant="danger" v-on:click="decideLogout">
           {% trans "Logout" %}
         </b-button>
+      </b-navbar-nav>
+      <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
+        <b-navbar-brand v-if="user == null">
+          <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
+        </b-navbar-brand>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -59,30 +69,35 @@
       <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Visualizer</b-button></b-col>
     </div>
     <!-- Login -->
-    <b-row v-if="user == null" align-h="center">
-      <b-col cols="4" class="text-center">
-        <h1>Login</h1>
-        <b-form @submit="onSubmitLogin">
-          <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
-              <b-form-input
-                  id="username"
-                  type="text"
-                  v-model="form.username"
-                  autocomplete="username"
-                  required />
-          </b-form-group>
-          <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
-              <b-form-input
-                  id="password"
-                  type="password"
-                  autocomplete="current-password"
-                  v-model="form.password"
-                  required />
-          </b-form-group>
-          <b-button class="mt-3" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
-      </b-form>
-      </b-col>
-    </b-row>
+    <div class="overlay" id="overlay">
+			<div class="popup" id="popup">
+        <b-button variant="danger" onclick="closePopUp();" id="closePopUp" class="closePopUp">X</b-button>
+        <h4>Login</h4>
+        <b-row v-if="user == null" align-h="center">
+          <b-col cols="4" class="text-center">
+            <b-form @submit="onSubmitLogin">
+              <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
+                  <b-form-input
+                      id="username"
+                      type="text"
+                      v-model="form.username"
+                      autocomplete="username"
+                      required />
+              </b-form-group>
+              <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
+                  <b-form-input
+                      id="password"
+                      type="password"
+                      autocomplete="current-password"
+                      v-model="form.password"
+                      required />
+              </b-form-group>
+              <b-button onclick="closePopUp();" class="mt-3" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
+          </b-form>
+          </b-col>
+        </b-row>
+			</div>
+    </div>
     <!-- Dashboard -->
     <b-row v-if="user != null">
       <b-col sm="12" md="6">
@@ -101,7 +116,7 @@
       </b-col>
     </b-row>
     <b-row class="pt-5">
-      <b-img src={% static 'styles/footer.png' %}>FOOTER FEO</b-img>
+      <b-img center src={% static 'styles/footer.png' %}>FOOTER FEO</b-img>
     </b-row>
   </b-container>
 </div>
@@ -213,12 +228,19 @@
                       });
               },
               decideLogout(evt) {
-                  evt.preventDefault();
-                  var data = {token: this.token};
-                  this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
-                  this.token = null;
-                  this.user = null;
-                  document.cookie = 'decide=; path=/;';
+                var opcion = confirm("Are you sure you want to log out?");
+                  if (opcion == true) {
+                    alert ("You have successfully logged out");
+                    evt.preventDefault();
+                    var data = {token: this.token};
+                    this.postData("/gateway/authentication/logout/", data);
+                    this.token = null;
+                    this.user = null;
+                    document.cookie = 'decide=; path=/;';
+                    return true;
+                  } else {
+                    return false;
+                }
               },
               showAlert(lvl, msg) {
                   this.alertLvl = lvl;
@@ -227,6 +249,21 @@
               }
           },
       })
+  </script>
+  <script>
+    function openPopUp() {
+      overlay = document.getElementById('overlay');
+      popup = document.getElementById('popup');
+      overlay.classList.add('active');
+      popup.classList.add('active');
+
+      document.getElementById('username').value = "";
+      document.getElementById('password').value = "";
+    }
+    function closePopUp(){
+      overlay.classList.remove('active');
+      popup.classList.remove('active');
+    }
   </script>
 </body>
 {% endblock %}
