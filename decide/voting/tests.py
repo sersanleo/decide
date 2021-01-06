@@ -18,6 +18,8 @@ from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 from django.db.utils import IntegrityError
 from .admin import give_message
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 import sys
 
 
@@ -561,7 +563,7 @@ class VotingTestCase(BaseTestCase):
 
         
 
-       def test_started_by_positive(self):
+    def test_started_by_positive(self):
         voting = self.create_voting()
         voting_id = voting.id
         user= self.get_or_create_user(1)
