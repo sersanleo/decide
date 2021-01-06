@@ -317,7 +317,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q2, option='option {}'.format(i+1))
             opt.save()
-
+            
         v = Voting(name='test voting multi')
         v.save()
         v.question.add(q1)
@@ -366,5 +366,26 @@ class VotingTestCase(BaseTestCase):
         longitud = len(q)
         self.assertEqual(longitud, 2)
 
-    
+    #Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (1 question)
+    #directamente debido a que ahora las question forman parte de un conjunto
+
+    def test_multi_voting_simple_neg(self):
+        v1 = self.create_voting()
+
+        with self.assertRaises(Exception) as raised:
+            option = v1.question.options.all()
+
+        self.assertEqual(AttributeError, type(raised.exception))
+
+    #Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
+    #directamente debido a que ahora las question forman parte de un conjunto
+
+    def test_multi_voting_two_neg(self):
+        v1 = self.create_voting_multi()
+
+        with self.assertRaises(Exception) as raised:
+            option = v1.question.options.all()
+
+        self.assertEqual(AttributeError, type(raised.exception))
+
     
