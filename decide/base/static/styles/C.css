@@ -93,3 +93,7 @@ footer{
     display: block;
     margin: auto;
 }
+
+#text-voice-assistants {
+    margin: 40px;
+}
