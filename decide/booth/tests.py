@@ -35,6 +35,14 @@ from base import mods
 
 NOW_DATE = timezone.now().date()
 S_DATE = NOW_DATE + datetime.timedelta(weeks=1)
+M_DATE = NOW_DATE - datetime.timedelta(days=31)
+E_DATE = NOW_DATE - datetime.timedelta(weeks=1)
+
+def sumalista(listaNumeros):
+    laSuma = 0
+    for i in listaNumeros:
+        laSuma = laSuma + i
+    return laSuma
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
@@ -226,7 +234,7 @@ class BoothTests(TestCase):
         v.save()
         v.question.add(q1), v.question.add(q2), v.question.add(q3)
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'base'})
+                                          defaults={'me': True, 'name': 'base'})    
         a.save()
         v.auths.add(a)
         Voting.create_pubkey(v)
@@ -283,3 +291,94 @@ class LoginTest(TestCase):
         self.assertEqual('user_token' in session, False)
         self.assertEqual('voter_id' in session, False)
         self.assertEqual('username' in session, False)
+
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------TEST DASHBOARD----------------------------------------------
+#---------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+class DashboardTest(TestCase):
+    def setUp(self):
+        #Create user
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u = UserProfile(id=1, username='voter1', sex='M')
+        u.set_password('123')
+        u.save()
+        token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
+        #Add session token
+        session = self.client.session
+        session['user_token'] = token
+        session['voter_id'] = u.id
+        session.save()
+        #Create voting 1
+
+        #Create question 1
+        q1 = Question(id=1,desc='Unique option question', option_types=1)
+        q1.save()
+        for i in range(3):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt.save()
+
+        #Create question 2
+        q2 = Question(id=2,desc='Multiple option question', option_types=2)
+        q2.save()
+        for i in range(4):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
+
+        #Create question 3
+        q3 = Question(id=3,desc='Rank order scale question', option_types=3)
+        q3.save()
+        for i in range(5):
+            opt = QuestionOption(question=q3, option='option {}'.format(i+1))
+            opt.save()
+        
+        v1 = Voting(id=1, name='Single question voting',desc='Single question voting...', points=1, start_date=timezone.now())
+        v1.save()
+        v1.question.add(q1), v1.question.add(q2), v1.question.add(q3)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'base'})
+        a.save()
+        v1.auths.add(a)
+        Voting.create_pubkey(v1)
+
+        #Create voting 2
+
+        #Create question 4
+        q4 = Question(id=4, desc='Unique option question 2', option_types=1)
+        q4.save()
+        for i in range(3):
+            opt = QuestionOption(question=q4, option='option {}'.format(i+1))
+            opt.save()
+
+        v2 = Voting(id=2, name='Single question voting 2',desc='Single question voting...', points=1, start_date=M_DATE, end_date=E_DATE)
+        v2.save()
+        v2.question.add(q4)
+        v2.auths.add(a)
+        Voting.create_pubkey(v2)
+
+        #Add user to census
+        census1 = Census(voting_id=v1.id, voter_id=u.id)
+        census1.save()
+        census2 = Census(voting_id=v2.id, voter_id=u.id)
+        census2.save()
+
+        #Create suggestion 1
+        s1 = SuggestingForm(id=1, user_id=u.id, title="Suggesting title", suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE, is_approved=True)
+        s1.save()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def test_dashboard_details(self):
+        response = self.client.get(reverse('dashboard'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['vot_dis']), 1)
+        self.assertEquals(sumalista(response.context['votaciones_por_meses']), 1)
+        self.assertEquals(len(response.context['months']), 12)
+        #self.assertEqual(response.context['tipo_votaciones'][0], 0)
+        #self.assertEqual(response.context['tipo_votaciones'][1], 0)
+        #self.assertEqual(response.context['tipo_votaciones'][2], 0)
+        self.assertEqual(len(response.context['approved_suggestions']), 1)
+        self.assertEqual(len(response.context['recent_suggestions']), 1)
