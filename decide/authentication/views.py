@@ -13,6 +13,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from .serializers import UserSerializer
 
+from base import mods
+
 
 class GetUserView(APIView):
     def post(self, request):
@@ -33,6 +35,28 @@ class LogoutView(APIView):
         return Response({})
 
 
+class ChangeStyleView(APIView):
+    def post(self, request):
+        # validating token
+        token = request.auth.key
+        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user_id = user.get('id', None)
+
+        if not user_id:
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # validating style
+        newstyle = request.data.get('style')
+        if not newstyle in [i[0] for i in UserProfile.styles]:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        u = UserProfile.objects.get(id=user_id)
+        u.style = newstyle
+        u.save(update_fields=['style'])
+
+        return  Response({})
+
+
 class RegisterView(APIView):
     def post(self, request):
         key = request.data.get('token', '')
@@ -42,12 +66,13 @@ class RegisterView(APIView):
 
         username = request.data.get('username', '')
         sex = request.data.get('sex', '')
+        style = request.data.get('style', '')
         pwd = request.data.get('password', '')
-        if not username or not pwd or not sex:
+        if not username or not pwd or not sex or not style:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
         try:
-            user = UserProfile(username=username, sex=sex)
+            user = UserProfile(username=username, sex=sex, style=style)
             user.set_password(pwd)
             user.save()
             token, _ = Token.objects.get_or_create(user=user)
