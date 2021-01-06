@@ -62,21 +62,26 @@ class StoreView(generics.ListAPIView):
         if perms.status_code == 401:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
-        sexType=request.user.sex
-        a = ""
-        b = ""
-        for opt in vote:
-            a = a + opt['a'] + ','
-            b = b + opt['b'] + ','
+        # the user has voted this question of this voting
+        number_of_votes = Vote.objects.filter(voting_id=vid, question_id=question_id, voter_id=voter_id).count()
+        if number_of_votes != 0:
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            sexType=request.user.sex
+            a = ""
+            b = ""
+            for opt in vote:
+                a = a + opt['a'] + ','
+                b = b + opt['b'] + ','
 
-        a = a[:-1]
-        b = b[:-1]
+            a = a[:-1]
+            b = b[:-1]
 
-        v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,sex=sexType, question_id=question_id)
+            v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,sex=sexType, question_id=question_id)
 
-        v.a = a
-        v.b = b
+            v.a = a
+            v.b = b
 
-        v.save()
+            v.save()
 
         return  Response({})
