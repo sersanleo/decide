@@ -335,7 +335,7 @@ class VotingTestCase(BaseTestCase):
         q.save()
         self.assertEqual(q.desc, 'test question2')
 
-        #Caso negativo: se crean dos Question con descripcionres repetidas y se lanza un error
+        #Caso negativo: se crean dos Question con descripcionres repetidas y se lanza un error que impide crearla
 
     def test_question_unique_neg(self):
         v = self.create_question()
