@@ -21,17 +21,14 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = json.dumps(r[0])
-            if (r[0]['end_date'] != None):
-                labels, data = self.get_identity_data(r[0])
-                context['labels'] = labels
-                context['data'] = data
-
+            if not r[0]['end_date'] == None:
+                self.statistics_identity(r[0],context)
         except:
             raise Http404
 
         return context
 
-    def get_identity_data(self,voting):
+    def statistics_identity(self,voting, context):
         labels = []
         data = []
         postproc = voting.get('postproc')
@@ -39,8 +36,8 @@ class VisualizerView(TemplateView):
         for voting in postproc[0]:
             labels.append(voting['option'])
             data.append(int(voting['postproc']))
-
-        return labels,data
+        context['labels'] = labels
+        context['data'] = data
 
 class StatisticsView(TemplateView):
     template_name = 'visualizer/statistics.html'
