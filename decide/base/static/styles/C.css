@@ -78,6 +78,15 @@ footer{
 #username,#password{
     font-size:1em;
 }
+
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
+}
+
+#asistente_movil {
+    width: 400px;
+}
+
 .closePopUp {
     float: right;
 }
