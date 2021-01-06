@@ -78,3 +78,13 @@ footer{
 #username,#password{
     font-size:1em;
 }
+.closePopUp {
+    float: right;
+}
+.popup h4 {
+    color: #0a1b2b !important;
+    font-family: serif !important;
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
