@@ -86,11 +86,21 @@ class VotingTestCase(BaseTestCase):
             c = Census(voter_id=u.id, voting_id=v.id)
             c.save()
 
+
     def get_or_create_user(self, pk):
         user, _ = User.objects.get_or_create(pk=pk)
         user.username = 'user{}'.format(pk)
         user.set_password('qwerty')
         user.sex = 'M'
+        user.save()
+        return user
+
+
+    def get_or_create_user_fem(self, pk):
+        user, _ = User.objects.get_or_create(pk=pk)
+        user.username = 'user{}'.format(pk)
+        user.set_password('qwerty')
+        user.sex = 'F'
         user.save()
         return user
 
@@ -170,7 +180,117 @@ class VotingTestCase(BaseTestCase):
             self.logout()
             voter = voters.pop()
 
-    def test_tally_message_positive(self):
+    def store_votes_unique_option_fem(self, v):
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
+
+        for i in range(1):
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+
+                a,b = None, None
+                for j in range(1):
+                    chosen_option = options[0]
+                    
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b: 
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+                        
+                    else:
+                        a = str(x)
+                        b = str(y)
+                        
+                    votos.append({'a': a, 'b': b })
+                
+            data = {
+                'voting': v.id,
+                'voter': voter.voter_id,
+                'vote': votos,
+                'question_id': q.id,
+                'token': self.token
+            }                
+
+            mods.post('store', json=data)
+            self.logout()
+            voter = voters.pop()
+
+    # def test_tally_message_positive(self):
+    #     voting = self.create_voting()
+    #     self.create_voters(voting)
+    #     voting.create_pubkey()
+        
+    #     self.login()
+    #     data = {'action': 'bad'}
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 400)
+        
+    #     data = {'action': 'start'}
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json(), 'Voting started')
+
+    #     self.store_votes_unique_option(voting)
+        
+    #     data = {'action': 'stop'}
+    #     self.login()
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json(), 'Voting stopped')
+        
+    #     data = {'action': 'tally'}
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json(), 'Voting tallied')
+    #     tally=voting.tally_votes(self.token)
+        
+    #     mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
+    #     mensajeObtenido=give_message(voting,tally)
+        
+    #     self.assertEqual(mensajeEsperado, mensajeObtenido)
+
+    # def test_tally_message_negative(self):
+    #     voting = self.create_voting()
+    #     self.create_voters(voting)
+    #     voting.create_pubkey()
+        
+    #     self.login()
+    #     data = {'action': 'bad'}
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 400)
+        
+    #     data = {'action': 'start'}
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json(), 'Voting started')
+
+    #     self.store_votes_unique_option(voting)
+        
+    #     data = {'action': 'stop'}
+    #     self.login()
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json(), 'Voting stopped')
+        
+    #     data = {'action': 'tally'}
+    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.json(), 'Voting tallied')
+    #     tally=voting.tally_votes(self.token)
+        
+    #     mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
+    #     mensajeObtenido=give_message(voting,tally)
+        
+    #     self.assertNotEqual(mensajeEsperado, mensajeObtenido)
+
+
+    def test_tally_masc_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
@@ -197,14 +317,54 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting tallied')
-        tally=voting.tally_votes(self.token)
-        
-        mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
-        mensajeObtenido=give_message(voting,tally)
-        
-        self.assertEqual(mensajeEsperado, mensajeObtenido)
+        voting.tally_votes(self.token)
+        tallyM=voting.tally_votes_masc(self.token)
+        tallyF=voting.tally_votes_fem(self.token)
+        for i, q in enumerate(voting.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
+            opts = []
+            for opt in opciones:
+                if q.option_types == 3:
+                    votesM = []
+                    votesF = []
+                    for i in range (opt_count):
+                        votesM.append(0)
+                        votesF.append(0)
+                    for dicc in tallyM:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM[pos[0]] = votesM[pos[0]] + 1
+                    for dicc in tallyF:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
+                else:
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
+                opts.append({
+                    'Option:': opt.option,
+                    'has this male votes:': votesM 
+                })
 
-    def test_tally_message_negative(self):
+        resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 1}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 0}, {'Option:': 'option 5', 'has this male votes:': 0}]"
+        self.assertEqual(str(opts),resultadoEsperado)
+
+
+    def test_tally_masc_negative(self):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
@@ -231,16 +391,200 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting tallied')
-        tally=voting.tally_votes(self.token)
-        
-        mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
-        mensajeObtenido=give_message(voting,tally)
-        
-        self.assertNotEqual(mensajeEsperado, mensajeObtenido)
+        voting.tally_votes(self.token)
+        tallyM=voting.tally_votes_masc(self.token)
+        tallyF=voting.tally_votes_fem(self.token)
+        for i, q in enumerate(voting.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
+            opts = []
+            for opt in opciones:
+                if q.option_types == 3:
+                    votesM = []
+                    votesF = []
+                    for i in range (opt_count):
+                        votesM.append(0)
+                        votesF.append(0)
+                    for dicc in tallyM:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM[pos[0]] = votesM[pos[0]] + 1
+                    for dicc in tallyF:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
+                else:
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
+                opts.append({
+                    'Option:': opt.option,
+                    'has this male votes:': votesM 
+                })
 
+        resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 0}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 1}, {'Option:': 'option 5', 'has this male votes:': 0}]"
+        self.assertNotEqual(str(opts),resultadoEsperado)
 
+    def test_tally_fem_positive(self):
+        voting = self.create_voting()
+        self.create_voters(voting)
+        voting.create_pubkey()
+        
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        self.store_votes_unique_option_fem(voting)
+        
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        voting.tally_votes(self.token)
+        tallyM=voting.tally_votes_masc(self.token)
+        tallyF=voting.tally_votes_fem(self.token)
+        for i, q in enumerate(voting.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
+            opts = []
+            for opt in opciones:
+                if q.option_types == 3:
+                    votesM = []
+                    votesF = []
+                    for i in range (opt_count):
+                        votesM.append(0)
+                        votesF.append(0)
+                    for dicc in tallyM:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM[pos[0]] = votesM[pos[0]] + 1
+                    for dicc in tallyF:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
+                else:
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
+                opts.append({
+                    'Option:': opt.option,
+                    'has this female votes:': votesF
+                })
+
+        resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 1}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 0}, {'Option:': 'option 5', 'has this female votes:': 0}]"
+        self.assertEqual(str(opts),resultadoEsperado)
+
+    def test_tally_fem_negative(self):
+        voting = self.create_voting()
+        self.create_voters(voting)
+        voting.create_pubkey()
+        
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        self.store_votes_unique_option_fem(voting)
+        
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        voting.tally_votes(self.token)
+        tallyM=voting.tally_votes_masc(self.token)
+        tallyF=voting.tally_votes_fem(self.token)
+        for i, q in enumerate(voting.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
+            opts = []
+            for opt in opciones:
+                if q.option_types == 3:
+                    votesM = []
+                    votesF = []
+                    for i in range (opt_count):
+                        votesM.append(0)
+                        votesF.append(0)
+                    for dicc in tallyM:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM[pos[0]] = votesM[pos[0]] + 1
+                    for dicc in tallyF:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
+                else:
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
+                opts.append({
+                    'Option:': opt.option,
+                    'has this male votes:': votesF
+                })
+
+        resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 0}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 1}, {'Option:': 'option 5', 'has this female votes:': 0}]"
+        self.assertNotEqual(str(opts),resultadoEsperado)
         
 
+    
     # def test_update_voting(self):
     #     voting = self.create_voting()
 
