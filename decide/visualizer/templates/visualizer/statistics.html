@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+    <div id="app-visualizer">
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+        </b-navbar>
+
+        <div class="statistics container">
+            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+            <h2 class="heading">Estadísticas:</h2>
+
+
+            <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Personas censadas</th>
+                            <th>Votos totales</th>
+                            <th>Porcentaje del censo que ha votado</th>
+                            <th v-if="!voting.start_date">Estado</th>
+                            <th v-else-if="!voting.end_date">Votos restantes</th>
+                            <th v-else>Absentismo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.census]]</td>
+                            <td>[[stats.votes]]</td>
+                            <td>[[stats.percentage]]%</td>
+                            <td v-if="!voting.start_date">Sin iniciar</td>
+                            <td v-else-if="!voting.end_date">[[stats.census-stats.votes]]</td>
+                            <td v-else>[[100-stats.percentage]]%</td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+        var voting = {{voting|safe}};
+        var stats = {{stats|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-visualizer',
+            data: {
+                voting: voting,
+                stats: stats
+            }
+        })
+
+    </script>
+</body>
+{% endblock %}
