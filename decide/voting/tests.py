@@ -214,7 +214,39 @@ class VotingTestCase(BaseTestCase):
         
         self.assertEqual(mensajeEsperado, mensajeObtenido)
 
+    def test_tally_message_negative(self):
+        voting = self.create_voting()
+        self.create_voters(voting)
+        voting.create_pubkey()
+        
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
 
+        self.store_votes_unique_option(voting)
+        
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)
+        
+        mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
+        mensajeObtenido=give_message(voting,tally)
+        
+        self.assertNotEqual(mensajeEsperado, mensajeObtenido)
 
 
         
