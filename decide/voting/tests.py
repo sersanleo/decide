@@ -754,5 +754,31 @@ class VotingTestCase(BaseTestCase):
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
 
+
+#Test Unitarios para creación de una voting y autoincluirse en el censo.
+
+    def test_create_voting_autocensus_pos(self):
+
+        v = self.create_voting()
+        # Ha seleccionado autocenso (hacer con selenium)
+        if True:
+            c = Census.objects.get_or_create(voter_id=1, voting_id=v.id)
+        self.assertTrue(c)
+
+        # Caso positivo: se crea una voting y se asigna el creador al censo.
+
+    def test_create_voting_noautocensus_neg(self):
+
+        v = self.create_voting()
+        # No ha seleccionado autocenso (hacer con selenium)
+        if False:
+            Census.objects.get_or_create(voter_id=1, voting_id=v.id)
+
+        with self.assertRaises(Exception) as raised:
+            Census.objects.get(voter_id=1, voting_id=v.id)
+        self.assertEqual(Census.DoesNotExist, type(raised.exception))
+
+        # Caso negativo: se crea una voting y no se asigna el creador al censo.
+
         
 
