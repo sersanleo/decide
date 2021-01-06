@@ -68,6 +68,7 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
                 st = status.HTTP_400_BAD_REQUEST
             else:
                 voting.start_date = timezone.now()
+                voting.started_by = str(request.user.username)
                 voting.save()
                 msg = 'Voting started'
         elif action == 'stop':

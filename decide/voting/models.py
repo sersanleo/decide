@@ -22,10 +22,9 @@ class Question(models.Model):
                     (3, "EQUALITY"), (4, "SAINTE_LAGUE"), (5, "DROOP"),
                     (6, "IMPERIALI"), (7, "HARE"))
     type = models.PositiveIntegerField(choices=ANSWER_TYPES_VOTING, default="0")
-    #type = models.ForeignKey(TypeVoting, related_name='voting', on_delete=models.CASCADE)
 
     def clean(self):
-        if self.option_types == 3 and not self.type == 2:
+        if self.option_types == 3 and not self.type == 1:
             raise ValidationError(('Rank order scale option type must be selected with Borda type.'))
 
 
@@ -37,12 +36,6 @@ class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.CharField(max_length=200)
-    rank_order = models.PositiveIntegerField(blank=True, null=True)
-    
-
-
-
-
 
     def save(self):
 
@@ -95,19 +88,19 @@ class Voting(models.Model):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
-        return [[i['a'], i['b']] for i in votes], [[i['c'], i['d']] for i in votes]
+        return votes
 
     def get_votes_masc(self, token=''):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
-        return [[i['a'], i['b']] for i in votes if i['sex']=='M']
+        return votes
     
     def get_votes_fem(self, token=''):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
-        return [[i['a'], i['b']] for i in votes if i['sex']=='F']
+        return votes
     
     def get_info(self,token=''):
         votos=Voting.objects.get(id=self.id)
@@ -119,8 +112,13 @@ class Voting(models.Model):
         The tally is a shuffle and then a decrypt
         '''
 
-        votes, ranked_votes = self.get_votes(token)
-
+        votos  = self.get_votes(token)
+        votes = []
+        for i in votos:
+            aa = i['a'].split(',')
+            bb = i['b'].split(',')
+            for j in range(len(aa)):
+                votes.append([int(aa[j]), int(bb[j]), j, i['question_id']])           
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
         decrypt_url = "/decrypt/{}/".format(self.id)
@@ -138,40 +136,33 @@ class Voting(models.Model):
         data = {"msgs": response.json()}
         response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
                 response=True)
-
+        
         if response.status_code != 200:
             # TODO: manage error
             pass
 
         self.tally = response.json()
-        if ranked_votes and len(ranked_votes[0]) != 0 and ranked_votes[0][0] != 0:
-                    
-            data = { "msgs": ranked_votes }
-            response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
-                    response=True)
-            if response.status_code != 200:
-                pass
-
-            data = {"msgs": response.json()}
-            response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
-                    response=True)
-
-            if response.status_code != 200:
-                pass
-
-            self.tally = [self.tally, response.json()]
         self.save()
 
+        tally=self.tally
+        return tally
         self.tally_votes_masc(token)
-        self.votes_info_opciones()
-        self.votes_info_votos()
-    
+        return tally
     def tally_votes_masc(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
+        votos  = self.get_votes(token)
 
-        votes = self.get_votes_masc(token)
+        votes = []
+        for i in votos:
+            if i['sex'] == 'M':
+                aa = i['a'].split(',')
+                bb = i['b'].split(',')
+                for j in range(len(aa)):
+                    #[[int(i['a']), int(i['b'])] for i in votes if i['sex']=='F']
+                    votes.append([int(aa[j]), int(bb[j]), j, i['question_id']])            
+
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
@@ -198,14 +189,25 @@ class Voting(models.Model):
         self.tallyM = response.json()
         self.save()
 
+        tallyM=self.tallyM
+
         self.tally_votes_fem(token)
+        return tallyM
     
     def tally_votes_fem(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
 
-        votes = self.get_votes_fem(token)
+        votos  = self.get_votes(token)
+
+        votes = []
+        for i in votos:
+            if i['sex'] == 'F':
+                aa = i['a'].split(',')
+                bb = i['b'].split(',')
+                for j in range(len(aa)):
+                    votes.append([int(aa[j]), int(bb[j]), j,i['question_id']])            
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
@@ -232,40 +234,52 @@ class Voting(models.Model):
         self.tallyF = response.json()
         self.save()
 
+        tallyF=self.tallyF
         self.do_postproc()
+        return tallyF
       
 
-    def votes_info_opciones(self):
-        options = set()
-        for q in self.question.all():
-            for o in q.options.all():
-                options.add(o)
 
 
-        opts = []
-        for opt in options:
-            opts.append('option:'+ str(opt.option)) 
-        return opts   
 
-    def votes_info_votos(self):
-        tally = self.tally
-        options = set()
-        for q in self.question.all():
-            for o in q.options.all():
-                options.add(o)
+   
 
+    def votes_info_votos(self,tally):
+        data=[]
+        for i, q in enumerate(self.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
+            opts = []
+            for opt in opciones:
+                if q.option_types == 3:
+                    votes = []
+                    for i in range (opt_count):
+                        votes.append(0)
 
-        opts = []
-        for opt in options:
-            if isinstance(tally, list):
-                votes = tally.count(opt.number)
-            else:
-                votes = 0
-            opts.append(
-                str(votes)+" votes"
-            )  
-        
-        return opts
+                    for dicc in tally:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None:
+                            votes[pos[0]] = votes[pos[0]] + 1
+                    
+                else:
+                    votes = 0
+
+                    for dicc in tally:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None:
+                            votes = votes + 1
+                opts.append({
+                    'option': opt.option,
+                    'number': opt.number,
+                    'votes': votes,
+                })
+            data.append({'pregunta': q.desc, 'opciones':opts})
+        return data
+
     def do_postproc(self):
         tally = self.tally
         tallyM = self.tallyM
@@ -273,22 +287,62 @@ class Voting(models.Model):
         points = self.points
         tallies = ['IDENTITY', 'BORDA', 'HONDT', 'EQUALITY', 'SAINTE_LAGUE', 'DROOP', 'IMPERIALI', 'HARE']
         data = []
-        for q in self.question.all():
+
+        for i, q in enumerate(self.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
             opts = []
-            for opt in q.options.all():
-                votesM = tallyM.count(opt.number)
-                votesF = tallyF.count(opt.number)
-                if isinstance(tally, list) and len(tally) != 0 and isinstance(tally[0], list):
-                    m = [i for i, x in enumerate(tally[0]) if x == opt.number]
-                    votes = [tally[1][j] for j in m]
+            for opt in opciones:
+                if q.option_types == 3:
+                    votes = []
+                    votesM = []
+                    votesF = []
+                    for i in range (opt_count):
+                        votes.append(0)
+                        votesM.append(0)
+                        votesF.append(0)
 
-                elif isinstance(tally, list) and len(tally) != 0:
-                    votes = tally.count(opt.number)
-
+                    for dicc in tally:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votes[pos[0]] = votes[pos[0]] + 1
+                    for dicc in tallyM:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesM[pos[0]] = votesM[pos[0]] + 1
+                    for dicc in tallyF:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
                 else:
                     votes = 0
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tally:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votes = votes + 1
+
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
                 opts.append({
                     'question': opt.question.desc,
+                    'question_id':opt.question.id,
                     'option': opt.option,
                     'number': opt.number,
                     'votes': votes,
@@ -296,9 +350,9 @@ class Voting(models.Model):
                     'votes_fem': votesF,
                     'points': points
                 })
-            data.append( { 'type': tallies[q.type],'options': opts }) 
+            data.append( { 'type': tallies[q.type],'options': opts})
+        print(data)
         postp = mods.post('postproc', json=data)
-
         self.postproc = postp
         self.save()
 
