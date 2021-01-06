@@ -183,20 +183,26 @@ class PostProcView(APIView):
         questions = request.data
 
         for q in questions:
+            result = None
             t = q['type']
             opts = q['options']
+
             if t == 'IDENTITY':
-                out.append(self.identity(opts))
+                result = self.identity(opts)
             if t == 'BORDA':
-                out.append(self.borda(opts))
+                result = self.borda(opts)
             if t == 'EQUALITY':
-                out.append(self.equality(opts))
+                result = self.equality(opts)
             if t == 'SAINTE_LAGUE' or t == 'HONDT':
-                out.append(self.proportional_representation(opts, t))
+                result = self.proportional_representation(opts, t)
             if t == 'DROOP':
-                out.append(self.droop(opts))
+                result = self.droop(opts)
             if t == 'IMPERIALI':
-                out.append(self.imperiali(opts))
+                result = self.imperiali(opts)
             if t == 'HARE':
-                out.append(self.hare(opts))
+                result = self.hare(opts)
+
+            out.append({'type': t, 'options': result})
+
+
         return Response(out)
