@@ -753,6 +753,58 @@ class VotingTestCase(BaseTestCase):
         with self.assertRaises(Exception) as raised:
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
+        
+        # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
+
+    def test_create_question_restriction_pos(self):
+        q = self.create_question()
+        q.option_types = 3
+        q.type = 1
+        q.clean()
+        q.save()
+
+        self.assertEqual(q.option_types,3)
+        self.assertEqual(q.type, 1)
+
+        # Caso positivo: se crea una question respetando la restriccion
+
+    def test_create_question_restriction_neg(self):
+        q = self.create_question()
+        q.option_types = 3
+        q.type = 2
+
+        with self.assertRaises(Exception) as raised:
+            q.clean()
+            q.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+
+        # Caso negativo: se crea una question sin respetar la restriccion
+
+    # Test Unitarios para creación de una question con valores de option_type y type no validos.
+
+    def test_create_question_optiontypes_neg(self):
+        q = self.create_question()
+        q.option_types = 9999
+        q.type = 2
+
+        with self.assertRaises(Exception) as raised:
+            q.full_clean()
+            q.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+
+        # Caso negativo: se crea una question y se asignan valores no válidos a option_types
+
+    def test_create_question_type_neg(self):
+        q = self.create_question()
+        q.option_types = 1
+        q.type = 9999
+
+        with self.assertRaises(Exception) as raised:
+            q.full_clean()
+            q.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+
+        # Caso negativo: se crea una question y se asignan valores no válidos a type
 
         
 
