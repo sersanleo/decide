@@ -28,27 +28,27 @@
                     </div>
                 </b-navbar-nav>
 
-            <!-- Right aligned nav items -->
-            <b-navbar-nav class="ml-auto" v-if="user != null">
-                <b-navbar-brand v-if="user != null">
-                    <strong>
-                    Welcome [[this.user.username]]!
-                    </strong>
-                </b-navbar-brand>
-                <b-nav-item-dropdown text="{% trans "Change style" %}" right>
-                    {% for style in user_styles %}
-                      <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
-                    {% endfor %}
-                </b-nav-item-dropdown>
-                <b-button variant="danger" v-on:click="decideLogout">
-                    {% trans "Logout" %}
-                </b-button>
-            </b-navbar-nav>
-            <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
-                <b-navbar-brand v-if="user == null">
-                    <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
-                </b-navbar-brand>
-            </b-navbar-nav>
+                <!-- Right aligned nav items -->
+                <b-navbar-nav class="ml-auto" v-if="user != null">
+                    <b-navbar-brand v-if="user != null">
+                        <strong>
+                        Welcome [[this.user.username]]!
+                        </strong>
+                    </b-navbar-brand>
+                    <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+                        {% for style in user_styles %}
+                            <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
+                        {% endfor %}
+                    </b-nav-item-dropdown>
+                    <b-button variant="danger" v-on:click="decideLogout">
+                        {% trans "Logout" %}
+                    </b-button>
+                </b-navbar-nav>
+                <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
+                    <b-navbar-brand v-if="user == null">
+                        <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
+                    </b-navbar-brand>
+                </b-navbar-nav>
             </b-collapse>
         </b-navbar>
 
@@ -142,8 +142,12 @@
                     </li>
                 </ul>
             </p>
-    
+
+        <div class="pt-5">
+            <img id="footer" src={% static 'styles/footer.png' %}/>
         </div>
+    
+    </div>
     {% endblock %}
     
     {% block extrabody %}
