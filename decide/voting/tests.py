@@ -518,8 +518,82 @@ class VotingTestCase(BaseTestCase):
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 1}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 0}, {'Option:': 'option 5', 'has this female votes:': 0}]"
         self.assertEqual(str(opts),resultadoEsperado)
+
+    def test_tally_fem_negative(self):
+        voting = self.create_voting()
+        self.create_voters(voting)
+        voting.create_pubkey()
+        
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        self.store_votes_unique_option_fem(voting)
+        
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        voting.tally_votes(self.token)
+        tallyM=voting.tally_votes_masc(self.token)
+        tallyF=voting.tally_votes_fem(self.token)
+        for i, q in enumerate(voting.question.all()):
+            opciones = q.options.all()
+            opt_count=len(opciones)
+            opts = []
+            for opt in opciones:
+                if q.option_types == 3:
+                    votesM = []
+                    votesF = []
+                    for i in range (opt_count):
+                        votesM.append(0)
+                        votesF.append(0)
+                    for dicc in tallyM:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM[pos[0]] = votesM[pos[0]] + 1
+                    for dicc in tallyF:
+                        indice = opt.number 
+                        pos = dicc.get(str(indice))
+                        
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
+                else:
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
+                opts.append({
+                    'Option:': opt.option,
+                    'has this male votes:': votesF
+                })
+
+        resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 0}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 1}, {'Option:': 'option 5', 'has this female votes:': 0}]"
+        self.assertNotEqual(str(opts),resultadoEsperado)
         
 
+    
     # def test_update_voting(self):
     #     voting = self.create_voting()
 
