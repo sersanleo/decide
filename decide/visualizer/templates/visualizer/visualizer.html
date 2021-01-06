@@ -7,6 +7,7 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 {% endblock %}
 
 {% block content %}
@@ -25,29 +26,30 @@
                 <h2 class="heading">Resultados:</h2>
 
                 <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-                    <canvas id="grafica"></canvas>
+                    <canvas id="grafica" ></canvas>
                 </div>
-                <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-                <script>
 
-                    var ctx = document.getElementById('grafica').getContext('2d');
-                    var chart = new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: {{labels|safe}},
-                            datasets:[{
-                                label: 'Resultados',
-                                backgroundColor: ['black', 'grey', 'brown'],
-                                borderColor: 'black',
-                                data: {{data|safe}}
-                            }]
-                        },
-                        options: {
-                            responsive: true
-                        }
-                    });
+                    <script>
+                        window.onload = function() {
+                            var ctx = document.getElementById('grafica').getContext('2d');
+                            var chart = new Chart(ctx, {
+                                type: 'pie',
+                                data: {
+                                    labels: {{labels|safe}},
+                                    datasets:[{
+                                        label: 'Resultados',
+                                        backgroundColor: ['black', 'grey', 'brown'],
+                                        borderColor: 'black',
+                                        data: {{data|safe}}
+                                    }]
+                                },
+                                options: {
+                                    responsive: true
+                                }
+                            });
+                        };
 
-                </script>
+                    </script>
 
             </div>
 

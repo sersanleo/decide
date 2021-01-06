@@ -21,15 +21,13 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = json.dumps(r[0])
+            if (r[0]['end_date'] != None):
+                labels, data = self.get_identity_data(r[0])
+                context['labels'] = labels
+                context['data'] = data
+
         except:
             raise Http404
-
-        try:
-            labels, data = self.get_identity_data(r[0])
-            context['labels'] = labels
-            context['data'] = data
-        except:
-            return context
 
         return context
 
@@ -43,6 +41,32 @@ class VisualizerView(TemplateView):
             data.append(int(voting['postproc']))
 
         return labels,data
+
+class StatisticsView(TemplateView):
+    template_name = 'visualizer/statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vid = kwargs.get('voting_id', 0)
+
+        try:
+            r = mods.get('voting', params={'id': vid})
+            census = Census.objects.filter(voting_id=vid).all()
+            votes = Vote.objects.filter(voting_id=vid).all()
+            c=census.count()
+            v=votes.count()
+            stat = {"census":c}
+            stat["votes"] = v
+            if v>0:
+                stat["percentage"] = round(v/c*100,2);
+            else:
+                stat["percentage"] = 0;
+            context['voting'] = json.dumps(r[0])
+            context['stats'] = json.dumps(stat)
+        except:
+            raise Http404
+
+        return context
 
 def get_list_votings(request):
     filter = request.GET.get('filter')
