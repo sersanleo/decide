@@ -54,28 +54,6 @@ class VotingTestCase(BaseTestCase):
 
         return v
 
-    # def create_voting_multi(self):
-    #     q1 = Question(desc='test1 question', option_types=2)
-    #     q2 = Question(desc='test2 question', option_types=2)
-    #     q1.save()
-    #     q2.save()
-    #     for i in range(5):
-    #         opt = QuestionOption(question=q1, option='option {}'.format(i+1))
-    #         opt.save()
-    #     for i in range(5):
-    #         opt = QuestionOption(question=q2, option='option {}'.format(i+1))
-    #         opt.save()
-    #     v = Voting(name='test voting')
-    #     v.save()
-    #     v.question.add(q1)
-    #     v.question.add(q2)
-
-    #     a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-    #                                       defaults={'me': True, 'name': 'test auth'})
-    #     a.save()
-    #     v.auths.add(a)
-
-    #     return v
     
     def create_question(self):
         q = Question(desc='test question')
@@ -132,11 +110,6 @@ class VotingTestCase(BaseTestCase):
     #     with self.assertRaises(Exception) as raised:
     #         v2 = self.create_voting()
     #     self.assertEqual(IntegrityError, type(raised.exception))
-
-    # def test_multi_voting(self):
-    #     v1 = self.create_voting_multi()
-    #     for q in v1.question.all()
-    #         self.assertEqual(q.options.all(), )
     
     def store_votes_unique_option(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
@@ -178,7 +151,7 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-
+    
     def test_tally_message_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -247,7 +220,7 @@ class VotingTestCase(BaseTestCase):
         
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
 
-
+    
         
 
     # def test_update_voting(self):
@@ -327,3 +300,71 @@ class VotingTestCase(BaseTestCase):
     #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
     #     self.assertEqual(response.status_code, 400)
     #     self.assertEqual(response.json(), 'Voting already tallied')
+
+    #Pruebas unitarias para la funcionalidad de crear votaciones con múltiples question
+
+    def create_voting_multi(self):
+        q1 = Question(desc='test1 question', option_types=2)
+        q2 = Question(desc='test2 question', option_types=2)
+
+        q1.save()
+        q2.save()
+
+        for i in range(5):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt.save()
+
+        for i in range(5):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
+
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    #Caso positivo 1: se crea correctamente una votación con una única question
+
+    def test_multi_voting_simple_pos(self):
+        v1 = self.create_voting()  
+        self.assertEqual(v1.name, 'test voting')
+
+        
+        q = []
+        for quest in v1.question.all():
+            q.append(quest.desc)
+
+        desc = q[0]
+        self.assertEqual(desc, 'test question')
+        
+        longitud = len(q)
+        self.assertEqual(longitud, 1)
+
+    #Caso positivo 2: se crea correctamente una votación con dos question
+
+    def test_multi_voting_two_pos(self):
+        v1 = self.create_voting_multi()  
+        self.assertEqual(v1.name, 'test voting multi')
+
+        
+        q = []
+        for quest in v1.question.all():
+            q.append(quest.desc)
+
+        desc1 = q[0]
+        desc2 = q[1]
+        self.assertEqual(desc1, 'test1 question')
+        self.assertEqual(desc2, 'test2 question')
+        
+        longitud = len(q)
+        self.assertEqual(longitud, 2)
+
+    
+    
