@@ -34,27 +34,27 @@
                     </div>
                 </b-navbar-nav>
 
-            <!-- Right aligned nav items -->
-            <b-navbar-nav class="ml-auto" v-if="user != null">
-                <b-navbar-brand v-if="user != null">
-                    <strong>
-                    Welcome [[this.user.username]]!
-                    </strong>
-                </b-navbar-brand>
-                <b-nav-item-dropdown text="{% trans "Change style" %}" right>
-                    {% for style in user_styles %}
-                      <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
-                    {% endfor %}
-                </b-nav-item-dropdown>
-                <b-button variant="danger" v-on:click="decideLogout">
-                    {% trans "Logout" %}
-                </b-button>
-            </b-navbar-nav>
-            <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
-                <b-navbar-brand v-if="user == null">
-                    <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
-                </b-navbar-brand>
-            </b-navbar-nav>
+                <!-- Right aligned nav items -->
+                <b-navbar-nav class="ml-auto" v-if="user != null">
+                    <b-navbar-brand v-if="user != null">
+                        <strong>
+                        Welcome [[this.user.username]]!
+                        </strong>
+                    </b-navbar-brand>
+                    <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+                        {% for style in user_styles %}
+                            <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
+                        {% endfor %}
+                    </b-nav-item-dropdown>
+                    <b-button variant="danger" v-on:click="decideLogout">
+                        {% trans "Logout" %}
+                    </b-button>
+                </b-navbar-nav>
+                <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
+                    <b-navbar-brand v-if="user == null">
+                        <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
+                    </b-navbar-brand>
+                </b-navbar-nav>
             </b-collapse>
         </b-navbar>
 
@@ -95,6 +95,7 @@
         </div>
 
         </div>
+        <div id="text-voice-assistants">
         <h2>Help with voice assistants</h2>
             <p>
                 Welcome to the help page with voice assistants. On this page we will indicate some voice assistants recommended by us,
@@ -124,15 +125,15 @@
                         We have chosen this extension, because it is very easy to install and use. In almost a minute, you can install 
                         it and learn how to use it. Simply clicking the "Add to Chrome" button (or "Add to Firefox"), 
                         would be ready for use.<br>
-                        <img id="asistente_instalacion" src="{% static 'styles/asistente_voz_instalacion.png' %}" alt="Image of voice assistant installation"/><br>
+                        <img id="asistente_instalacion" src="{% static 'styles/asistente_voz_instalacion.png' %}" alt="Image of voice assistant installation"/><br><br>
                         <!--Y para utilizarlo, simplemente tenemos que ir a la página que queremos escuchar a través del ordenador y 
                         pulsar el símbolo de la extensión (megáfono), y pulsar el siguiente botón.-->
                         And to use it, we simply have to go to the page that we want to hear through 
-                        the computer and press the symbol of extension (megaphone), and press the next button to play<br>
+                        the computer and press the symbol of extension (megaphone), and press the next button to play.<br>
                         <img id="asistente_uso" src="{% static 'styles/asistente_voz_uso.PNG' %}" alt="Image of voice assistant usage"/><br><br>
                         <!--Además, puedes escuchar únicamente la parte que desees de la página, seleccionándolo-->
                         In addition, You can only listen to the part of the page you want, selecting it.<br>
-                        <img id="asistente_uso2" src="{% static 'styles/asistente_voz_uso2.png' %}" alt="Image of voice assistant usage"/><br>
+                        <img id="asistente_uso2" src="{% static 'styles/asistente_voz_uso2.png' %}" alt="Image of voice assistant usage"/><br><br>
                         <!--Enlaces para descargar la extension:-->
                         Links to download the extension:
                         <ul>
@@ -143,13 +144,17 @@
                     </li>
                     <li>
                         <!--En dispositivos móviles: Instalar google assistant desde la Play Store (Android) o App Store (iOS)-->
-                        On mobile: Install the google assistant from the Play Store (Android) o App Store (iOS) <br>
+                        On mobile: Install the google assistant from the Play Store (Android) o App Store (iOS). <br>
                         <img id="asistente_movil" src="{% static 'styles/asistente_voz_movil.jpeg' %}" alt="Image voice assistant for mobile"/>
                     </li>
                 </ul>
             </p>
-    
         </div>
+    </div>
+
+    <div class="pt-5">
+        <img id="footer" src={% static 'styles/footer.png' %}/>
+    </div>
     {% endblock %}
     
     {% block extrabody %}
@@ -160,7 +165,7 @@
         <script>
             var app = new Vue({
                 delimiters: ['[[', ']]'],
-                el: '#app-index',
+                el: '#help-voice-assistant',
                 data: {
                     token: null,
                     user: null,

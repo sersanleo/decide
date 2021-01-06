@@ -78,6 +78,15 @@ footer{
 #username,#password{
     font-size:1em;
 }
+
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
+}
+
+#asistente_movil {
+    width: 400px;
+}
+
 .btn-abrir-popup{
     padding: 0 20px;
 	margin-bottom: 20px;
@@ -142,4 +151,13 @@ footer{
     font-size: 36px;
     font-weight: 600;
     margin-bottom: 10px;
+}
+
+#footer {
+    display: block;
+    margin: auto;
+}
+
+#text-voice-assistants {
+    margin: 40px;
 }

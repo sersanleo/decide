@@ -151,6 +151,15 @@ html, body{
     margin-bottom: 10px;
 }
 
+#footer {
+    display: block;
+    margin: auto;
+}
+
+#text-voice-assistants {
+    margin: 40px;
+}
+
 
 /*
 ESTO FUE LO K AÑADIO MOISES AL ESTILO DE CABINA SIN QUERER. POR SI HACE FALTA
