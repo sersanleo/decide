@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
+    path('helpvoiceassistant/', views.helpvoiceassistant),
     path('', views.IndexView.as_view(), name="index")
 ]
 
