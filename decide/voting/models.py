@@ -144,9 +144,10 @@ class Voting(models.Model):
         self.tally = response.json()
         self.save()
 
+        tally=self.tally
+        return tally
         self.tally_votes_masc(token)
-        self.votes_info_votos()
-    
+        return tally
     def tally_votes_masc(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
@@ -188,7 +189,10 @@ class Voting(models.Model):
         self.tallyM = response.json()
         self.save()
 
+        tallyM=self.tallyM
+
         self.tally_votes_fem(token)
+        return tallyM
     
     def tally_votes_fem(self, token=''):
         '''
@@ -230,7 +234,9 @@ class Voting(models.Model):
         self.tallyF = response.json()
         self.save()
 
+        tallyF=self.tallyF
         self.do_postproc()
+        return tallyF
       
 
 
@@ -238,9 +244,8 @@ class Voting(models.Model):
 
    
 
-    def votes_info_votos(self):
+    def votes_info_votos(self,tally):
         data=[]
-        tally = self.tally
         for i, q in enumerate(self.question.all()):
             opciones = q.options.all()
             opt_count=len(opciones)
