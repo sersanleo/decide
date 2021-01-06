@@ -138,7 +138,6 @@ class VotingTestCase(BaseTestCase):
     #     for q in v1.question.all()
     #         self.assertEqual(q.options.all(), )
     
-
     def store_votes_unique_option(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
