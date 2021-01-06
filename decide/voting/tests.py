@@ -320,7 +320,7 @@ class VotingTestCase(BaseTestCase):
     #     self.assertEqual(response.json(), 'Voting already tallied')
 
 
-    # Test Unitarios para la task 005
+    # Test Unitarios para la creación de Question con descripción única
 
     def create_question(self):
         q = Question(desc='test question')
@@ -334,5 +334,13 @@ class VotingTestCase(BaseTestCase):
         q = Question(desc='test question2')
         q.save()
         self.assertEqual(q.desc, 'test question2')
+
+        #Caso negativo: se crean dos Question con descripcionres repetidas y se lanza un error
+
+    def test_question_unique_neg(self):
+        v = self.create_question()
+        with self.assertRaises(Exception) as raised:
+            self.create_question()
+        self.assertEqual(IntegrityError, type(raised.exception))
 
         
