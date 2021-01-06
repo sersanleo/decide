@@ -19,6 +19,7 @@ from voting.models import Voting, Question, QuestionOption
 from django.db.utils import IntegrityError
 from .admin import give_message
 import sys
+from django.shortcuts import get_object_or_404
 
 
 
@@ -247,8 +248,49 @@ class VotingTestCase(BaseTestCase):
         
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
 
+    def test_started_by_positive(self):
+        voting = self.create_voting()
+        voting_id = voting.id
+        user= self.get_or_create_user(1)
+        user.is_staff = True
+        user.is_superuser = True
+        user.is_active = True
+        user.save()
+        self.login(user=user.username)
 
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
         
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        voting = get_object_or_404(Voting, pk=voting_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+        self.assertEqual(voting.started_by, user.username)
+        
+    def test_started_by_negative(self):
+        voting = self.create_voting()
+        voting_id = voting.id
+        user= self.get_or_create_user(1)
+        user.is_staff = True
+        user.is_superuser = True
+        user.is_active = True
+        user.save()
+        self.login()
+
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+
+        voting = get_object_or_404(Voting, pk=voting_id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+        self.assertNotEqual(voting.started_by, user.username)
 
     # def test_update_voting(self):
     #     voting = self.create_voting()
