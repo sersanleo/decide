@@ -32,14 +32,14 @@ def stop(ModelAdmin, request, queryset):
 def tally(ModelAdmin, request, queryset):
     for v in queryset.filter(end_date__lt=timezone.now()):
         token = request.session.get('auth-token', '')
-        v.tally_votes(token)
-        respuesta=give_message(v)
+        tally=v.tally_votes(token)
+        respuesta=give_message(v,tally)
         messages.info(request,respuesta)
 
 
-def give_message(v):
+def give_message(v,tally):
     mensj=""
-    votos = v.votes_info_votos()
+    votos = v.votes_info_votos(tally)
     for voto in votos:
         pregunta = voto['pregunta']
         mensj = mensj + "for question " + pregunta
