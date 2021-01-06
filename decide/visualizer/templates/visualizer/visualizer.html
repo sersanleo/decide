@@ -7,6 +7,7 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -15,37 +16,76 @@
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
         </b-navbar>
-
-        <div class="voting container">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-
-            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
-            <div v-else>
-                <h2 class="heading">Resultados:</h2>
-
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                     {% for dict in postproc %}
-                        <tr>
-                            <th>{{ dict.option }}</th>
-                            <td>{{ dict.postproc }}</td>
-                            <td class="text-muted">{{ dict.votes }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
     </div>
+
+    <!-- Gráfica sexo por opción de una votación-->
+    <div id="container" style="width: 75%; margin: 0 auto; position: relative;">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        var barChartData = {
+            labels: {{options|safe}},
+            datasets: [
+                {
+                    label: 'Masculino',
+                    backgroundColor: 'rgb(249, 231, 159)',
+                    borderColor: 'rgb(249, 231, 159)',
+                    borderWidth: 1,
+                    data: {{v_men|safe}}
+                },
+                {
+                    label: 'Femenino',
+                    backgroundColor: 'rgb(187, 143, 206)',
+                    borderColor: 'rgb(187, 143, 206)',
+                    borderWidth: 1,
+                    data: {{v_women|safe}}
+                }
+            ]
+        }
+        
+        var chartOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            legend: {
+                position: "right"
+            },
+            title: {
+                display: true,
+                fontSize: 25,
+                padding: 20,
+                text: "Número de votos según el sexo"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                    }
+                }]
+            },
+            layout: {
+                padding: {
+                    left: 50,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            }
+        }
+        
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myBar = new Chart(ctx, {
+            type: "bar",
+            data: barChartData,
+            options: chartOptions
+            });
+        };
+    </script>
+
+    
+    
 {% endblock %}
 
 {% block extrabody %}
@@ -63,6 +103,8 @@
                 voting: voting
             }
         })
+
     </script>
+
 </body>
 {% endblock %}
