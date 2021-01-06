@@ -476,6 +476,25 @@
   },
   {
     "model": "authentication.UserProfile",
+    "pk": 36,
+    "fields": {
+      "first_name": "Test",
+      "last_name": "test",
+      "is_superuser": true,
+      "password": "pbkdf2_sha256$100000$bWWEMGuheUqL$+6Hql3znkScHMz5w5DsurMrD+31e+P/PnYcflkNSA14=",
+      "username": "TestCase",
+      "email": "algo@algo.com",
+      "is_staff": true,
+      "is_active": true,
+      "sex": "F",
+      "date_joined": "2019-11-11T22:00:00Z",
+      "last_login": "2019-11-11T22:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "authentication.UserProfile",
     "pk": 35,
     "fields": {
       "first_name": "Primer nombre",
