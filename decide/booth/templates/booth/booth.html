@@ -158,7 +158,6 @@
                         .then(data => {
                             this.user = data;
                             this.signup = false;
-                            alert ("¡Welcome!");
                         }).catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
@@ -171,7 +170,6 @@
                     this.user = null;
                     document.cookie = 'decide=;';
                     this.signup = true;
-                    alert ("You have successfully logged out");
                 },
                 decideEncrypt() {
                     var bigmsg = BigInt.fromJSONObject(this.selected.toString());
@@ -190,7 +188,6 @@
                     this.postData("{% url "gateway" "store" "/" %}", data)
                         .then(data => {
                             this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
-                            alert ("Your vote has been sent");
                         })
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
