@@ -22,15 +22,25 @@
       </div>
     </nav>
 </header>
+    <script src="{% static 'js/zoom.js' %}"></script>
 
 {% endblock %}
 
 {% block content %}
     <div id="app-visualizer">
+
 <!--        &lt;!&ndash; Navbar &ndash;&gt;-->
 <!--        <b-navbar type="dark" variant="secondary">-->
 <!--            <b-navbar-brand tag="h1">Decide</b-navbar-brand>-->
 <!--        </b-navbar>-->
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <div id="buttons_zoom"> 
+                <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+                <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+            </div>
+        </b-navbar>
 
 <!--        <div class="voting container">-->
 <!--            <h1>[[ voting.id ]] - [[ voting.name ]] </h1>-->
