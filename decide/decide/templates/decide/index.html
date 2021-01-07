@@ -14,26 +14,36 @@
   <!-- Navbar -->
   <b-navbar toggleable="lg" type="dark" variant="primary">
     <b-navbar-brand href="/">
-      <img src="{% static 'styles/LOGODecide.png' %}" />
+      <img src="{% static 'img/LOGODecide.png' %}" />
       Decide
     </b-navbar-brand>
 
     <!-- Responsive navbar button -->
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
+    <div class="navbar-collapse collapse show">
+      <b-navbar-nav>
+        <b-nav-item href="{% url 'dashboard' %}" v-if="user != null">Booth</b-nav-item>
+        <b-nav-item href="{% url 'admin:index' %}" v-if="user != null && user.is_staff">Admin</b-nav-item>
+        <b-nav-item href="/admin/voting/voting" v-if="user != null && user.is_staff">Votings</b-nav-item>
+        <b-nav-item href="/helpvoiceassistant/">Accesibility help</b-nav-item>
+      </b-navbar-nav>
+  </div>
+
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
         <div id="buttons_zoom"> 
           <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
           <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
-      </div>
+        </div>
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
+      <!-- Authenticated user -->
       <b-navbar-nav class="ml-auto" v-if="user != null">
-        <b-navbar-brand v-if="user != null">
+        <b-navbar-brand>
           <strong>
-          Welcome [[this.user.username]]!
+            {% trans "Welcome" %}, [[this.user.username]]!
           </strong>
         </b-navbar-brand>
         <b-nav-item-dropdown text="{% trans "Change style" %}" right>
@@ -45,10 +55,10 @@
           {% trans "Logout" %}
         </b-button>
       </b-navbar-nav>
-      <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
-        <b-navbar-brand v-if="user == null">
-          <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
-        </b-navbar-brand>
+
+      <!-- Non authenticated user -->
+      <b-navbar-nav class="ml-auto" v-if="user == null">
+        <b-button onclick="openPopUp();" variant="light" id="btn-abrir-popup" >{% trans "Login" %}</b-button>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -58,16 +68,10 @@
     [[ alertMsg ]]
   </b-alert>
 
-  <b-container class="pt-3">
+  <b-container class="pt-4">
     <b-row>
-      <b-col>Welcome to Decide, the online voting platform. This is the main page. Here, you can press booth to go voting or press visualizer to see the results.</b-col>
+      <b-col>Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account and press booth to vote or press visualizer to see the results.</b-col>
     </b-row>
-    <div>
-      <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Booth</b-button></b-col>
-    </div>
-    <div>
-      <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Visualizer</b-button></b-col>
-    </div>
     <!-- Login -->
     <div class="overlay" id="overlay">
 			<div class="popup" id="popup">
@@ -98,20 +102,20 @@
         </b-row>
 			</div>
     </div>
-    <!-- Dashboard -->
+    <!-- Mini dashboard -->
     <b-row v-if="user != null">
       <b-col sm="12" md="6">
         <h1>{% trans "My pending votings" %}</h1>
         <b-list-group>
           <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">{% trans "No pending votings" %}</b-list-group-item>
-          <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
+          <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id + '/1/'">[[ voting.name ]]</b-list-group-item>
         </b-list-group>
       </b-col>
       <b-col sm="12" md="6">
         <h1>{% trans "My votings results" %}</h1>
         <b-list-group>
           <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">{% trans "No results" %}</b-list-group-item>
-          <b-list-group-item v-for="voting in past_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
+          <b-list-group-item v-for="voting in past_votings" :href="'/visualizer/' + voting.id">[[ voting.name ]]</b-list-group-item>
         </b-list-group>
       </b-col>
     </b-row>
@@ -121,7 +125,7 @@
       <b-col lg="4" class="pb-2"><b-button pill onclick="location.href='helpvoiceassistant'" class="mt-2" size="lg">Voice assistant</b-button></b-col>
     </div>
     <b-row class="pt-5">
-      <b-img center src={% static 'styles/footer.png' %}>FOOTER FEO</b-img>
+      <b-img center src={% static 'img/footer.png' %}/>
     </b-row>
   </b-container>
 </div>
@@ -235,7 +239,6 @@
               decideLogout(evt) {
                 var opcion = confirm("Are you sure you want to log out?");
                   if (opcion == true) {
-                    alert ("You have successfully logged out");
                     evt.preventDefault();
                     var data = {token: this.token};
                     this.postData("/gateway/authentication/logout/", data);

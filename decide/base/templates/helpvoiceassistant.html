@@ -18,45 +18,55 @@
         <div id="app-index">
         <!-- Ayuda con los asistentes de voz-->
         <b-navbar toggleable="lg" type="dark" variant="primary">
-            
             <b-navbar-brand href="/">
-                <img src="{% static 'styles/LOGODecide.png' %}" />
-                Decide
-              </b-navbar-brand>
-            
+              <img src="{% static 'img/LOGODecide.png' %}" />
+              Decide
+            </b-navbar-brand>
+        
+            <!-- Responsive navbar button -->
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-            
+        
+            <div class="navbar-collapse collapse show">
+              <b-navbar-nav>
+                <b-nav-item href="{% url 'dashboard' %}" v-if="user != null">Booth</b-nav-item>
+                <b-nav-item href="{% url 'admin:index' %}" v-if="user != null && user.is_staff">Admin</b-nav-item>
+                <b-nav-item href="/admin/voting/voting" v-if="user != null && user.is_staff">Votings</b-nav-item>
+                <b-nav-item href="/helpvoiceassistant/">Accesibility help</b-nav-item>
+              </b-navbar-nav>
+          </div>
+        
             <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav>
-                    <div id="buttons_zoom">
-                        <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
-                        <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
-                    </div>
-                </b-navbar-nav>
-
-                <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto" v-if="user != null">
-                    <b-navbar-brand v-if="user != null">
-                        <strong>
-                        Welcome [[this.user.username]]!
-                        </strong>
-                    </b-navbar-brand>
-                    <b-nav-item-dropdown text="{% trans "Change style" %}" right>
-                        {% for style in user_styles %}
-                            <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
-                        {% endfor %}
-                    </b-nav-item-dropdown>
-                    <b-button variant="danger" v-on:click="decideLogout">
-                        {% trans "Logout" %}
-                    </b-button>
-                </b-navbar-nav>
-                <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
-                    <b-navbar-brand v-if="user == null">
-                        <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
-                    </b-navbar-brand>
-                </b-navbar-nav>
+              <b-navbar-nav>
+                <div id="buttons_zoom"> 
+                  <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+                  <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+                </div>
+              </b-navbar-nav>
+        
+              <!-- Right aligned nav items -->
+              <!-- Authenticated user -->
+              <b-navbar-nav class="ml-auto" v-if="user != null">
+                <b-navbar-brand>
+                  <strong>
+                    {% trans "Welcome" %}, [[this.user.username]]!
+                  </strong>
+                </b-navbar-brand>
+                <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+                  {% for style in user_styles %}
+                    <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
+                  {% endfor %}
+                </b-nav-item-dropdown>
+                <b-button variant="danger" v-on:click="decideLogout">
+                  {% trans "Logout" %}
+                </b-button>
+              </b-navbar-nav>
+        
+              <!-- Non authenticated user -->
+              <b-navbar-nav class="ml-auto" v-if="user == null">
+                <b-button onclick="openPopUp();" variant="light" id="btn-abrir-popup" >{% trans "Login" %}</b-button>
+              </b-navbar-nav>
             </b-collapse>
-        </b-navbar>
+          </b-navbar>
 
         <!-- Alerts -->
         <b-alert :variant="alertLvl" dismissible v-model="alertShow">
@@ -93,10 +103,10 @@
                 </b-row>
             </div>
         </div>
-
-        </div>
-        <div id="text-voice-assistants">
-        <h2>Help with voice assistants</h2>
+        <b-container class="pt-4">
+            <b-row>
+              <b-col>
+                <h2>Help with voice assistants</h2>
             <p>
                 Welcome to the help page with voice assistants. On this page we will indicate some voice assistants recommended by us,
                 which we have used to check that our page is readable by them.
@@ -149,12 +159,12 @@
                     </li>
                 </ul>
             </p>
-        </div>
-    </div>
-
-    <div class="pt-5">
-        <img id="footer" src={% static 'styles/footer.png' %}/>
-    </div>
+              </b-col>
+            </b-row>
+            <b-row class="pt-5">
+              <b-img center src={% static 'img/footer.png' %}/>
+            </b-row>
+        </b-container>
     {% endblock %}
     
     {% block extrabody %}
@@ -252,7 +262,6 @@
                     decideLogout(evt) {
                       var opcion = confirm("Are you sure you want to log out?");
                         if (opcion == true) {
-                          alert ("You have successfully logged out");
                           evt.preventDefault();
                           var data = {token: this.token};
                           this.postData("/gateway/authentication/logout/", data);

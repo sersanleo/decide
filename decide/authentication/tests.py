@@ -85,6 +85,43 @@ class AuthTestCase(APITestCase):
 
         self.assertEqual(Token.objects.filter(user__username='voter1').count(), 0)
 
+## ESTOS TEST LOS LLAMO U PORQUE SI EN ORDEN ALFABÉTICO VIENEN ANTES DE GETUSER, DA ERROR. PREGUNTAR AL PROFESOR
+# son test del cambio de estilo
+
+    def test_u(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+
+        token = response.json().get('token')
+        
+        data = {'token': token, 'style': 'C'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_u_inexistent_style(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+
+        token = response.json().get('token')
+        
+        data = {'token': token, 'style': 'W'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_u_inexistent_token(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+        
+        data = {'token': 'inventado', 'style': 'N'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
     def test_register_bad_permissions(self):
         data = {'username': 'voter1', 'password': '123'}
         response = self.client.post('/authentication/login/', data, format='json')

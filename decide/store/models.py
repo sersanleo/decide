@@ -1,5 +1,4 @@
 from django.db import models
-from base.models import BigBigField
 
 
 class Vote(models.Model):
@@ -8,10 +7,8 @@ class Vote(models.Model):
     question_id = models.PositiveIntegerField()
     sex=models.CharField(max_length=200,blank=True)
 
-    a = BigBigField()
-    b = BigBigField()
-    c = BigBigField()
-    d = BigBigField()
+    a = models.TextField()
+    b = models.TextField()
 
     voted = models.DateTimeField(auto_now=True)
 
