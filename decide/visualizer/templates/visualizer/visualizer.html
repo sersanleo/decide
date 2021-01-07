@@ -7,45 +7,237 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+<header>
+     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/visualizer">Decide</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+        </div>
+      </div>
+    </nav>
+</header>
+    <script src="{% static 'js/zoom.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
     <div id="app-visualizer">
+
+<!--        &lt;!&ndash; Navbar &ndash;&gt;-->
+<!--        <b-navbar type="dark" variant="secondary">-->
+<!--            <b-navbar-brand tag="h1">Decide</b-navbar-brand>-->
+<!--        </b-navbar>-->
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <div id="buttons_zoom"> 
+                <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+                <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+            </div>
         </b-navbar>
 
-        <div class="voting container">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+<!--        <div class="voting container">-->
+<!--            <h1>[[ voting.id ]] - [[ voting.name ]] </h1>-->
+<!--            <h5>[[ voting.desc ]]</h5>-->
+<!--            <div v-if="!voting.start_date">-->
+<!--            <h4>La votación aun no ha comenzado. Hasta ahora hay [[stats.census]] personas censadas.</h4>-->
 
-            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
-            <div v-else>
-                <h2 class="heading">Resultados:</h2>
 
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                     {% for dict in postproc %}
-                        <tr>
-                            <th>{{ dict.option }}</th>
-                            <td>{{ dict.postproc }}</td>
-                            <td class="text-muted">{{ dict.votes }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<!--            </div>-->
+<!--            <div v-else-if="!voting.end_date">-->
+<!--                <p></p>-->
+<!--                <h4>Votación en curso. La votación esta sujeta a cambios.</h4>-->
+<!--                <p></p>-->
+<!--                <h2 class="heading">Progreso de la votación:</h2>-->
+<!--                <table class="table table-bordered table-striped">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th>Numero de Votos</th>-->
+<!--                            <th>Porcentaje de Voto</th>-->
+<!--                            <th>Numero de Personas sin Votar</th>-->
+<!--                            <th>Porcentaje de Personas sin Votar</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                        <tr>-->
+<!--                            <td>[[stats.votes]]</td>-->
+<!--                            <td>[[(stats.votes/stats.census)*100]]%</td>-->
+<!--                            <td>[[stats.census-stats.votes]]</td>-->
+<!--                            <td>[[((stats.votes/stats.census)-1)*(-100)]]%</td>-->
+<!--                        </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
 
-        </div>
+<!--            </div>-->
+<!--            <div v-else>-->
+<!--                <p></p>-->
+<!--                <h2 class="heading">Resultados:</h2>-->
+<!--                <p></p>-->
+<!--                <table class="table table-bordered table-striped">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th>Opción</th>-->
+<!--                            <th>Puntuación</th>-->
+<!--                            <th>Votos</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                     {% for dict in postproc %}-->
+<!--                        <tr>-->
+<!--                            <th>{{ dict.option }}</th>-->
+<!--                            <td>{{ dict.postproc }}</td>-->
+<!--                            <td class="text-muted">{{ dict.votes }}</td>-->
+<!--                        </tr>-->
+<!--                    {% endfor %}-->
+<!--                    </tbody>-->
+<!--                </table>-->
+
+<!--                <h2 class="heading">Estadísticas porcentuales:</h2>-->
+<!--                <table class="table table-bordered table-striped">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th>Opción</th>-->
+<!--                            <th>Porcentaje de Puntuación</th>-->
+<!--                            <th>Porcentaje de Votos</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                        <tr v-for="opt in voting.postproc" :key="opt.number">-->
+<!--                            <td>[[opt.option]]</td>-->
+<!--                            <td>[[(opt.postproc/stats.votes)*100]]%</td>-->
+<!--                            <td>[[(opt.votes/stats.votes)*100]]%</td>-->
+<!--                        </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+
+<!--                <h2 class="heading">Estadísticas totales:</h2>-->
+<!--                <table class="table table-bordered table-striped">-->
+<!--                    <thead>-->
+<!--                        <tr>-->
+<!--                            <th>Numero de Votos</th>-->
+<!--                            <th>Porcentaje de Voto</th>-->
+<!--                            <th>Numero de Personas sin Votar</th>-->
+<!--                            <th>Porcentaje de Abstención</th>-->
+<!--                        </tr>-->
+<!--                    </thead>-->
+<!--                    <tbody>-->
+<!--                        <tr>-->
+<!--                            <td>[[stats.votes]]</td>-->
+<!--                            <td>[[(stats.votes/stats.census)*100]]%</td>-->
+<!--                            <td>[[stats.census-stats.votes]]</td>-->
+<!--                            <td>[[((stats.votes/stats.census)-1)*(-100)]]%</td>-->
+<!--                        </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+<!--            </div>-->
+
+    <!-- Gráfica sexo por opción de una votación-->
+    <div id="container" style="width: 75%; margin: 0 auto; position: relative;">
+        <canvas id="canvas"></canvas>
     </div>
+<!--        <div class="voting container">-->
+<!--            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>-->
+
+<!--            <h2 v-if="!voting.start_date">Votación no comenzada</h2>-->
+<!--            <h2 v-else-if="!voting.end_date">Votación en curso</h2>-->
+<!--            <div v-else>-->
+<!--                <h2 class="heading">Resultados:</h2>-->
+
+    <script>
+        var barChartData = {
+            labels: {{options|safe}},
+            datasets: [
+                {
+                    label: 'Masculino',
+                    backgroundColor: 'rgb(249, 231, 159)',
+                    borderColor: 'rgb(249, 231, 159)',
+                    borderWidth: 1,
+                    data: {{v_men|safe}}
+                },
+                {
+                    label: 'Femenino',
+                    backgroundColor: 'rgb(187, 143, 206)',
+                    borderColor: 'rgb(187, 143, 206)',
+                    borderWidth: 1,
+                    data: {{v_women|safe}}
+                }
+            ]
+        }
+        
+        var chartOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            legend: {
+                position: "right"
+            },
+            title: {
+                display: true,
+                fontSize: 25,
+                padding: 20,
+                text: "Número de votos según el sexo"
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                    }
+                }]
+            },
+            layout: {
+                padding: {
+                    left: 50,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            }
+        }
+        
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myBar = new Chart(ctx, {
+            type: "bar",
+            data: barChartData,
+            options: chartOptions
+            });
+        };
+    </script>
+
+
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+        <canvas id="grafica" ></canvas>
+    </div>
+
+        <script>
+            window.onload = function() {
+                var ctx = document.getElementById('grafica').getContext('2d');
+                var chart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: {{labels|safe}},
+                        datasets:[{
+                            label: 'Resultados',
+                            backgroundColor: ['black', 'grey', 'brown'],
+                            borderColor: 'black',
+                            data: {{data|safe}}
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            };
+
+        </script>
+
+
 {% endblock %}
 
 {% block extrabody %}
@@ -56,13 +248,16 @@
 
     <script>
         var voting = {{voting|safe}};
+        var stats = {{stats|safe}};
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
             data: {
-                voting: voting
+                voting: voting,
+                stats: stats
             }
         })
+
     </script>
-</body>
+
 {% endblock %}

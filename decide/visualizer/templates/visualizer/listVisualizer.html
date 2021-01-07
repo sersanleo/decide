@@ -16,7 +16,7 @@
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
         </b-navbar>
-        <h3>Listado de votaciones</h3>
+        <h3>Listado de votaciones</h3>  
         <b>Buscar por nombre:
             <form action="" method="get">
             <input type="text" id="nombre" name="nombre">
@@ -41,7 +41,7 @@
                         {% else %}
                             <td>Votacion finalizada</td>
                         {% endif %}
-                            <td><a href="{{ voting.id }}">Visualizar resultados</a> </td>
+                            <td><a href="{{ voting.id }}">Visualizar graficos </a><a> / </a><a href="{{ voting.id }}/statistics"> Visualizar estadisticas</a> </td>
                     </tr>
             {% endfor %}
             </table>
@@ -52,6 +52,7 @@
             </br></br><b>Como no eres superusuario solo puedes ver las votaciones en las que estas censado</b>
         {% endif %}
         </div>
+    </br></br><h5><a href="/visualizer/global"> Visualizar estadisticas globales</a></h5>
 {% endblock %}
 
 {% block extrabody %}
