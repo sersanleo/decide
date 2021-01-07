@@ -26,7 +26,6 @@
         <b-nav-item href="{% url 'dashboard' %}" v-if="user != null">Booth</b-nav-item>
         <b-nav-item href="{% url 'admin:index' %}" v-if="user != null && user.is_staff">Admin</b-nav-item>
         <b-nav-item href="/admin/voting/voting" v-if="user != null && user.is_staff">Votings</b-nav-item>
-        <b-nav-item href="/helpvoiceassistant/">Accesibility help</b-nav-item>
       </b-navbar-nav>
   </div>
 
@@ -119,11 +118,12 @@
         </b-list-group>
       </b-col>
     </b-row>
-    <div>
-      <br><br>
-      <b-col><strong>You need some help?</strong></b-col>
-      <b-col lg="4" class="pb-2"><b-button pill onclick="location.href='helpvoiceassistant'" class="mt-2" size="lg">Voice assistant</b-button></b-col>
-    </div>
+    <b-row class="pt-5">
+      <b-col>
+        You need some help on accesibility?</strong></br>
+        <b-button pill onclick="location.href='helpvoiceassistant'" class="mt-2" size="lg">Voice assistant</b-button>
+      </b-col>
+    </b-row>
     <b-row class="pt-5">
       <b-img center src={% static 'img/footer.png' %}/>
     </b-row>
