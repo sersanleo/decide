@@ -20,7 +20,7 @@ class IndexView(TemplateView):
         return context
 
 class HelpVoiceAssistantView(TemplateView):
-    template_name = 'helpvoiceassistant.html'
+    template_name = 'decide/helpvoiceassistant.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
