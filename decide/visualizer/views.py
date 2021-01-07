@@ -5,14 +5,13 @@ from django.views.generic import TemplateView
 from django.http import Http404
 
 from base import mods
+from voting.models import Voting
 from census.models import Census
 from store.models import Vote
 
-from voting.models import Voting
-
-
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,12 +25,15 @@ class VisualizerView(TemplateView):
             # Mostramos las gráficas de las votaciones finalizadas
             if not voting.end_date == None:
 
+                # self.statistics_identity(r[0],context)
                 # if voting.type == 'EQUALITY':
                 self.statistics_equality(context, voting)
                 #elif voting.type == 'IDENTITY':
 
                 # else:
-                self.statistics_points(context, voting)
+                # self.statistics_points(context, voting)
+
+
 
         except:
             raise Http404
@@ -101,6 +103,17 @@ class VisualizerView(TemplateView):
 
         return context
 
+    def statistics_identity(self,voting, context):
+        labels = []
+        data = []
+        postproc = voting.get('postproc')
+
+        for voting in postproc[0]:
+            labels.append(voting['option'])
+            data.append(int(voting['postproc']))
+        context['labels'] = labels
+        context['data'] = data
+
 class VisualizerViewPointsInclude(TemplateView):
     template_name = 'visualizer/functionVisualizer.html'
 
@@ -151,6 +164,7 @@ class VisualizerViewPointsInclude(TemplateView):
         context['desc'] = desc
 
         return context
+
 
 class StatisticsView(TemplateView):
     template_name = 'visualizer/statistics.html'
