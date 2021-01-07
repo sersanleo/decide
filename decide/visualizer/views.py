@@ -87,3 +87,64 @@ def get_list_votings(request):
         user = True
     return render(request, 'visualizer/listVisualizer.html', {'votings': list, 'user': user})
 
+
+def get_global_view(request):
+
+    vt = 0
+    ct = 0
+    nvs = 0
+
+    try:
+        votings = Voting.objects.all()
+        abstm = 0
+        porvotm = 0
+        vtm = 0
+        ctm = 0
+        abstr = 999999999999999999
+        porvotr = 999999999999999999
+        vtr = 999999999999999999
+        ctr = 999999999999999999
+        tabst = 0
+        tporvot = 0
+        for vot in votings:
+            if vot.end_date:
+                vid = vot.id
+                census = Census.objects.filter(voting_id=vid).all().count()
+                votes = Vote.objects.filter(voting_id=vid).all().count()
+                #Votos totales y mayor / menor
+                vt = vt + votes
+                if vtm < votes:
+                    vtm = votes
+                if vtr > votes:
+                    vtr = votes
+                #Censo total y mayor / menor
+                ct = ct + census
+                if ctm < census:
+                    ctm = census 
+                if ctr > census:
+                    ctr = census
+
+                #Numero de votaciones
+                nvs = nvs + 1
+                #Porcentaje de abstencion y mayor / menor
+                if census != 0:
+                    abst = ((votes/census)-1)*(-100)
+                    tabst = tabst + abst
+                    if abstm < abst:
+                        abstm = abst
+                    if abstr > abst:
+                        abstr = abst
+                #Porcentaje de voto y mayor / menor
+                    porvot = (votes/census)*100
+                    tporvot = tporvot + porvot
+                    if porvotm < porvot:
+                        porvotm = porvot
+                    if porvotr > porvot:
+                        porvotr = porvot
+                        
+    except:
+            
+        raise Http404
+        
+    return render(request, 'visualizer/globalVisualizer.html', {'votes': vt, 'votesm': vtm, 'census': ct, 'censusm': ctm, 'nvoting': nvs, 
+    'abst': tabst, 'abstm': abstm, 'porvot': tporvot, 'porvotm': porvotm, 'porvotr': porvotr, 'abstr': abstr, 'votesr': vtr, 'censusr': ctr})
