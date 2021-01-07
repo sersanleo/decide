@@ -8,20 +8,37 @@
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+<header>
+     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/visualizer">Decide</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+        </div>
+      </div>
+    </nav>
+</header>
+
 {% endblock %}
 
 {% block content %}
     <div id="app-visualizer">
-        <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-        </b-navbar>
     </div>
 
     <!-- Gráfica sexo por opción de una votación-->
     <div id="container" style="width: 75%; margin: 0 auto; position: relative;">
         <canvas id="canvas"></canvas>
     </div>
+<!--        <div class="voting container">-->
+<!--            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>-->
+
+<!--            <h2 v-if="!voting.start_date">Votación no comenzada</h2>-->
+<!--            <h2 v-else-if="!voting.end_date">Votación en curso</h2>-->
+<!--            <div v-else>-->
+<!--                <h2 class="heading">Resultados:</h2>-->
 
     <script>
         var barChartData = {
@@ -84,8 +101,6 @@
         };
     </script>
 
-    
-    
 {% endblock %}
 
 {% block extrabody %}
