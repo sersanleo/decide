@@ -122,7 +122,7 @@ class GetUserVotingsView(APIView):
             try:
                 voting = Voting.objects.get(id=vid)
                 votes = Vote.objects.filter(voter_id=user_id, voting_id=vid).count()
-                print(voting.tally)
+                
                 if votes == 0 and voting.start_date != None and voting.end_date == None:
                     pending_votings.append(voting)
                 elif votes > 0 and voting.start_date != None and voting.end_date != None and voting.tally != None:

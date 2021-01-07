@@ -38,23 +38,23 @@ class LogoutView(APIView):
 class ChangeStyleView(APIView):
     def post(self, request):
         # validating token
-        token = request.auth.key
+        token = request.data.get('token')
         user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
         if not user_id:
-            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({}, status=HTTP_400_BAD_REQUEST)
 
         # validating style
         newstyle = request.data.get('style')
         if not newstyle in [i[0] for i in UserProfile.styles]:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
-        u = UserProfile.objects.get(id=user_id)
+        u = UserProfile.objects.get(pk=user_id)
         u.style = newstyle
         u.save(update_fields=['style'])
 
-        return  Response({})
+        return Response({})
 
 
 class RegisterView(APIView):
