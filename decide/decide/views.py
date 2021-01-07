@@ -16,6 +16,11 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        
+        
+        for key, value in self.request.session.items():
+            print('{} => {}'.format(key, value))
+
         context['user_styles'] = UserProfile.styles;
         return context
 
