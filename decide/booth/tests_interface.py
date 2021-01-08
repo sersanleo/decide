@@ -89,9 +89,8 @@ class SuggestingInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element_by_id("suggestingDate").send_keys("2020")
         self.driver.find_element_by_id("suggestingContent").send_keys("test1")
         self.driver.find_element_by_id("submitSugForm").click()
-        #time.sleep(2)
-        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
     def test_interface_create_suggestion_success(self):
         self.driver.get(f'{self.live_server_url}/booth/')
@@ -108,7 +107,7 @@ class SuggestingInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element_by_id("suggestingDate").send_keys("2022")
         self.driver.find_element_by_id("suggestingContent").send_keys("test1")
         self.driver.find_element_by_id("submitSugForm").click()
-        #time.sleep(2)
+
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
 
     def test_interface_create_suggestion_fail_empty_suggestingTitle(self):
@@ -124,7 +123,7 @@ class SuggestingInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element_by_id("suggestingDate").send_keys("2022")
         self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
         self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
-        #time.sleep(2)
+
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
     def test_interface_create_suggestion_fail_empty_suggestingDate(self):
@@ -137,7 +136,7 @@ class SuggestingInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "suggestingTitle").send_keys("test1")
         self.driver.find_element(By.ID, "suggestingContent").send_keys("test1")
         self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
-        #time.sleep(2)
+
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
     def test_interface_create_suggestion_fail_empty_suggestingContent(self):
@@ -153,23 +152,18 @@ class SuggestingInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element_by_id("suggestingDate").send_keys("01")
         self.driver.find_element_by_id("suggestingDate").send_keys("2022")
         self.driver.find_element(By.CSS_SELECTOR, ".btn-primary").click()
-        #time.sleep(2)
+
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/suggesting/')
 
-#---------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------
-#---------------------------------TEST DE INTERFAZ DE BOOTH-----------------------------------
-#---------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------
-
-class BoothInterfaceTests(StaticLiveServerTestCase):
-
+class AccesibilityInterfaceTests(StaticLiveServerTestCase):
+# Esta clase de test requiere que la opción headless esté a False para su correcto funcionamiento
     def setUp(self):
         self.booth = BoothTests()
         self.booth.setUp()
 
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
+        options.add_argument("--window-size=1920,1080")
         self.driver = webdriver.Chrome(options=options)
 
         super().setUp()
@@ -179,70 +173,44 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         self.booth.tearDown()
         self.driver.quit()
 
-    # def test_interface_vote_question_unique_no_vote_failure(self):
-    #     self.driver.get(f'{self.live_server_url}/booth/')
-    #     self.driver.find_element(By.ID, "username").send_keys("voter1")
-    #     self.driver.find_element(By.ID, "password").send_keys("123")
-    #     self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-    #     self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-    #     self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-    #     alert = self.driver.find_elements_by_id('alertVoteMessage')
-    #     self.assertTrue(len(alert)<1)
-    
-    # def test_interface_vote_question_multi_no_vote_failure(self):
-    #     self.driver.get(f'{self.live_server_url}/booth/')
-    #     self.driver.find_element(By.ID, "username").send_keys("voter1")
-    #     self.driver.find_element(By.ID, "password").send_keys("123")
-    #     self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-    #     self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-    #     self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-    #     alert = self.driver.find_elements_by_id('alertVoteMessage')
-    #     self.assertTrue(len(alert)<1)
-
-    
-    # def test_interface_vote_question_rank_no_vote_failure(self):
-    #     self.driver.get(f'{self.live_server_url}/booth/')
-    #     self.driver.find_element(By.ID, "username").send_keys("voter1")
-    #     self.driver.find_element(By.ID, "password").send_keys("123")
-    #     self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-    #     self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-    #     button = self.driver.find_elements_by_id('rankSendButton')
-    #     self.assertTrue(len(button)<1)
-
-    def test_interface_vote_success(self):
+    def test_accesibility_dalt_deutera_protan_success(self):
         self.driver.get(f'{self.live_server_url}/booth/')
-        self.driver.find_element(By.ID, "username").click()
+        self.driver.find_element(By.XPATH, "//*[@role='button']").click()
+        vis_types = self.driver.find_elements(By.XPATH, "//*[@role='menuitem']")
+        vis_types[0].click()
         self.driver.find_element(By.ID, "username").send_keys("voter1")
-        self.driver.find_element(By.ID, "password").click()
         self.driver.find_element(By.ID, "password").send_keys("123")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         time.sleep(1)
         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
         time.sleep(1)
-        # form_radios_uniq = self.driver.find_elements_by_tag_name("label")
-        # form_radios_uniq[0].click()
-        self.driver.find_element(By.CSS_SELECTOR, "#\BVID17 .btn").click()
-        self.driver.find_element(By.ID, "envButton").click()
-        time.sleep(2)
-        alert = self.driver.find_element(By.ID, "alertVoteMessage")
-        self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
-        self.driver.find_element(By.LINK_TEXT, "Siguiente pregunta >>").click()
-        time.sleep(2)
+        form_radios_uniq = self.driver.find_elements_by_tag_name("label")
+        self.assertEquals(form_radios_uniq[0].value_of_css_property('background-color'),'rgba(82, 172, 255, 1)')
 
-        form_radios_mult = self.driver.find_elements_by_tag_name("label")
-        for i in form_radios_mult:
-            i.click()
-        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-        alert = self.driver.find_element(By.ID, "alertVoteMessage")
-        self.assertEquals(alert.text,'Conglatulations. Your vote has been sent')
-        self.driver.find_element(By.LINK_TEXT, "Siguiente pregunta >>").click()
-        time.sleep(2)
+    def test_accesibility_dalt_tritan_succes(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.XPATH, "//*[@role='button']").click()
+        vis_types = self.driver.find_elements(By.XPATH, "//*[@role='menuitem']")
+        vis_types[1].click()
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
+        time.sleep(1)
+        form_radios_uniq = self.driver.find_elements_by_tag_name("label")
+        self.assertEquals(form_radios_uniq[0].value_of_css_property('background-color'),'rgba(255, 102, 102, 1)')
 
-        form_radios_rank = self.driver.find_elements_by_tag_name("label")
-        for i in form_radios_rank:
-            i.click()
-        self.driver.find_element(By.ID, "rankSendButton").click()
-        self.driver.find_element(By.ID, "alertVoteMessage").click()
-        self.driver.find_element(By.LINK_TEXT, "Finalizar votación").click()
-        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
-        time.sleep(2)
+    def test_accesibility_dalt_normal_succes(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.XPATH, "//*[@role='button']").click()
+        vis_types = self.driver.find_elements(By.XPATH, "//*[@role='menuitem']")
+        vis_types[2].click()
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        time.sleep(1)
+        self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
+        time.sleep(1)
+        form_radios_uniq = self.driver.find_elements_by_tag_name("label")
+        self.assertEquals(form_radios_uniq[0].value_of_css_property('background-color'),'rgba(108, 117, 125, 1)')
