@@ -147,38 +147,6 @@ class PostProcView(APIView):
         return self.largest_remainder(options, q, points)
 
     def post(self, request):
-        """
-         * type: IDENTITY | EQUALITY | BORDA |
-         * options: [
-            {
-             option: str,
-             number: int,
-             votes: int
-            }
-           ]
-
-         * type: DROOP | IMPERIALI | SAINTE_LAGUE | DHONDT | HARE
-         * points: int
-         * options: [
-            {
-             option: str,
-             number: int,
-             votes: int,
-            }
-           ]
-
-        * type: EQUALITY
-        * options: [
-            {
-             option: str,
-             number: int,
-             votes_men: int,
-             votes_women: int,
-            }
-           ]
-
-        """
-
         out = []
         questions = request.data
 
