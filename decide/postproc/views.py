@@ -67,14 +67,14 @@ class PostProcView(APIView):
         n_men = 0
 
         for opt in options:
-            n_women += opt['votes_women']
-            n_men += opt['votes_men']
+            n_women += opt['votes_fem']
+            n_men += opt['votes_masc']
 
         for opt in options:
             if n_women > n_men:
-                votes = opt['votes_men'] + opt['votes_women'] * (n_men / n_women)
+                votes = opt['votes_masc'] + opt['votes_fem'] * (n_men / n_women)
             else:
-                votes = opt['votes_women'] + opt['votes_men'] * (n_women / n_men)
+                votes = opt['votes_fem'] + opt['votes_masc'] * (n_women / n_men)
 
             out.append({
                 **opt,
