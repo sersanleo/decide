@@ -2,6 +2,7 @@ import time
 
 from authentication.models import UserProfile
 from django.test import TestCase
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from base.tests import BaseTestCase
 from selenium import webdriver
