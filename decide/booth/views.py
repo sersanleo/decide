@@ -95,12 +95,14 @@ def votings_user_by_type(list_vid):
     try:
         votings = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=False)
         for v in votings:
-            if v.question.option_types == 1:
-                unique+=1
-            elif v.question.option_types == 2:
-                mult+=1
-            elif v.question.option_types == 3:
-                rank+=1
+            questions = v.question.all()
+            for q in questions:
+                if q.option_types == 1:
+                    unique+=1
+                elif q.option_types == 2:
+                    mult+=1
+                elif q.option_types == 3:
+                    rank+=1
     except Exception:
         error='No se encuentra la votación'
 
