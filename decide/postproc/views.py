@@ -106,15 +106,19 @@ class PostProcView(APIView):
         points_for_opt = []
         multiplier = 2 if type == 'SAINTE_LAGUE' else 1
         points = options[0]['points']
+        zero_votes = True
 
         for i in range(0, len(options)):
             votes.append(options[i]['votes'])
             points_for_opt.append(0)
+            if zero_votes is True and options[i]['votes'] is not 0:
+                zero_votes = False
 
-        for i in range(0, points):
-            max_index = votes.index(max(votes))
-            points_for_opt[max_index] += 1
-            votes[max_index] = options[max_index]['votes'] / (multiplier * points_for_opt[max_index] + 1)
+        if zero_votes is False:
+            for i in range(0, points):
+                max_index = votes.index(max(votes))
+                points_for_opt[max_index] += 1
+                votes[max_index] = options[max_index]['votes'] / (multiplier * points_for_opt[max_index] + 1)
 
         for i in range(0, len(options)):
             out.append({
