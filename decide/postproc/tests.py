@@ -138,6 +138,23 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    def test_borda_without_option_attribute(self):
+        with self.assertRaises(KeyError):
+            data = [{
+                'type': 'BORDA'
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
+
+    def test_borda_without_options(self):
+        with self.assertRaises(Exception):
+            data = [{
+                'type': 'BORDA',
+                'options': []
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
     
     def test_equality_women_greater(self):
         data = [{
