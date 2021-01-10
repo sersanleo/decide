@@ -48,6 +48,9 @@ class PostProcView(APIView):
     def borda(self, options):
         out = []
 
+        if len(options) is 0:
+            raise(Exception('Bad request: There no options'))
+
         for opt in options:
             votes = 0
             options_number = len(options)
