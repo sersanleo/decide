@@ -48,7 +48,7 @@ class PostProcView(APIView):
     def borda(self, options):
         out = []
 
-        if len(options) is 0:
+        if len(options) == 0:
             raise(Exception('Bad request: There no options'))
 
         for opt in options:
@@ -111,7 +111,7 @@ class PostProcView(APIView):
         for i in range(0, len(options)):
             votes.append(options[i]['votes'])
             points_for_opt.append(0)
-            if zero_votes is True and options[i]['votes'] is not 0:
+            if zero_votes is True and options[i]['votes'] != 0:
                 zero_votes = False
 
         if zero_votes is False:
