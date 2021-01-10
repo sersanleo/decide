@@ -182,6 +182,9 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 2', 'number': 2, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 280000},
                 {'option': 'Option 3', 'number': 3, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 160000},
                 {'option': 'Option 4', 'number': 4, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 60000},
+                {'option': 'Option 5', 'number': 5, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 40000},
+                {'option': 'Option 6', 'number': 6, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 20000},
+                {'option': 'Option 7', 'number': 7, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 10000}
             ]
         }]
 
@@ -192,6 +195,9 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 2', 'number': 2, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 280000, 'postproc': 2},
                 {'option': 'Option 3', 'number': 3, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 160000, 'postproc': 1},
                 {'option': 'Option 4', 'number': 4, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 60000, 'postproc': 1},
+                {'option': 'Option 5', 'number': 5, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 40000, 'postproc': 0},
+                {'option': 'Option 6', 'number': 6, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 20000, 'postproc': 0},
+                {'option': 'Option 7', 'number': 7, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 10000, 'postproc': 0}
             ]
         }]
 
@@ -200,6 +206,89 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+
+    def test_sainte_lague_without_points(self):
+        data = [{
+            'type': 'SAINTE_LAGUE',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 340000},
+                {'option': 'Option 2', 'number': 2, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 280000},
+                {'option': 'Option 3', 'number': 3, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 160000},
+                {'option': 'Option 4', 'number': 4, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 60000},
+                {'option': 'Option 5', 'number': 5, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 40000},
+                {'option': 'Option 6', 'number': 6, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 20000},
+                {'option': 'Option 7', 'number': 7, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 10000}
+            ]
+        }]
+
+        expected_result = [{
+            'type': 'SAINTE_LAGUE',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 340000, 'postproc': 0},
+                {'option': 'Option 2', 'number': 2, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 280000, 'postproc': 0},
+                {'option': 'Option 3', 'number': 3, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 160000, 'postproc': 0},
+                {'option': 'Option 4', 'number': 4, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 60000, 'postproc': 0},
+                {'option': 'Option 5', 'number': 5, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 40000, 'postproc': 0},
+                {'option': 'Option 6', 'number': 6, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 20000, 'postproc': 0},
+                {'option': 'Option 7', 'number': 7, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 10000, 'postproc': 0}
+            ]
+        }]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_sainte_lague_without_votes(self):
+        data = [{
+            'type': 'SAINTE_LAGUE',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0},
+                {'option': 'Option 2', 'number': 2, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0},
+                {'option': 'Option 3', 'number': 3, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0},
+                {'option': 'Option 4', 'number': 4, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0},
+                {'option': 'Option 5', 'number': 5, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0},
+                {'option': 'Option 6', 'number': 6, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0},
+                {'option': 'Option 7', 'number': 7, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0}
+            ]
+        }]
+
+        expected_result = [{
+            'type': 'SAINTE_LAGUE',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0},
+                {'option': 'Option 2', 'number': 2, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0},
+                {'option': 'Option 3', 'number': 3, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0},
+                {'option': 'Option 4', 'number': 4, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0},
+                {'option': 'Option 5', 'number': 5, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0},
+                {'option': 'Option 6', 'number': 6, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0},
+                {'option': 'Option 7', 'number': 7, 'points': 7, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0}
+            ]
+        }]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_sainte_lague_without_option_attribute(self):
+        with self.assertRaises(KeyError):
+            data = [{
+                'type': 'SAINTE_LAGUE'
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
+
+    def test_sainte_lague_without_options(self):
+        with self.assertRaises(IndexError):
+            data = [{
+                'type': 'SAINTE_LAGUE',
+                'options': []
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
 
     def test_hondt(self):
         data = [{
