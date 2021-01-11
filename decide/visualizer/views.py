@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.shortcuts import render
 from django.views.generic import TemplateView
@@ -178,12 +179,37 @@ class StatisticsView(TemplateView):
             votes = Vote.objects.filter(voting_id=vid).all()
             c=census.count()
             v=votes.count()
-            stat = {"census":c}
-            stat["votes"] = v
+            stat = {"census": c, "votes": v}
             if v>0:
                 stat["percentage"] = round(v/c*100,2);
             else:
                 stat["percentage"] = 0;
+
+            voting = Voting.objects.filter(id=vid).all()[0]
+            start = voting.start_date
+            end = voting.end_date
+            if start is None:
+                stat["start"] = "Not started yet"
+            else:
+                stat["start"] = datetime.strftime(start, "%b %d %Y %H:%M:%S")
+            if end is None:
+                stat["end"] = "Not finished yet"
+            else:
+                stat["end"] = datetime.strftime(end, "%b %d %Y %H:%M:%S")
+            if start is not None and end is not None:
+                stat["time"]=str(end-start)
+
+            else:
+                stat["time"]="Not finished yet"
+            if voting.postproc is not None:
+                stat["type"] = voting.postproc[0]["type"]
+            else:
+                stat["type"] = "Undefined"
+            if voting.tally is not None or voting.tallyF is not None or voting.tallyM is not None:
+                stat["tally"] = "Finished"
+            else:
+                stat["tally"] = "Not started"
+
             context['voting'] = json.dumps(r[0])
             context['stats'] = json.dumps(stat)
         except:

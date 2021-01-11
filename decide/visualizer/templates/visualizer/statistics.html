@@ -43,7 +43,27 @@
                         </tr>
                     </tbody>
                 </table>
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
+                <p v-if="!voting.start_date">* Voting not started yet. Census is still open and might change *</p>
+            <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Counting type</th>
+                            <th>Counting Status</th>
+                            <th>Start date</th>
+                            <th>End date</th>
+                            <th v-if="voting.end_date">Time elapsed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.type]]</td>
+                            <td>[[stats.tally]]</td>
+                            <td>[[stats.start]]</td>
+                            <td>[[stats.end]]</td>
+                            <td v-if="voting.end_date">[[stats.time]]</td>
+                        </tr>
+                    </tbody>
+                </table>
         </div>
     </div>
 {% endblock %}
