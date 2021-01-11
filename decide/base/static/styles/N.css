@@ -112,6 +112,7 @@ html, body{
 	justify-content: center;
     display: flex;
     visibility: hidden;
+    z-index: 2;
     
 }
 .overlay.active{
