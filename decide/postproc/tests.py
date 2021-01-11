@@ -445,7 +445,6 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
 
     def test_droop_without_points(self):
-        self.maxDiff = None
         data = [{
             'type': 'DROOP',
             'options': [
