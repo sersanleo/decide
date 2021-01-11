@@ -72,20 +72,31 @@ class PostProcView(APIView):
         n_women = 0
         n_men = 0
 
+        if len(options) == 0:
+            raise(Exception('Bad request: There are no options'))
+
         for opt in options:
             n_women += opt['votes_fem']
             n_men += opt['votes_masc']
+        
+        if n_men == 0 or n_women == 0:
+            for opt in options:
+                votes = opt['votes_fem'] + opt['votes_masc']
+                out.append({
+                    **opt,
+                    'postproc': votes,
+                })
+        else:
+            for opt in options:
+                if n_women > n_men:
+                    votes = opt['votes_masc'] + opt['votes_fem'] * (n_men / n_women)
+                else:
+                    votes = opt['votes_fem'] + opt['votes_masc'] * (n_women / n_men)
 
-        for opt in options:
-            if n_women > n_men:
-                votes = opt['votes_masc'] + opt['votes_fem'] * (n_men / n_women)
-            else:
-                votes = opt['votes_fem'] + opt['votes_masc'] * (n_women / n_men)
-
-            out.append({
-                **opt,
-                'postproc': round(votes),
-            })
+                out.append({
+                    **opt,
+                    'postproc': round(votes),
+                })
 
         out.sort(key=lambda x: -x['postproc'])
 
