@@ -218,6 +218,37 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    def test_equality_without_votes(self):
+        data = [{
+            'type': 'EQUALITY',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0},
+                { 'option': 'Option 2', 'number': 2, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0},
+                { 'option': 'Option 3', 'number': 3, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0},
+                { 'option': 'Option 4', 'number': 4, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0},
+                { 'option': 'Option 5', 'number': 5, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0},
+                { 'option': 'Option 6', 'number': 6, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0},
+            ]
+        }]
+
+        expected_result = [{
+            'type': 'EQUALITY',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option 2', 'number': 2, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option 3', 'number': 3, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option 4', 'number': 4, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option 5', 'number': 5, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option 6', 'number': 6, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
+            ]
+        }]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
     def test_sainte_lague(self):
         data = [{
             'type': 'SAINTE_LAGUE',
