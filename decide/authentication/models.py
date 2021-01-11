@@ -47,6 +47,7 @@ class UserProfile(AbstractUser):
                  ('F', 'Female'))
     sex = models.CharField(max_length=1, choices=sex_types)
     styles = (('N', 'Normal'),
+                ('T', 'Tritanopia'),
                  ('C', 'Color blind'))
     style = models.CharField(max_length=1, choices=styles, help_text='Designates which style will be shown to the user across pages; helpful for people with difficulties distinguishing colors.', default=styles[0][0], verbose_name='style')
 
