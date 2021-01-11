@@ -42,6 +42,35 @@
                             <td v-else>[[100-stats.percentage]]%</td>
                         </tr>
                     </tbody>
+                            </table>
+                        <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Male census percentage</th>
+                            <th>Female census percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.males_c]]%</td>
+                            <td>[[stats.females_c]]%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                           </table>
+                        <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Male voting percentage</th>
+                            <th>Female voting percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>[[stats.males_v_percentage]]%</td>
+                            <td>[[stats.females_v_percentage]]%</td>
+                        </tr>
+                    </tbody>
                 </table>
                 <p v-if="!voting.start_date">* Voting not started yet. Census is still open and might change *</p>
             <table class="table table-bordered table-striped">
