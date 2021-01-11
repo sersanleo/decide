@@ -89,7 +89,9 @@ class SuggestingFormTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_send_suggesting_form_success(self):
-        data = {'suggesting-title': 'Suggestsing', 'suggesting-date': '2021-01-08', 'suggesting-content': 'Full suggesting content...'}
+        future_date = timezone.now().date() + datetime.timedelta(weeks=1)
+        date = future_date.strftime("%Y-%m-%d")
+        data = {'suggesting-title': 'Suggestsing', 'suggesting-date': date, 'suggesting-content': 'Full suggesting content...'}
         initital_suggesting_counter = SuggestingForm.objects.all().count()
 
         response = self.client.post('/booth/suggesting/send/', data, follow=True)
