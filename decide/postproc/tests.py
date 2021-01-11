@@ -191,24 +191,24 @@ class PostProcTestCase(APITestCase):
         data = [{
             'type': 'EQUALITY',
             'options': [
-                { 'option': 'Option 1', 'number': 1, 'votes_masc': 3, 'votes_fem': 1 },
-                { 'option': 'Option 2', 'number': 2, 'votes_masc': 1, 'votes_fem': 2 },
-                { 'option': 'Option 3', 'number': 3, 'votes_masc': 2, 'votes_fem': 1 },
-                { 'option': 'Option 4', 'number': 4, 'votes_masc': 0, 'votes_fem': 0 },
-                { 'option': 'Option 5', 'number': 5, 'votes_masc': 1, 'votes_fem': 1 },
-                { 'option': 'Option 6', 'number': 6, 'votes_masc': 3, 'votes_fem': 3 },
+                { 'option': 'Option 1', 'number': 1, 'votes_masc': 3, 'votes_fem': 1, 'points': 0, 'votes': 0 },
+                { 'option': 'Option 2', 'number': 2, 'votes_masc': 1, 'votes_fem': 2, 'points': 0, 'votes': 0 },
+                { 'option': 'Option 3', 'number': 3, 'votes_masc': 2, 'votes_fem': 1, 'points': 0, 'votes': 0 },
+                { 'option': 'Option 4', 'number': 4, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0 },
+                { 'option': 'Option 5', 'number': 5, 'votes_masc': 1, 'votes_fem': 1, 'points': 0, 'votes': 0 },
+                { 'option': 'Option 6', 'number': 6, 'votes_masc': 3, 'votes_fem': 3, 'points': 0, 'votes': 0 },
             ]
         }]
 
         expected_result = [{
             'type': 'EQUALITY',
             'options': [
-                { 'option': 'Option 6', 'number': 6, 'votes_masc': 3, 'votes_fem': 3, 'postproc': 5 },
-                { 'option': 'Option 1', 'number': 1, 'votes_masc': 3, 'votes_fem': 1, 'postproc': 3 },
-                { 'option': 'Option 2', 'number': 2, 'votes_masc': 1, 'votes_fem': 2, 'postproc': 3 },
-                { 'option': 'Option 3', 'number': 3, 'votes_masc': 2, 'votes_fem': 1, 'postproc': 3 },
-                { 'option': 'Option 5', 'number': 5, 'votes_masc': 1, 'votes_fem': 1, 'postproc': 2 },
-                { 'option': 'Option 4', 'number': 4, 'votes_masc': 0, 'votes_fem': 0, 'postproc': 0 },
+                { 'option': 'Option 6', 'number': 6, 'votes_masc': 3, 'votes_fem': 3, 'points': 0, 'votes': 0, 'postproc': 5 },
+                { 'option': 'Option 1', 'number': 1, 'votes_masc': 3, 'votes_fem': 1, 'points': 0, 'votes': 0, 'postproc': 3 },
+                { 'option': 'Option 2', 'number': 2, 'votes_masc': 1, 'votes_fem': 2, 'points': 0, 'votes': 0, 'postproc': 3 },
+                { 'option': 'Option 3', 'number': 3, 'votes_masc': 2, 'votes_fem': 1, 'points': 0, 'votes': 0, 'postproc': 3 },
+                { 'option': 'Option 5', 'number': 5, 'votes_masc': 1, 'votes_fem': 1, 'points': 0, 'votes': 0, 'postproc': 2 },
+                { 'option': 'Option 4', 'number': 4, 'votes_masc': 0, 'votes_fem': 0, 'points': 0, 'votes': 0, 'postproc': 0 },
             ]
         }]
 
