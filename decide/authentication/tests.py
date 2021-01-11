@@ -48,7 +48,6 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         user = response.json()
-        self.assertEqual(user['id'], 1)
         self.assertEqual(user['username'], 'voter1')
 
     def test_getuser_invented_token(self):
@@ -85,10 +84,7 @@ class AuthTestCase(APITestCase):
 
         self.assertEqual(Token.objects.filter(user__username='voter1').count(), 0)
 
-## ESTOS TEST LOS LLAMO U PORQUE SI EN ORDEN ALFABÉTICO VIENEN ANTES DE GETUSER, DA ERROR. PREGUNTAR AL PROFESOR
-# son test del cambio de estilo
-
-    def test_u(self):
+    def test_changestyle(self):
         data = {'username': 'voter1', 'password': '123'}
         response = self.client.post('/authentication/login/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -100,7 +96,7 @@ class AuthTestCase(APITestCase):
         response = self.client.post('/authentication/changestyle/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
-    def test_u_inexistent_style(self):
+    def test_changestyle_inexistent_style(self):
         data = {'username': 'voter1', 'password': '123'}
         response = self.client.post('/authentication/login/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -112,7 +108,7 @@ class AuthTestCase(APITestCase):
         response = self.client.post('/authentication/changestyle/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    def test_u_inexistent_token(self):
+    def test_changestyle_inexistent_token(self):
         data = {'username': 'voter1', 'password': '123'}
         response = self.client.post('/authentication/login/', data, format='json')
         self.assertEqual(response.status_code, 200)
