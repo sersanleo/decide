@@ -20,6 +20,8 @@ font-size:1.1428em;
     color:white;
 
 }
+
+
 .colMS {
     background-color:#5D6D7E !important;
 }
@@ -30,20 +32,24 @@ h1{
 }
 #header{ 
     background-color: #17202A !important;
+    color: white !important;
 }
 
 .module caption{
     background: #17202A !important;
+    color: white !important;
 }
 
 .module table th {
     width: 100%;
     background: #34495E !important;
+    color: white !important;
 }
 
 .module table td {
     white-space: nowrap;
-    background: #34495E !important;
+    background: #90A7C0 !important;
+    color: white !important;
 }
 
 #content{
@@ -64,6 +70,7 @@ h1{
 
 .object-tools .addlink{
     background-color: #17202A !important;
+    color: white !important;
 }
 
 #content-main a{
@@ -163,6 +170,7 @@ h1{
     width: 100%;
     margin: 5px 0 0 25px;
     color: #17202A;
+    
 }
 
 #changelist-filter {
@@ -220,6 +228,56 @@ h1{
     font-size: 11px;
     color: white;
 }
+
+
+.admindatefilter .button, .admindatefilter input[type="reset"] {
+    background: #17202A;
+    padding: 4px 5px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.datetimeshortcuts .date-icon {
+    background: url(../img/icon-calendar.svg) 0 0 no-repeat;
+    top: -1px;
+    background: #17202A;
+    color: white !important;
+    margin: 2px;
+}
+
+.calendar td a{
+    display: block;
+    font-weight: 400;
+    padding: 6px;
+    text-decoration: none;
+    color:#fff;
+}
+
+.calendar td a, .timelist a {
+    display: block;
+    font-weight: 400;
+    padding: 6px;
+    color: #fff;
+}
+
+
+.calendar th a, .timelist a {
+    display: block;
+    font-weight: 400;
+    padding: 6px;
+    color: #fff;
+}
+
+.calendar th a{
+    display: block;
+    font-weight: 400;
+    padding: 6px;
+    text-decoration: none;
+    color: #fff;
+}
+
 
 
 .btn-abrir-popup{
