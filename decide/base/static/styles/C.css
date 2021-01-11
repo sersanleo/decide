@@ -115,7 +115,7 @@ footer{
 	justify-content: center;
     display: flex;
     visibility: hidden;
-    
+    z-index: 2;
 }
 .overlay.active{
     visibility: visible;
@@ -141,7 +141,7 @@ footer{
 
 .popup .btn-cerrar-popup:hover {
 	color: #000;
-  
+}
 .closePopUp {
     float: right;
 }
