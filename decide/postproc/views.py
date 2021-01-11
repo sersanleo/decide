@@ -10,6 +10,9 @@ class PostProcView(APIView):
         e = []
         r = []
 
+        if len(options) == 0:
+            raise(Exception('Bad request: There are no options'))
+
         for opt in options:
             ei = math.floor(opt['votes'] / q)
             e.append(ei)
