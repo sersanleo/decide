@@ -248,6 +248,23 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertEqual(values, expected_result)
+    
+    def test_equality_without_option_attribute(self):
+        with self.assertRaises(KeyError):
+            data = [{
+                'type': 'EQUALITY'
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
+
+    def test_equality_without_options(self):
+        with self.assertRaises(Exception):
+            data = [{
+                'type': 'EQUALITY',
+                'options': []
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
 
     def test_sainte_lague(self):
         data = [{
