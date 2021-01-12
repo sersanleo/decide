@@ -12,11 +12,11 @@ class BaseTestCase(APITestCase):
         self.token = None
         mods.mock_query(self.client)
 
-        user_noadmin = UserProfile(username='noadmin', sex='M')
+        user_noadmin = UserProfile(username='noadmin', sex='M', style='N')
         user_noadmin.set_password('qwerty')
         user_noadmin.save()
 
-        user_admin = UserProfile(username='admin', sex='F', is_staff=True)
+        user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True)
         user_admin.set_password('qwerty')
         user_admin.save()
 

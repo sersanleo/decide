@@ -48,7 +48,7 @@ class QuestionOption(models.Model):
         return '{} ({})'.format(self.option, self.number)
 
 
-    
+
 class Voting(models.Model):
     name = models.CharField(max_length=200, unique = True)
     desc = models.TextField(blank=True, null=True)
@@ -95,17 +95,17 @@ class Voting(models.Model):
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
         return votes
-    
+
     def get_votes_fem(self, token=''):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
         return votes
-    
+
     def get_info(self,token=''):
         votos=Voting.objects.get(id=self.id)
         return votos
-    
+
 
     def tally_votes(self, token=''):
         '''
@@ -118,7 +118,7 @@ class Voting(models.Model):
             aa = i['a'].split(',')
             bb = i['b'].split(',')
             for j in range(len(aa)):
-                votes.append([int(aa[j]), int(bb[j]), j, i['question_id']])           
+                votes.append([int(aa[j]), int(bb[j]), j, i['question_id']])
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
         decrypt_url = "/decrypt/{}/".format(self.id)
@@ -136,7 +136,7 @@ class Voting(models.Model):
         data = {"msgs": response.json()}
         response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
                 response=True)
-        
+
         if response.status_code != 200:
             # TODO: manage error
             pass
@@ -145,14 +145,14 @@ class Voting(models.Model):
         self.save()
 
         tally=self.tally
-        return tally
         self.tally_votes_masc(token)
         return tally
+
     def tally_votes_masc(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
-        votos  = self.get_votes(token)
+        votos  = self.get_votes_masc(token)
 
         votes = []
         for i in votos:
@@ -161,7 +161,7 @@ class Voting(models.Model):
                 bb = i['b'].split(',')
                 for j in range(len(aa)):
                     #[[int(i['a']), int(i['b'])] for i in votes if i['sex']=='F']
-                    votes.append([int(aa[j]), int(bb[j]), j, i['question_id']])            
+                    votes.append([int(aa[j]), int(bb[j]), j, i['question_id']])
 
 
         auth = self.auths.first()
@@ -193,13 +193,13 @@ class Voting(models.Model):
 
         self.tally_votes_fem(token)
         return tallyM
-    
+
     def tally_votes_fem(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
 
-        votos  = self.get_votes(token)
+        votos  = self.get_votes_fem(token)
 
         votes = []
         for i in votos:
@@ -207,7 +207,7 @@ class Voting(models.Model):
                 aa = i['a'].split(',')
                 bb = i['b'].split(',')
                 for j in range(len(aa)):
-                    votes.append([int(aa[j]), int(bb[j]), j,i['question_id']])            
+                    votes.append([int(aa[j]), int(bb[j]), j,i['question_id']])
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
@@ -237,12 +237,12 @@ class Voting(models.Model):
         tallyF=self.tallyF
         self.do_postproc()
         return tallyF
-      
 
 
 
 
-   
+
+
 
     def votes_info_votos(self,tally):
         data=[]
@@ -257,19 +257,19 @@ class Voting(models.Model):
                         votes.append(0)
 
                     for dicc in tally:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None:
                             votes[pos[0]] = votes[pos[0]] + 1
-                    
+
                 else:
                     votes = 0
 
                     for dicc in tally:
                         indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None:
                             votes = votes + 1
                 opts.append({
@@ -303,20 +303,20 @@ class Voting(models.Model):
                         votesF.append(0)
 
                     for dicc in tally:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
                         if pos!=None and pos[1]==q.id:
                             votes[pos[0]] = votes[pos[0]] + 1
                     for dicc in tallyM:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votesM[pos[0]] = votesM[pos[0]] + 1
                     for dicc in tallyF:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votesF[pos[0]] = votesF[pos[0]] + 1
                 else:
@@ -326,7 +326,7 @@ class Voting(models.Model):
                     for dicc in tally:
                         indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votes = votes + 1
 

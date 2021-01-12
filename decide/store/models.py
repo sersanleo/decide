@@ -1,5 +1,4 @@
 from django.db import models
-from base.models import BigBigField
 
 
 class Vote(models.Model):
@@ -10,7 +9,6 @@ class Vote(models.Model):
 
     a = models.TextField()
     b = models.TextField()
-
 
     voted = models.DateTimeField(auto_now=True)
 
