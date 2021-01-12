@@ -14,24 +14,17 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from base.tests import BaseTestCase
 
-
-
-
-class TestVotacinconmismonombre(StaticLiveServerTestCase):
+class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
   def setUp(self):
     self.base = BaseTestCase()
     self.base.setUp()
-
-
 
     self.driver = webdriver.Firefox()
     self.vars = {}
     self.driver.maximize_window() #For maximizing window
     self.driver.implicitly_wait(20) #gives an implicit wait for 20 seconds
 
-    super().setUp()
-
-  
+    super().setUp() 
   
   def tearDown(self):
     super().tearDown()
