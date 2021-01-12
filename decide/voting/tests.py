@@ -1403,3 +1403,38 @@ class VotingTestCase(BaseTestCase):
                 votes_aux = votes_aux + clear[clave]
 
         self.assertNotEqual(votes, votes_aux)
+
+    #Caso positivo tallyF con votacion de opción múltiple
+    def test_tallyF_multiple_positive_model(self):
+        v=self.create_voting_variable_option_types(2)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux_fem(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
