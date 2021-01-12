@@ -107,13 +107,6 @@ class VotingTestCase(BaseTestCase):
         return clear
 
 
-
-    # def test_duplicate_voting_name(self):
-    #     v1 = self.create_voting()
-    #     with self.assertRaises(Exception) as raised:
-    #         v2 = self.create_voting()
-    #     self.assertEqual(IntegrityError, type(raised.exception))
-
     def store_votes_unique_option(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
@@ -196,7 +189,7 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-
+    
     def test_tally_message_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -606,84 +599,88 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
         self.assertNotEqual(voting.started_by, user.username)
-    # def test_update_voting(self):
-    #     voting = self.create_voting()
+    
+    def test_update_voting(self):
+        voting = self.create_voting_variable_option_types(3)
+        voting2 = self.create_voting_multi()
+        voting3 = self.create_voting_prueba()
 
-    #     data = {'action': 'start'}
-    #     #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
-    #     #self.assertEqual(response.status_code, 401)
+        data = {'action': 'start'}
+        response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 401)
 
-    #     # login with user no admin
-    #     self.login(user='noadmin')
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 403)
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
 
-    #     # login with user admin
-    #     self.login()
-    #     data = {'action': 'bad'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
+        # login with user admin
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
 
-    #     # STATUS VOTING: not started
-    #     for action in ['stop', 'tally']:
-    #         data = {'action': action}
-    #         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #         self.assertEqual(response.status_code, 400)
-    #         self.assertEqual(response.json(), 'Voting is not started')
+        # STATUS VOTING: not started
+        for action in ['stop', 'tally']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json(), 'Voting is not started')
 
-    #     data = {'action': 'start'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.json(), 'Voting started')
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
 
-    #     # STATUS VOTING: started
-    #     data = {'action': 'start'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting already started')
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
 
-    #     data = {'action': 'tally'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting is not stopped')
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not stopped')
 
-    #     data = {'action': 'stop'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.json(), 'Voting stopped')
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
 
-    #     # STATUS VOTING: stopped
-    #     data = {'action': 'start'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting already started')
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
 
-    #     data = {'action': 'stop'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting already stopped')
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already stopped')
+        
+  
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting2.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not started')
 
-    #     data = {'action': 'tally'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.json(), 'Voting tallied')
+        # STATUS VOTING: tallied
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting2.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
 
-    #     # STATUS VOTING: tallied
-    #     data = {'action': 'start'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting already started')
 
-    #     data = {'action': 'stop'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting already stopped')
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting2.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
 
-    #     data = {'action': 'tally'}
-    #     response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.json(), 'Voting already tallied')
-
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting3.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not started')
 
     #Pruebas unitarias para la funcionalidad de crear votaciones con múltiples question
 
@@ -798,7 +795,7 @@ class VotingTestCase(BaseTestCase):
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
 
-        # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
+    # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
 
     def test_create_question_restriction_pos(self):
         q = self.create_question()
@@ -1023,5 +1020,41 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(votes, votes_aux)
 
+        #Test Unitarios para la task 001
 
+    def create_voting_prueba(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting 2')
+        
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    #Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+
+    def test_duplicate_voting_name_positive(self):
+        v1 = self.create_voting()
+        v2 = self.create_voting_prueba()
+        self.assertNotEqual(v1, v2)
+
+    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+
+    def test_duplicate_voting_name_negative(self):
+        v1 = self.create_voting()
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    
+        
+        
 
