@@ -34,6 +34,7 @@ class VisualizerView(TemplateView):
                 # else:
                 context = self.statistics_points(context, voting)
 
+
         except:
             raise Http404
 

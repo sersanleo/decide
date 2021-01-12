@@ -1,4 +1,6 @@
 import time
+
+from authentication.models import UserProfile
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from base.tests import BaseTestCase
@@ -87,3 +89,22 @@ class AdminTestCase(StaticLiveServerTestCase):
 		elements = self.driver.find_elements(By.CSS_SELECTOR, ".table:nth-child(6) th:nth-child(4)")
 		assert len(elements) > 0
 		self.driver.close()
+
+
+class List_View_Tests(BaseTestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+    def setUp(self):
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def test_get_list_voting_200(self):
+        response = self.client.get('/visualizer/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_votings_from_list_voting_anonymous(self):
+        response = self.client.get('/visualizer/')
+        votings = response.context['votings']
+        self.assertEqual(votings, [])
+
