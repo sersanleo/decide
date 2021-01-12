@@ -1175,3 +1175,30 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(IntegrityError, type(raised.exception))
 
 
+    # Tests de modelo de Task t042
+    # Preguntas con opción única
+
+    def test_store_unique_option_question_positive(self):
+        options_type = 1
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_multiple_option_question_positive(self):
+        options_type = 2
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_none_option_question_negative(self):
+        options_type = None      
+        q = Question(desc='test question', option_types=options_type)
+        
+        with self.assertRaises(Exception) as raised:
+            q.save()
+            
+        self.assertEqual(IntegrityError, type(raised.exception))
