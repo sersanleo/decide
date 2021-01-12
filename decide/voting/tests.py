@@ -18,6 +18,8 @@ from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 from django.db.utils import IntegrityError
 from .admin import give_message
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 import sys
 
 
@@ -44,7 +46,7 @@ class VotingTestCase(BaseTestCase):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
         v = Voting(id=1,name='test voting')
-        
+
         v.save()
         v.question.add(q)
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -54,7 +56,7 @@ class VotingTestCase(BaseTestCase):
 
         return v
 
-    
+
 
     def create_voters(self, v):
         for i in range(100):
@@ -103,7 +105,7 @@ class VotingTestCase(BaseTestCase):
                     voter = voters.pop()
                     mods.post('store', json=data)
         return clear
-   
+
 
 
     # def test_duplicate_voting_name(self):
@@ -111,7 +113,7 @@ class VotingTestCase(BaseTestCase):
     #     with self.assertRaises(Exception) as raised:
     #         v2 = self.create_voting()
     #     self.assertEqual(IntegrityError, type(raised.exception))
-    
+
     def store_votes_unique_option(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
@@ -128,26 +130,26 @@ class VotingTestCase(BaseTestCase):
                 a,b = None, None
                 for j in range(1):
                     chosen_option = options[0]
-                    
+
                     x, y = self.encrypt_msg(chosen_option.number, v)
 
-                    if a and b: 
+                    if a and b:
                         a = a + ',' + str(x) + ''
                         b = b + ',' + str(y) + ''
-                        
+
                     else:
                         a = str(x)
                         b = str(y)
-                        
+
                     votos.append({'a': a, 'b': b })
-                
+
             data = {
                 'voting': v.id,
                 'voter': voter.voter_id,
                 'vote': votos,
                 'question_id': q.id,
                 'token': self.token
-            }                
+            }
 
             mods.post('store', json=data)
             self.logout()
@@ -170,26 +172,26 @@ class VotingTestCase(BaseTestCase):
                 a,b = None, None
                 for j in range(1):
                     chosen_option = options[0]
-                    
+
                     x, y = self.encrypt_msg(chosen_option.number, v)
 
-                    if a and b: 
+                    if a and b:
                         a = a + ',' + str(x) + ''
                         b = b + ',' + str(y) + ''
-                        
+
                     else:
                         a = str(x)
                         b = str(y)
-                        
+
                     votos.append({'a': a, 'b': b })
-                
+
             data = {
                 'voting': v.id,
                 'voter': voter.voter_id,
                 'vote': votos,
                 'question_id': q.id,
                 'token': self.token
-            }                
+            }
 
             mods.post('store', json=data)
             self.logout()
@@ -199,68 +201,68 @@ class VotingTestCase(BaseTestCase):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
-        
+
         self.login()
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
 
         self.store_votes_unique_option(voting)
-        
+
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting stopped')
-        
+
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting tallied')
         tally=voting.tally_votes(self.token)
-        
+
         mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         mensajeObtenido=give_message(voting,tally)
-        
+
         self.assertEqual(mensajeEsperado, mensajeObtenido)
 
     def test_tally_message_negative(self):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
-        
+
         self.login()
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
 
         self.store_votes_unique_option(voting)
-        
+
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting stopped')
-        
+
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting tallied')
         tally=voting.tally_votes(self.token)
-        
+
         mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         mensajeObtenido=give_message(voting,tally)
-        
+
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
 
 
@@ -269,25 +271,25 @@ class VotingTestCase(BaseTestCase):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
-        
+
         self.login()
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
 
         self.store_votes_unique_option(voting)
-        
+
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting stopped')
-        
+
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -307,14 +309,14 @@ class VotingTestCase(BaseTestCase):
                         votesM.append(0)
                         votesF.append(0)
                     for dicc in tallyM:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
                         if pos!=None and pos[1]==q.id:
                             votesM[pos[0]] = votesM[pos[0]] + 1
                     for dicc in tallyF:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votesF[pos[0]] = votesF[pos[0]] + 1
                 else:
@@ -332,7 +334,7 @@ class VotingTestCase(BaseTestCase):
                             votesF = votesF + 1
                 opts.append({
                     'Option:': opt.option,
-                    'has this male votes:': votesM 
+                    'has this male votes:': votesM
                 })
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 1}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 0}, {'Option:': 'option 5', 'has this male votes:': 0}]"
@@ -343,25 +345,25 @@ class VotingTestCase(BaseTestCase):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
-        
+
         self.login()
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
 
         self.store_votes_unique_option(voting)
-        
+
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting stopped')
-        
+
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -381,14 +383,14 @@ class VotingTestCase(BaseTestCase):
                         votesM.append(0)
                         votesF.append(0)
                     for dicc in tallyM:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
                         if pos!=None and pos[1]==q.id:
                             votesM[pos[0]] = votesM[pos[0]] + 1
                     for dicc in tallyF:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votesF[pos[0]] = votesF[pos[0]] + 1
                 else:
@@ -406,7 +408,7 @@ class VotingTestCase(BaseTestCase):
                             votesF = votesF + 1
                 opts.append({
                     'Option:': opt.option,
-                    'has this male votes:': votesM 
+                    'has this male votes:': votesM
                 })
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 0}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 1}, {'Option:': 'option 5', 'has this male votes:': 0}]"
@@ -416,25 +418,25 @@ class VotingTestCase(BaseTestCase):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
-        
+
         self.login()
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
 
         self.store_votes_unique_option_fem(voting)
-        
+
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting stopped')
-        
+
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -454,14 +456,14 @@ class VotingTestCase(BaseTestCase):
                         votesM.append(0)
                         votesF.append(0)
                     for dicc in tallyM:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
                         if pos!=None and pos[1]==q.id:
                             votesM[pos[0]] = votesM[pos[0]] + 1
                     for dicc in tallyF:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votesF[pos[0]] = votesF[pos[0]] + 1
                 else:
@@ -489,12 +491,12 @@ class VotingTestCase(BaseTestCase):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
-        
+
         self.login()
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
 
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
@@ -502,13 +504,13 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.json(), 'Voting started')
 
         self.store_votes_unique_option_fem(voting)
-        
+
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting stopped')
-        
+
         data = {'action': 'tally'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -528,14 +530,14 @@ class VotingTestCase(BaseTestCase):
                         votesM.append(0)
                         votesF.append(0)
                     for dicc in tallyM:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
                         if pos!=None and pos[1]==q.id:
                             votesM[pos[0]] = votesM[pos[0]] + 1
                     for dicc in tallyF:
-                        indice = opt.number 
+                        indice = opt.number
                         pos = dicc.get(str(indice))
-                        
+
                         if pos!=None and pos[1]==q.id:
                             votesF[pos[0]] = votesF[pos[0]] + 1
                 else:
@@ -559,9 +561,9 @@ class VotingTestCase(BaseTestCase):
         resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 0}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 1}, {'Option:': 'option 5', 'has this female votes:': 0}]"
         self.assertNotEqual(str(opts),resultadoEsperado)
 
-        
 
-       def test_started_by_positive(self):
+
+    def test_started_by_positive(self):
         voting = self.create_voting()
         voting_id = voting.id
         user= self.get_or_create_user(1)
@@ -574,7 +576,7 @@ class VotingTestCase(BaseTestCase):
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
 
@@ -582,7 +584,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
         self.assertEqual(voting.started_by, user.username)
-        
+
     def test_started_by_negative(self):
         voting = self.create_voting()
         voting_id = voting.id
@@ -596,7 +598,7 @@ class VotingTestCase(BaseTestCase):
         data = {'action': 'bad'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
-        
+
         data = {'action': 'start'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
 
@@ -699,7 +701,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q2, option='option {}'.format(i+1))
             opt.save()
-            
+
         v = Voting(name='test voting multi')
         v.save()
         v.question.add(q1)
@@ -715,27 +717,27 @@ class VotingTestCase(BaseTestCase):
     #Caso positivo 1: se crea correctamente una votación con una única question
 
     def test_multi_voting_simple_pos(self):
-        v1 = self.create_voting()  
+        v1 = self.create_voting()
         self.assertEqual(v1.name, 'test voting')
 
-        
+
         q = []
         for quest in v1.question.all():
             q.append(quest.desc)
 
         desc = q[0]
         self.assertEqual(desc, 'test question')
-        
+
         longitud = len(q)
         self.assertEqual(longitud, 1)
 
     #Caso positivo 2: se crea correctamente una votación con dos question
 
     def test_multi_voting_two_pos(self):
-        v1 = self.create_voting_multi()  
+        v1 = self.create_voting_multi()
         self.assertEqual(v1.name, 'test voting multi')
 
-        
+
         q = []
         for quest in v1.question.all():
             q.append(quest.desc)
@@ -744,7 +746,7 @@ class VotingTestCase(BaseTestCase):
         desc2 = q[1]
         self.assertEqual(desc1, 'test1 question')
         self.assertEqual(desc2, 'test2 question')
-        
+
         longitud = len(q)
         self.assertEqual(longitud, 2)
 
@@ -770,7 +772,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(AttributeError, type(raised.exception))
 
-    
+
 
 
     # Test Unitarios para la creación de Question con descripción única
@@ -795,7 +797,7 @@ class VotingTestCase(BaseTestCase):
         with self.assertRaises(Exception) as raised:
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
-        
+
         # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
 
     def test_create_question_restriction_pos(self):
@@ -874,11 +876,11 @@ class VotingTestCase(BaseTestCase):
 
         # Caso negativo: se crea una voting y no se asigna el creador al censo.
 
-        
+
 
 
     # Test Unitarios de Task t026
-   
+
     def create_voting_variable_option_types(self, option_type):
         q = Question(desc='test question', option_types=option_type)
         q.save()
@@ -886,7 +888,7 @@ class VotingTestCase(BaseTestCase):
             opt = QuestionOption(question=q, option='option {}'.format(i+1), number=i+1)
             opt.save()
         v = Voting(name='test voting')
-        
+
         v.save()
         v.question.add(q)
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -914,11 +916,11 @@ class VotingTestCase(BaseTestCase):
                 if q.option_types == 1:
                     random_amount = 1
                 else:
-                    random_amount = random.randint(1, count_options) 
+                    random_amount = random.randint(1, count_options)
 
                 for j in range(0, random_amount):
                     chosen_option = options[j]
-                    
+
                     if chosen_option.number in clear:
                         clear[chosen_option.number] += 1
                     else:
@@ -926,23 +928,23 @@ class VotingTestCase(BaseTestCase):
 
                     x, y = self.encrypt_msg(chosen_option.number, v)
 
-                    if a and b: 
+                    if a and b:
                         a = a + ',' + str(x) + ''
                         b = b + ',' + str(y) + ''
-                        
+
                     else:
                         a = str(x)
                         b = str(y)
 
                 votos.append({'a': a, 'b': b })
-                
+
                 data = {
                     'voting': v.id,
                     'voter': voter.voter_id,
                     'vote': votos,
                     'question_id': q.id,
                     'token': self.token
-                }                
+                }
                 mods.post('store', json=data)
 
             self.logout()
@@ -962,24 +964,24 @@ class VotingTestCase(BaseTestCase):
         self.login()  # set token
         v.tally_votes(self.token)
 
-        tally = v.tally       
-        
+        tally = v.tally
+
         questions = v.question.all()
 
         votes = 0
         votes_aux = 0
         for qs in questions:
             for opt in qs.options.all():
-                
+
 
                 for dicc in tally:
                     indice = opt.number
                     pos = dicc.get(str(indice))
-                    
+
                     if pos!=None:
                         votes = votes + 1
 
-            
+
             for clave in clear.keys():
                 votes_aux = votes_aux + clear[clave]
 
@@ -999,8 +1001,8 @@ class VotingTestCase(BaseTestCase):
         self.login()  # set token
         v.tally_votes(self.token)
 
-        tally = v.tally    
-        
+        tally = v.tally
+
         questions = v.question.all()
 
         votes = 0
@@ -1011,11 +1013,11 @@ class VotingTestCase(BaseTestCase):
                 for dicc in tally:
                     indice = opt.number
                     pos = dicc.get(str(indice))
-                    
+
                     if pos!=None:
                         votes = votes + 1
 
-            
+
             for clave in clear.keys():
                 votes_aux = votes_aux + clear[clave]
 
