@@ -5,31 +5,32 @@ import math
 
 class PostProcView(APIView):
 
-    def largest_remainder(self, options, q, points):
+    def largest_remainder(self, options, q, points, zero_votes):
         out = []
         e = []
         r = []
 
-        if len(options) == 0:
-            raise(Exception('Bad request: There are no options'))
+        if not zero_votes:
+            if len(options) == 0:
+                raise(Exception('Bad request: There are no options'))
 
-        for opt in options:
-            ei = math.floor(opt['votes'] / q)
-            e.append(ei)
-            r.append(opt['votes'] - q * ei)
+            for opt in options:
+                ei = math.floor(opt['votes'] / q)
+                e.append(ei)
+                r.append(opt['votes'] - q * ei)
 
-        k = points - sum(e)
+            k = points - sum(e)
 
-        for x in range(k):
-            grtst_rest_index = r.index(max(r))
-            e[grtst_rest_index] = e[grtst_rest_index] + 1
-            r[grtst_rest_index] = -1
+            for x in range(k):
+                grtst_rest_index = r.index(max(r))
+                e[grtst_rest_index] = e[grtst_rest_index] + 1
+                r[grtst_rest_index] = -1
 
         cont = 0
         for opt in options:
             out.append({
                 **opt,
-                'postproc': e[cont],
+                'postproc': 0 if zero_votes else e[cont],
             })
             cont += 1
 
@@ -112,7 +113,7 @@ class PostProcView(APIView):
 
         q = round(1 + total_votes / (points + 1))
 
-        return self.largest_remainder(options, q, points)
+        return self.largest_remainder(options, q, points, total_votes == 0)
 
     def proportional_representation(self, options, type):
         out = []
@@ -153,7 +154,7 @@ class PostProcView(APIView):
 
         q = round(total_votes / (points + 2))
 
-        return self.largest_remainder(options, q, points)
+        return self.largest_remainder(options, q, points, total_votes == 0)
 
     def hare(self, options):
         total_votes = 0
@@ -165,7 +166,7 @@ class PostProcView(APIView):
 
         q = round(total_votes / points)
 
-        return self.largest_remainder(options, q, points)
+        return self.largest_remainder(options, q, points, total_votes == 0)
 
     def post(self, request):
         out = []
