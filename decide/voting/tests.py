@@ -65,6 +65,14 @@ class VotingTestCase(BaseTestCase):
             u.save()
             c = Census(voter_id=u.id, voting_id=v.id)
             c.save()
+    
+    def create_voters_fem(self, v):
+        for i in range(100):
+            u, _ = User.objects.get_or_create(username='testvoter{}'.format(i),sex='F')
+            u.is_active = True
+            u.save()
+            c = Census(voter_id=u.id, voting_id=v.id)
+            c.save()
 
 
     def get_or_create_user(self, pk):
@@ -953,6 +961,59 @@ class VotingTestCase(BaseTestCase):
             self.logout()
         return clear
 
+    def store_votes_aux_fem(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a,b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 1
+                    else:
+                        clear[chosen_option.number] = 1
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b })
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
+
     def test_complete_unique_option_voting_positive(self):
         v = self.create_voting_variable_option_types(1)
         self.create_voters(v)
@@ -1238,3 +1299,20 @@ class VotingTestCase(BaseTestCase):
         self.login()
         v.tally_votes(self.token)
         self.assertNotEqual(v.tallyM,expectedTallyM)
+
+    #Caso positivo tallyF con votacion de opción única
+    def test_tallyF_unique_positive_model(self):
+        expectedTallyF=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux_fem(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        self.assertEqual(v.tallyF,expectedTallyF)
