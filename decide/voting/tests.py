@@ -1138,7 +1138,6 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(opts, clear)
 
-
     # Voting points (Recuento proporcional)    
 
     def test_voting_points_positive(self):
@@ -1213,10 +1212,18 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(Question.objects.count(), 1)
         self.assertEqual(options_type, Question.objects.all()[0].option_types)
 
-    def test_store_voting_points_postive(self):
+    def test_store_voting_points_positive(self):
         points = 2
         v = Voting(id=1,name='test voting', points = points)
         v.save()
 
         self.assertEqual(Voting.objects.count(), 1)
-        self.assertEqual(points, Voting.objects.all()[0].option_types)
+        self.assertEqual(points, Voting.objects.all()[0].points)
+
+    def test_store_voting_points_negative(self):
+        points = -2
+        v = Voting(id=1,name='test voting', points = points)
+        with self.assertRaises(Exception) as raised:
+            v.save()
+
+        self.assertEqual(IntegrityError, type(raised.exception))
