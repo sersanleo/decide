@@ -351,7 +351,6 @@ class Voting(models.Model):
                     'points': points
                 })
             data.append( { 'type': tallies[q.type],'options': opts})
-        print(data)
         postp = mods.post('postproc', json=data)
         self.postproc = postp
         self.save()
