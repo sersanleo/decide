@@ -107,13 +107,6 @@ class VotingTestCase(BaseTestCase):
         return clear
 
 
-
-    # def test_duplicate_voting_name(self):
-    #     v1 = self.create_voting()
-    #     with self.assertRaises(Exception) as raised:
-    #         v2 = self.create_voting()
-    #     self.assertEqual(IntegrityError, type(raised.exception))
-
     def store_votes_unique_option(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
@@ -798,7 +791,7 @@ class VotingTestCase(BaseTestCase):
             self.create_question()
         self.assertEqual(IntegrityError, type(raised.exception))
 
-        # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
+    # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
 
     def test_create_question_restriction_pos(self):
         q = self.create_question()
@@ -1022,6 +1015,40 @@ class VotingTestCase(BaseTestCase):
                 votes_aux = votes_aux + clear[clave]
 
         self.assertEqual(votes, votes_aux)
+
+        #Test Unitarios para la task 001
+
+    def create_voting_prueba(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting 2')
+        
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    #Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+
+    def test_duplicate_voting_name_positive(self):
+        v1 = self.create_voting()
+        v2 = self.create_voting_prueba()
+        self.assertNotEqual(v1, v2)
+
+    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+
+    def test_duplicate_voting_name_negative(self):
+        v1 = self.create_voting()
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
 
 
 
