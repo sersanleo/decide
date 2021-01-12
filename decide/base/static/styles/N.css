@@ -87,7 +87,6 @@ html, body{
 
 .btn-abrir-popup{
     padding: 0 20px;
-	margin-bottom: 20px;
 	height: 40px;
 	line-height: 40px;
 	border: none;
@@ -113,6 +112,7 @@ html, body{
 	justify-content: center;
     display: flex;
     visibility: hidden;
+    z-index: 2;
     
 }
 .overlay.active{
@@ -149,6 +149,15 @@ html, body{
     font-size: 36px;
     font-weight: 600;
     margin-bottom: 10px;
+}
+
+#footer {
+    display: block;
+    margin: auto;
+}
+
+#text-voice-assistants {
+    margin: 40px;
 }
 
 

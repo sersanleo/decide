@@ -48,7 +48,6 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         user = response.json()
-        self.assertEqual(user['id'], 1)
         self.assertEqual(user['username'], 'voter1')
 
     def test_getuser_invented_token(self):
@@ -84,6 +83,40 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(Token.objects.filter(user__username='voter1').count(), 0)
+
+    def test_changestyle(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+
+        token = response.json().get('token')
+        
+        data = {'token': token, 'style': 'C'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_changestyle_inexistent_style(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+
+        token = response.json().get('token')
+        
+        data = {'token': token, 'style': 'W'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_changestyle_inexistent_token(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+        
+        data = {'token': 'inventado', 'style': 'N'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 400)
 
     def test_register_bad_permissions(self):
         data = {'username': 'voter1', 'password': '123'}

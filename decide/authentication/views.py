@@ -38,23 +38,57 @@ class LogoutView(APIView):
 class ChangeStyleView(APIView):
     def post(self, request):
         # validating token
-        token = request.auth.key
+        token = request.data.get('token')
         user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
         if not user_id:
-            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({}, status=HTTP_400_BAD_REQUEST)
 
         # validating style
         newstyle = request.data.get('style')
         if not newstyle in [i[0] for i in UserProfile.styles]:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
-        u = UserProfile.objects.get(id=user_id)
+        u = UserProfile.objects.get(pk=user_id)
         u.style = newstyle
         u.save(update_fields=['style'])
 
-        return  Response({})
+        return Response({})
+
+
+class PageLoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username', '')
+        password = request.data.get('password', '')
+        token = mods.post('authentication', entry_point='/login/', json={'username': username, 'password': password})
+        voter = mods.post('authentication', entry_point='/getuser/', json=token)
+
+        voter_id = voter.get('id', None)
+        if voter_id == None:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        request.session['user_token'] = token
+        request.session['voter_id'] = voter_id
+        request.session['username'] = voter.get('username', '')
+        request.session.modified = True
+        for key, value in self.request.session.items():
+            print('{} => {}'.format(key, value))
+        
+        return Response(token)
+
+
+class PageLogoutView(APIView):
+    def post(self, request):
+        token = self.request.session.get('user_token')
+
+        if token:
+            mods.post('authentication', entry_point='/logout/', json={'token':token})
+            del self.request.session['user_token']
+            del self.request.session['voter_id']
+            del self.request.session['username']
+
+        return Response({})
 
 
 class RegisterView(APIView):
