@@ -1137,3 +1137,32 @@ class VotingTestCase(BaseTestCase):
                     opts[opt.number] = votes
 
         self.assertEqual(opts, clear)
+
+
+    # Voting points (Recuento proporcional)    
+
+    def test_voting_points_positive(self):
+        points = 4
+        voting_type = 3
+        v = self.create_voting_variable_option_types(voting_type, points)
+        v.points = points
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 4
+        self.store_votes_ranked_aux(v, number_of_voters)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        v.tally    
+        postp = v.postproc
+
+        for dicc in postp:
+            options = dicc["options"]
+            for dicc_aux in options:
+                self.assertEqual(points, dicc_aux["points"])
+
