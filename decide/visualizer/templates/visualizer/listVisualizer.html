@@ -76,12 +76,11 @@
         </div>
         {% if user == True %}
             </br></br><b>As you are superuser you can see all the votes</b>
-            </br></br><h5><a href="/visualizer/global">View global statistics</a></h5>
         {% else %}
             </br></br><b>As you are not a superuser, you can only see the votes in which you are in the census</b>
         {% endif %}
         </div>
-
+        </br></br><h5><a href="/visualizer/global">View global statistics</a></h5>
 {% endblock %}
 
 {% block extrabody %}
