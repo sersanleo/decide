@@ -207,6 +207,10 @@
                             this.user = data;
                             if (this.user.style == 'C')
                                 setUserStyle("{% static 'styles/C.css' %}");
+                            else if (this.user.style == 'T')
+                                setUserStyle("{% static 'styles/T.css' %}");
+                            else if (this.user.style == 'O')
+                                setUserStyle("{% static 'styles/O.css' %}");
                             else
                                 setUserStyle("{% static 'styles/N.css' %}");
 
