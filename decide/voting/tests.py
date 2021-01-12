@@ -1165,3 +1165,13 @@ class VotingTestCase(BaseTestCase):
             options = dicc["options"]
             for dicc_aux in options:
                 self.assertEqual(points, dicc_aux["points"])
+
+    def test_voting_points_negative(self):
+        points = -1
+
+        with self.assertRaises(Exception) as raised:
+            v = self.create_voting_variable_option_types(3, points)
+
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+
