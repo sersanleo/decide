@@ -83,7 +83,9 @@ class SuggestingFormTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_send_suggesting_form_success(self):
-        data = {'suggesting-title': 'Suggestsing', 'suggesting-date': '2021-12-08', 'suggesting-content': 'Full suggesting content...'}
+        future_date = timezone.now().date() + datetime.timedelta(weeks=1)
+        date = future_date.strftime("%Y-%m-%d")
+        data = {'suggesting-title': 'Suggestsing', 'suggesting-date': date, 'suggesting-content': 'Full suggesting content...'}
         initital_suggesting_counter = SuggestingForm.objects.all().count()
 
         response = self.client.post('/booth/suggesting/send/', data, follow=True)
@@ -307,9 +309,23 @@ class DashboardTest(TestCase):
             opt = QuestionOption(question=q4, option='option {}'.format(i+1))
             opt.save()
 
+        #Create question 5
+        q5 = Question(id=5, desc='Multiple option question 2', option_types=2)
+        q5.save()
+        for i in range(4):
+            opt = QuestionOption(question=q5, option='option {}'.format(i+1))
+            opt.save()
+        
+        #Create question 6
+        q6 = Question(id=6, desc='Rank order scale question 2', option_types=3)
+        q6.save()
+        for i in range(5):
+            opt = QuestionOption(question=q6, option='option {}'.format(i+1))
+            opt.save()
+
         v2 = Voting(id=2, name='Single question voting 2',desc='Single question voting...', points=1, start_date=M_DATE, end_date=E_DATE)
         v2.save()
-        v2.question.add(q4)
+        v2.question.add(q4), v2.question.add(q5), v2.question.add(q6)
         v2.auths.add(a)
         Voting.create_pubkey(v2)
 
@@ -332,8 +348,8 @@ class DashboardTest(TestCase):
         self.assertEqual(len(response.context['vot_dis']), 1)
         self.assertEquals(sumalista(response.context['votaciones_por_meses']), 1)
         self.assertEquals(len(response.context['months']), 12)
-        #self.assertEqual(response.context['tipo_votaciones'][0], 0)
-        #self.assertEqual(response.context['tipo_votaciones'][1], 0)
-        #self.assertEqual(response.context['tipo_votaciones'][2], 0)
+        self.assertEqual(response.context['tipo_votaciones'][0], 1)
+        self.assertEqual(response.context['tipo_votaciones'][1], 1)
+        self.assertEqual(response.context['tipo_votaciones'][2], 1)
         self.assertEqual(len(response.context['approved_suggestions']), 1)
         self.assertEqual(len(response.context['recent_suggestions']), 1)
