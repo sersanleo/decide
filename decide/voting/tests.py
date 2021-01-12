@@ -1176,7 +1176,6 @@ class VotingTestCase(BaseTestCase):
 
 
     # Tests de modelo de Task t042
-    # Preguntas con opción única
 
     def test_store_unique_option_question_positive(self):
         options_type = 1
@@ -1202,3 +1201,14 @@ class VotingTestCase(BaseTestCase):
             q.save()
             
         self.assertEqual(IntegrityError, type(raised.exception))
+
+
+    # Tests de modelo de Task t043  
+    
+    def test_store_ranked_option_question_positive(self):
+        options_type = 3
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
