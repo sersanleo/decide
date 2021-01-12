@@ -1212,3 +1212,11 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(Question.objects.count(), 1)
         self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_voting_points_postive(self):
+        points = 2
+        v = Voting(id=1,name='test voting', points = points)
+        v.save()
+
+        self.assertEqual(Voting.objects.count(), 1)
+        self.assertEqual(points, Voting.objects.all()[0].option_types)
