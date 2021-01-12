@@ -1221,3 +1221,20 @@ class VotingTestCase(BaseTestCase):
         self.login()
         v.tally_votes(self.token)
         self.assertEqual(v.tallyM,expectedTallyM)
+    
+    #Caso negativo tallyM con votacion de opción única
+    def test_tallyM_unique_negative_model(self):
+        expectedTallyM=[{'0': [0, 1]}, {'1': [0, 1]}, {'0': [0, 1]}]
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        self.assertNotEqual(v.tallyM,expectedTallyM)
