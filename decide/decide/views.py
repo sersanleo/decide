@@ -9,6 +9,12 @@ from voting.serializers import MinimalVotingSerializer
 from authentication.models import UserProfile
 
 from base import mods
+from django.http import HttpResponse
+from django.utils.translation import ugettext as _
+
+def index(request):
+    output = _('StatusMsg')
+    return HttpResponse(output)
 
 class IndexView(TemplateView):
     template_name = 'decide/index.html'

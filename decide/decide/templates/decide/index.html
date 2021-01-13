@@ -1,8 +1,20 @@
 {% extends "decide/base.html" %}
 {% load i18n static %}
 
+<script src="{% static 'js/script.js' %}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+
 {% block content %}
+
+
 <b-row>
+  <button class="translate" id="es">Español</button>
+  <button class="translate" id="en">English</button>
+  
+  <p class="lang" key="prueba1">Esto es una prueba</p>
+  <p class="lang" key="prueba2">Este texto esta en español</p> 
+
   <b-col>Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account
     and press booth to vote or press visualizer to see the results.</b-col>
 </b-row>
@@ -52,6 +64,7 @@ getVotings(evt) {
       })
 }
 {% endblock %}
+
 
 {% block vue_after_getuser %}
 this.getVotings();

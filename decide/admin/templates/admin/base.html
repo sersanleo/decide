@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 <script src="{% static 'js/zoom.js' %}"></script>
 <script src="{% static 'js/popup.js' %}"></script>
+
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 {% block extrahead %}{% endblock %}
@@ -42,8 +43,11 @@
                 <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
                 <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
             </div>
+        
         </div>
         {% block usertools %}
+
+
         {% if has_permission %}
         
         <div id="user-tools">
@@ -136,3 +140,4 @@ function logoutmessage(){
 }
 
 </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

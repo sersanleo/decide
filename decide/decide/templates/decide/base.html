@@ -18,6 +18,9 @@
     </script>
     <!-- Zoom -->
     <script src="{% static 'js/zoom.js' %}"></script>
+    <!-- Translation -->
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!-- Popups -->
     <script>
         function openPopUp() {
@@ -67,11 +70,13 @@
                         <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button>
                         <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
                     </div>
+                    
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
                 <!-- Authenticated user -->
                 <b-navbar-nav class="ml-auto" v-if="user != null">
+
                     <b-navbar-brand>
                         <strong>
                             {% trans "Welcome" %}, [[this.user.username]]!
@@ -207,6 +212,10 @@
                             this.user = data;
                             if (this.user.style == 'C')
                                 setUserStyle("{% static 'styles/C.css' %}");
+                            else if (this.user.style == 'T')
+                                setUserStyle("{% static 'styles/T.css' %}");
+                            else if (this.user.style == 'O')
+                                setUserStyle("{% static 'styles/O.css' %}");
                             else
                                 setUserStyle("{% static 'styles/N.css' %}");
 
