@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 
 from .models import UserProfile
 from rest_framework.authtoken.models import Token
+from django.db.utils import DataError
 
 from base import mods
 
@@ -114,6 +115,17 @@ class AuthTestCase(APITestCase):
         token.update({'username': 'user1', 'password': 'pwd1', 'style': 'N'})
         response = self.client.post('/authentication/register/', token, format='json')
         self.assertEqual(response.status_code, 400)
+
+    def test_register_bad_request_bad_sex(self):
+        with self.assertRaises(DataError):
+
+            data = {'username': 'admin', 'password': 'admin' }
+            response = self.client.post('/authentication/login/', data, format='json')
+            self.assertEqual(response.status_code, 200)
+            token = response.json()
+
+            token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'NB', 'style': 'N'})
+            response = self.client.post('/authentication/register/', token, format='json')
 
     def test_register_bad_request_style_required(self):
         data = {'username': 'admin', 'password': 'admin' }

@@ -5,28 +5,32 @@ import math
 
 class PostProcView(APIView):
 
-    def largest_remainder(self, options, q, points):
+    def largest_remainder(self, options, q, points, zero_votes):
         out = []
         e = []
         r = []
 
-        for opt in options:
-            ei = math.floor(opt['votes'] / q)
-            e.append(ei)
-            r.append(opt['votes'] - q * ei)
+        if not zero_votes:
+            if len(options) == 0:
+                raise(Exception('Bad request: There are no options'))
 
-        k = points - sum(e)
+            for opt in options:
+                ei = math.floor(opt['votes'] / q)
+                e.append(ei)
+                r.append(opt['votes'] - q * ei)
 
-        for x in range(k):
-            grtst_rest_index = r.index(max(r))
-            e[grtst_rest_index] = e[grtst_rest_index] + 1
-            r[grtst_rest_index] = -1
+            k = points - sum(e)
+
+            for x in range(k):
+                grtst_rest_index = r.index(max(r))
+                e[grtst_rest_index] = e[grtst_rest_index] + 1
+                r[grtst_rest_index] = -1
 
         cont = 0
         for opt in options:
             out.append({
                 **opt,
-                'postproc': e[cont],
+                'postproc': 0 if zero_votes else e[cont],
             })
             cont += 1
 
@@ -48,6 +52,9 @@ class PostProcView(APIView):
     def borda(self, options):
         out = []
 
+        if len(options) == 0:
+            raise(Exception('Bad request: There no options'))
+
         for opt in options:
             votes = 0
             options_number = len(options)
@@ -66,20 +73,31 @@ class PostProcView(APIView):
         n_women = 0
         n_men = 0
 
-        for opt in options:
-            n_women += opt['votes_women']
-            n_men += opt['votes_men']
+        if len(options) == 0:
+            raise(Exception('Bad request: There are no options'))
 
         for opt in options:
-            if n_women > n_men:
-                votes = opt['votes_men'] + opt['votes_women'] * (n_men / n_women)
-            else:
-                votes = opt['votes_women'] + opt['votes_men'] * (n_women / n_men)
+            n_women += opt['votes_fem']
+            n_men += opt['votes_masc']
+        
+        if n_men == 0 or n_women == 0:
+            for opt in options:
+                votes = opt['votes_fem'] + opt['votes_masc']
+                out.append({
+                    **opt,
+                    'postproc': votes,
+                })
+        else:
+            for opt in options:
+                if n_women > n_men:
+                    votes = opt['votes_masc'] + opt['votes_fem'] * (n_men / n_women)
+                else:
+                    votes = opt['votes_fem'] + opt['votes_masc'] * (n_women / n_men)
 
-            out.append({
-                **opt,
-                'postproc': round(votes),
-            })
+                out.append({
+                    **opt,
+                    'postproc': round(votes),
+                })
 
         out.sort(key=lambda x: -x['postproc'])
 
@@ -95,7 +113,7 @@ class PostProcView(APIView):
 
         q = round(1 + total_votes / (points + 1))
 
-        return self.largest_remainder(options, q, points)
+        return self.largest_remainder(options, q, points, total_votes == 0)
 
     def proportional_representation(self, options, type):
         out = []
@@ -103,15 +121,19 @@ class PostProcView(APIView):
         points_for_opt = []
         multiplier = 2 if type == 'SAINTE_LAGUE' else 1
         points = options[0]['points']
+        zero_votes = True
 
         for i in range(0, len(options)):
             votes.append(options[i]['votes'])
             points_for_opt.append(0)
+            if zero_votes is True and options[i]['votes'] != 0:
+                zero_votes = False
 
-        for i in range(0, points):
-            max_index = votes.index(max(votes))
-            points_for_opt[max_index] += 1
-            votes[max_index] = options[max_index]['votes'] / (multiplier * points_for_opt[max_index] + 1)
+        if zero_votes is False:
+            for i in range(0, points):
+                max_index = votes.index(max(votes))
+                points_for_opt[max_index] += 1
+                votes[max_index] = options[max_index]['votes'] / (multiplier * points_for_opt[max_index] + 1)
 
         for i in range(0, len(options)):
             out.append({
@@ -132,7 +154,7 @@ class PostProcView(APIView):
 
         q = round(total_votes / (points + 2))
 
-        return self.largest_remainder(options, q, points)
+        return self.largest_remainder(options, q, points, total_votes == 0)
 
     def hare(self, options):
         total_votes = 0
@@ -144,41 +166,9 @@ class PostProcView(APIView):
 
         q = round(total_votes / points)
 
-        return self.largest_remainder(options, q, points)
+        return self.largest_remainder(options, q, points, total_votes == 0)
 
     def post(self, request):
-        """
-         * type: IDENTITY | EQUALITY | BORDA |
-         * options: [
-            {
-             option: str,
-             number: int,
-             votes: int
-            }
-           ]
-
-         * type: DROOP | IMPERIALI | SAINTE_LAGUE | DHONDT | HARE
-         * points: int
-         * options: [
-            {
-             option: str,
-             number: int,
-             votes: int,
-            }
-           ]
-
-        * type: EQUALITY
-        * options: [
-            {
-             option: str,
-             number: int,
-             votes_men: int,
-             votes_women: int,
-            }
-           ]
-
-        """
-
         out = []
         questions = request.data
 
