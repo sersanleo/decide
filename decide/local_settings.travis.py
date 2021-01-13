@@ -33,6 +33,8 @@ DATABASES = {
         'NAME': 'test_decide',
         'USER': 'decide',
 	'PASSWORD': 'decide',
+	'SEX': 'M',
+	'STYLE': 'N',
         'HOST': 'localhost',
         'PORT': '5432',
     }
