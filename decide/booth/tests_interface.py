@@ -234,21 +234,64 @@ class AccesibilityInterfaceTests(StaticLiveServerTestCase):
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
 
-# class BoothInterfaceTests(StaticLiveServerTestCase):
-#     def setUp(self):
-#         self.booth = BoothTests()
-#         self.booth.setUp()
+class BoothInterfaceTests(StaticLiveServerTestCase):
+      def setUp(self):
+        self.booth = BoothTests()
+        self.booth.setUp()
 
-#         options = webdriver.ChromeOptions()
-#         options.headless = True
-#         self.driver = webdriver.Chrome(options=options)
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        u = UserProfile(id=1, username='voter1', sex='M')
+        u.set_password('123')
+        u.save()
+        token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
+        # Add session token
+        session = self.client.session
+        session['user_token'] = token
+        session.save()
 
-#         super().setUp()
+        q2 = Question(id=2,desc='Multiple option question', option_types=2)
+        q2.save()
+        for i in range(4):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
 
-#     def tearDown(self):
-#         super().tearDown()
-#         self.booth.tearDown()
-#         self.driver.quit()
+       
+        q3 = Question(id=3,desc='Rank order scale question', option_types=3)
+        q3.save()
+        for i in range(5):
+            opt = QuestionOption(question=q3, option='option {}'.format(i+1))
+            opt.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'base'})    
+        a.save()
+        v2 = Voting(id=2, name='Rank question voting',desc='Rank question voting...', points=1, start_date=timezone.now())
+        v2.save()
+        v2.question.add(q3)
+        v3 = Voting(id=3, name='Multiple question voting',desc='Multiple question voting...', points=1, start_date=timezone.now())
+        v3.save()
+        v3.question.add(q2)
+
+        v2.auths.add(a)
+        Voting.create_pubkey(v2)
+        #Add user to census
+        census = Census(voting_id=v2.id, voter_id=u.id)
+        census.save()
+        
+        v3.auths.add(a)
+        Voting.create_pubkey(v3)
+        #Add user to census
+        census = Census(voting_id=v3.id, voter_id=u.id)
+        census.save()
+
+        super().setUp()
+
+     def tearDown(self):
+         super().tearDown()
+         self.booth.tearDown()
+         self.driver.quit()
 
 #     def test_booth_voting_success(self):
 #         self.driver.get(f'{self.live_server_url}/booth/')
