@@ -125,11 +125,11 @@ class Statistics_View_Tests(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_detail_voting_404(self):
-        response = self.client.get('/visualizer/10/statistics')
+        response = self.client.get('/visualizer/1010/statistics')
         self.assertEqual(response.status_code, 404)
 
 
-class Statistics_View_Tests(StaticLiveServerTestCase):
+class Statistics_View_Tests_Selenium(StaticLiveServerTestCase):
     fixtures = ['visualizer/migrations/populate.json', ]
 
     def setUp(self):
