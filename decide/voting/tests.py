@@ -1821,3 +1821,48 @@ class VotingTestCase(BaseTestCase):
                     opts[opt.number] = votes
 
         self.assertEqual(opts, clear)
+
+   #Caso negativo tallyM con votacion de opción ranked order
+    def test_tallyM_ranked_order_negative_model(self):
+        v=self.create_voting_variable_option_types(3)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_ranked_aux_negative(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM=v.tallyM
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count=len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range (opt_count):
+                    votes.append(0)
+
+                for dicc in tallyM:
+                    indice = opt.number 
+                    pos = dicc.get(str(indice))
+                    if pos!=None and pos[1]==qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break       
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertNotEqual(opts, clear)
