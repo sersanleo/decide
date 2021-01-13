@@ -9,10 +9,13 @@ from voting.models import Voting
 from voting.models import Question
 from census.models import Census
 from store.models import Vote
+from authentication.models import UserProfile
 
+from datetime import datetime
 
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -191,17 +194,73 @@ class StatisticsView(TemplateView):
         vid = kwargs.get('voting_id', 0)
 
         try:
+            males_c = 0
+            females_c = 0
             r = mods.get('voting', params={'id': vid})
             census = Census.objects.filter(voting_id=vid).all()
             votes = Vote.objects.filter(voting_id=vid).all()
-            c = census.count()
-            v = votes.count()
-            stat = {"census": c}
-            stat["votes"] = v
-            if v > 0:
-                stat["percentage"] = round(v / c * 100, 2);
+            c=census.count()
+            v=votes.count()
+            stat = {"census": c, "votes": v}
+            males = 0
+            females = 0
+            if v>0:
+                stat["percentage"] = round(v/c*100,2);
             else:
                 stat["percentage"] = 0;
+
+            voting = Voting.objects.filter(id=vid).all()[0]
+            start = voting.start_date
+            end = voting.end_date
+            if start is None:
+                stat["start"] = "Not started yet"
+            else:
+                stat["start"] = datetime.strftime(start, "%b %d %Y %H:%M:%S")
+            if end is None:
+                stat["end"] = "Not finished yet"
+            else:
+                stat["end"] = datetime.strftime(end, "%b %d %Y %H:%M:%S")
+            if start is not None and end is not None:
+                stat["time"]=str(end-start)
+            else:
+                stat["time"]="Not finished yet"
+            if voting.postproc is not None:
+                stat["type"] = voting.postproc[0]["type"]
+            else:
+                stat["type"] = "Undefined"
+            if voting.tally is not None or voting.tallyF is not None or voting.tallyM is not None:
+                stat["tally"] = "Finished"
+            else:
+                stat["tally"] = "Not started"
+            for vote in votes:
+                voter = list(UserProfile.objects.filter(id=vote.voter_id))[0]
+                if voter is not None:
+                    if(voter.sex=="M"):
+                        males=males+1
+                    if(voter.sex=="F"):
+                        females=females+1
+            for cen in census:
+                user = list(UserProfile.objects.filter(id=cen.voter_id))[0]
+                if user is not None:
+                    if(user.sex=="M"):
+                        males_c=males+1
+                    if(user.sex=="F"):
+                        females_c=females+1
+            stat["males_v"] = males
+            stat["females_v"] = females
+            if(males_c+females_c>0):
+                stat["males_c"] = round(males_c / (males_c+females_c) *100,2)
+                stat["females_c"] = round(females_c / (males_c+females_c) *100,2)
+            else:
+                stat["males_c"] = 0
+                stat["females_c"] = 0
+            if (males + females > 0):
+                stat["males_v_percentage"] = round(males / (males + females) * 100, 2)
+                stat["females_v_percentage"] = round(females / (males + females) * 100, 2)
+            else:
+                stat["males_v_percentage"] = 0
+                stat["females_v_percentage"] = 0
+
             context['voting'] = json.dumps(r[0])
             context['stats'] = json.dumps(stat)
         except:

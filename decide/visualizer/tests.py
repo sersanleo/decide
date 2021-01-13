@@ -228,3 +228,50 @@ class List_view_test_selenium(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/admin/')
         self.driver.find_element(By.CSS_SELECTOR, "a:nth-child(4)").click()
 
+
+class Statistics_View_Tests(BaseTestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+
+    def setUp(self):
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def test_get_detail_voting_20(self):
+        response = self.client.get('/visualizer/20/statistics')
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_detail_voting_404(self):
+        response = self.client.get('/visualizer/1010/statistics')
+        self.assertEqual(response.status_code, 404)
+
+
+class Statistics_View_Tests_Selenium(StaticLiveServerTestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        user_admin = UserProfile(username='decide', sex='M', style='N', is_staff=True, is_superuser=True, is_active=True)
+        user_admin.set_password('practica1234')
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.driver.quit()
+        self.base.tearDown()
+
+    def test_statisticsWithLogin(self):
+        voting = Voting(name='test 1', desc='r')
+        voting.save()
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.set_window_size(1920, 1000)
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("decide")
+        self.driver.find_element(By.ID, "id_password").send_keys("practica1234")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/1/statistics')
