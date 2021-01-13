@@ -1569,9 +1569,9 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(IntegrityError, type(raised.exception))
 
     #Test de modelo de Task t044
+
     #Caso positivo tallyM con votacion de opción única
     def test_tallyM_unique_positive_model(self):
-        expectedTallyM=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
         self.create_voters(v)
 
@@ -1584,11 +1584,29 @@ class VotingTestCase(BaseTestCase):
 
         self.login()
         v.tally_votes(self.token)
-        self.assertEqual(v.tallyM,expectedTallyM)
-    
+        tallyM=v.tallyM
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
     #Caso negativo tallyM con votacion de opción única
     def test_tallyM_unique_negative_model(self):
-        expectedTallyM=[{'0': [0, 1]}, {'1': [0, 1]}, {'0': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
         self.create_voters(v)
 
@@ -1597,15 +1615,33 @@ class VotingTestCase(BaseTestCase):
         v.save()
 
         number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
+        clear=self.store_votes_aux_negative(v,number_of_voters)
 
         self.login()
         v.tally_votes(self.token)
-        self.assertNotEqual(v.tallyM,expectedTallyM)
+        tallyM=v.tallyM
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
 
     #Caso positivo tallyF con votacion de opción única
     def test_tallyF_unique_positive_model(self):
-        expectedTallyF=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
         self.create_voters_fem(v)
 
@@ -1618,11 +1654,29 @@ class VotingTestCase(BaseTestCase):
 
         self.login()
         v.tally_votes(self.token)
-        self.assertEqual(v.tallyF,expectedTallyF)
-    
-    #Caso negativo tallyF con votacion de opción única
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+   #Caso negativo tallyF con votacion de opción única
     def test_tallyF_unique_negative_model(self):
-        expectedTallyF=[{'0': [0, 1]}, {'1': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
         self.create_voters_fem(v)
 
@@ -1631,11 +1685,30 @@ class VotingTestCase(BaseTestCase):
         v.save()
 
         number_of_voters=3
-        clear=self.store_votes_aux_fem(v,number_of_voters)
+        clear=self.store_votes_aux_fem_negative(v,number_of_voters)
 
         self.login()
         v.tally_votes(self.token)
-        self.assertNotEqual(v.tallyF,expectedTallyF)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
 
     #Caso positivo tallyM con votacion de opción múltiple
     def test_tallyM_multiple_positive_model(self):
@@ -1911,3 +1984,48 @@ class VotingTestCase(BaseTestCase):
                     opts[opt.number] = votes
 
         self.assertEqual(opts, clear)
+
+  #Caso negativo tallyF con votacion de opción ranked order
+    def test_tallyF_ranked_order_negative_model(self):
+        v=self.create_voting_variable_option_types(3)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_ranked_aux_fem_negative(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count=len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range (opt_count):
+                    votes.append(0)
+
+                for dicc in tallyF:
+                    indice = opt.number 
+                    pos = dicc.get(str(indice))
+                    if pos!=None and pos[1]==qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break       
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertNotEqual(opts, clear)
