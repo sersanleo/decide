@@ -332,8 +332,6 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-        #alert = self.driver.find_element(By.ID, "alertVoteMessage")
-        #self.assertEquals(alert, "Error: Bad Request")
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/1/1/')
 
     def test_booth_voting_multiple_no_option_selected(self):
@@ -343,8 +341,6 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.find_element(By.LINK_TEXT, "Multiple question voting").click()
         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-        #alert = self.driver.find_element(By.ID, "alertVoteMessage")
-        #self.assertEquals(alert, "Error: Bad Request")
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/3/2/')
 
 
