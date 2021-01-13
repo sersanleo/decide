@@ -346,3 +346,13 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         #alert = self.driver.find_element(By.ID, "alertVoteMessage")
         #self.assertEquals(alert, "Error: Bad Request")
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/3/2/')
+
+
+    def test_booth_voting_rank_no_option_selected(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Rank question voting").click()
+        rankButton = self.driver.find_elements(By.ID, "rankSendButton")
+        self.assertTrue(len(rankButton)<1)
