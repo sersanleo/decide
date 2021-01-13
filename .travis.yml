@@ -23,8 +23,8 @@ install:
   - wget -N http://chromedriver.storage.googleapis.com/2.27/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip 
   - rm chromedriver_linux64.zip
-  - sudo mv -f chromedriver /usr/local/share/
-  - sudo chmod +x /usr/local/share/chromedriver
+  - sudo mv -f chromedriver /usr/bin
+  - sudo chmod +x /usr/bin/chromedriver
 script:
   - cd decide
   - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
