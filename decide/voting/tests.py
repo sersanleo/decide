@@ -1260,6 +1260,204 @@ class VotingTestCase(BaseTestCase):
             self.logout()
         return clear
 
+
+    def store_votes_ranked_aux_fem(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+           
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a,b = None, None
+                random_amount = random.randint(1, count_options) 
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b: 
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+                        
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b })
+                
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }                
+                mods.post('store', json=data)
+
+
+                
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 1
+                        clear[opt_number][pos] = sum
+                        
+                    else: 
+                        clear[opt_number] = zeros.copy()               
+                        sum = clear[opt_number][pos] + 1      
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1 
+
+            self.logout()
+        return clear
+
+
+    def store_votes_ranked_aux_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+           
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a,b = None, None
+                random_amount = random.randint(1, count_options) 
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b: 
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+                        
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b })
+                
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }                
+                mods.post('store', json=data)
+
+
+                
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 2
+                        clear[opt_number][pos] = sum
+                        
+                    else: 
+                        clear[opt_number] = zeros.copy()               
+                        sum = clear[opt_number][pos] + 2   
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1 
+
+            self.logout()
+        return clear
+
+
+
+
+    def store_votes_ranked_aux_fem_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+           
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a,b = None, None
+                random_amount = random.randint(1, count_options) 
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b: 
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+                        
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b })
+                
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }                
+                mods.post('store', json=data)
+
+
+                
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 2
+                        clear[opt_number][pos] = sum
+                        
+                    else: 
+                        clear[opt_number] = zeros.copy()               
+                        sum = clear[opt_number][pos] + 2   
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1 
+
+            self.logout()
+        return clear
+
+
     def test_complete_ranked_option_voting_positive(self):
         voting_type = 3
         v = self.create_voting_variable_option_types(voting_type)
@@ -1578,3 +1776,48 @@ class VotingTestCase(BaseTestCase):
                 votes_aux = votes_aux + clear[clave]
 
         self.assertNotEqual(votes, votes_aux)
+
+    #Caso positivo tallyM con votacion de opción ranked order
+    def test_tallyM_ranked_order_positive_model(self):
+        v=self.create_voting_variable_option_types(3)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_ranked_aux(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM=v.tallyM
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count=len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range (opt_count):
+                    votes.append(0)
+
+                for dicc in tallyM:
+                    indice = opt.number 
+                    pos = dicc.get(str(indice))
+                    if pos!=None and pos[1]==qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break       
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
