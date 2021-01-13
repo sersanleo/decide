@@ -235,7 +235,7 @@ class AccesibilityInterfaceTests(StaticLiveServerTestCase):
 #---------------------------------------------------------------------------------------------
 
 class BoothInterfaceTests(StaticLiveServerTestCase):
-      def setUp(self):
+    def setUp(self):
         self.booth = BoothTests()
         self.booth.setUp()
 
@@ -288,10 +288,10 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
 
         super().setUp()
 
-     def tearDown(self):
-         super().tearDown()
-         self.booth.tearDown()
-         self.driver.quit()
+    def tearDown(self):
+        super().tearDown()
+        self.booth.tearDown()
+        self.driver.quit()
 
 #     def test_booth_voting_success(self):
 #         self.driver.get(f'{self.live_server_url}/booth/')
@@ -335,3 +335,14 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         #alert = self.driver.find_element(By.ID, "alertVoteMessage")
         #self.assertEquals(alert, "Error: Bad Request")
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/1/1/')
+
+    def test_booth_voting_multiple_no_option_selected(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Multiple question voting").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        #alert = self.driver.find_element(By.ID, "alertVoteMessage")
+        #self.assertEquals(alert, "Error: Bad Request")
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/3/2/')
