@@ -21,7 +21,7 @@ install:
   - pip install codacy-coverage
   - pip install selenium
   - wget -N http://chromedriver.storage.googleapis.com/2.27/chromedriver_linux64.zip
-  - unzip ~/chromedriver_linux64.zip -d 
+  - unzip ~/chromedriver_linux64.zip 
   - rm ~/chromedriver_linux64.zip
   - sudo mv -f ~/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
