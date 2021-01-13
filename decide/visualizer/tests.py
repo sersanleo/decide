@@ -228,4 +228,3 @@ class List_view_test_selenium(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/admin/')
         self.driver.find_element(By.CSS_SELECTOR, "a:nth-child(4)").click()
 
-

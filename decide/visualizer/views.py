@@ -19,19 +19,21 @@ class VisualizerView(TemplateView):
         vid = kwargs.get('voting_id', 0)
 
         try:
-            voting = Voting.objects.get(pk=vid)
+            # voting = Voting.objects.get(pk = vid)
             r = mods.get('voting', params={'id': vid})
-            context['voting'] = json.dumps(r[0])
+            voting = r[0]
+            # context['voting'] = json.dumps(voting)
 
             # Mostramos las gráficas de las votaciones finalizadas
-            if not voting.end_date == None:
+            if not voting['end_date'] == None:
+                postproc = voting ['postproc']
                 # self.statistics_identity(r[0],context)
                 # if voting.type == 'EQUALITY':
-                self.statistics_equality(context, voting)
-                # elif voting.type == 'IDENTITY':
+                # self.statistics_equality(context, voting)
+                #elif voting.type == 'IDENTITY':
 
                 # else:
-                # self.statistics_points(context, voting)
+                context = self.statistics_points(context, voting)
 
 
         except:
@@ -63,30 +65,29 @@ class VisualizerView(TemplateView):
         context['v_women'] = v_women
 
     def statistics_points(self, context, voting):
-        r = {}
-        r["name"] = "Nombre de la votación"
-        r["desc"] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " \
-                    "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-        r["type"] = 'IDENTITY'
-        r["options"] = [
-            {'question': 'unique', 'question_id': 2, 'option': 'a', 'number': 4, 'votes': 7, 'votes_masc': 0,
-             'votes_fem': 4, 'points': 7, 'postproc': 3},
-            {'question': 'unique', 'question_id': 2, 'option': 'b', 'number': 5, 'votes': 6, 'votes_masc': 0,
-             'votes_fem': 5, 'points': 7, 'postproc': 2},
-            {'question': 'unique', 'question_id': 2, 'option': 'c', 'number': 6, 'votes': 4, 'votes_masc': 0,
-             'votes_fem': 1, 'points': 7, 'postproc': 1},
-            {'question': 'unique', 'question_id': 2, 'option': 'd', 'number': 7, 'votes': 9, 'votes_masc': 0,
-             'votes_fem': 1, 'points': 7, 'postproc': 1}]
-        voting = r
+        # r = {}
+        # r["name"] = "Nombre de la votación"
+        # r["desc"] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " \
+        #             "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+        # r["type"] = 'IDENTITY'
+        # r["options"] = [{'question': 'unique', 'question_id': 2, 'option': 'a', 'number': 4, 'votes': 7, 'votes_masc': 0,
+        #                  'votes_fem': 4, 'points': 7, 'postproc': 3},
+        #                 {'question': 'unique', 'question_id': 2, 'option': 'b', 'number': 5, 'votes': 6, 'votes_masc': 0,
+        #                  'votes_fem': 5, 'points': 7, 'postproc': 2},
+        #                 {'question': 'unique', 'question_id': 2, 'option': 'c', 'number': 6, 'votes': 4, 'votes_masc': 0,
+        #                  'votes_fem': 1, 'points': 7, 'postproc': 1},
+        #                 {'question': 'unique', 'question_id': 2, 'option': 'd', 'number': 7, 'votes': 9, 'votes_masc': 0,
+        #                  'votes_fem': 1, 'points': 7, 'postproc': 1}]
+
         labels = []
         postproc = []
         votes = []
-        points = voting['options'][0]['points']
-        question = voting['options'][0]['question']
-        type = voting['type']
+        points = voting['postproc'][0]['options'][0]['points']
+        question = voting['postproc'][0]['options'][0]['question']
+        type = voting['postproc'][0]["type"]
         name = voting["name"]
         desc = voting["desc"]
-        for option in voting['options']:
+        for option in voting['postproc'][0]['options']:
             labels.append(option['option'])
             postproc.append((option['postproc']))
             votes.append(option['votes'])
@@ -120,37 +121,52 @@ class VisualizerViewPointsInclude(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         vid = kwargs.get('voting_id', 0)
-        voting = mods.get('voting', params={'id': vid})
 
-        context = self.statistics_points(context, voting)
+        try:
+            # voting = Voting.objects.get(pk = vid)
+            r = mods.get('voting', params={'id': vid})
+            voting = r[0]
+            # context['voting'] = json.dumps(voting)
+
+            # Mostramos las gráficas de las votaciones finalizadas
+            if not voting['end_date'] == None:
+                postproc = voting ['postproc']
+                # self.statistics_identity(r[0],context)
+                # if voting.type == 'EQUALITY':
+                # self.statistics_equality(context, voting)
+                #elif voting.type == 'IDENTITY':
+
+                # else:
+                context = self.statistics_points(context, voting)
+
+        except:
+            raise Http404
 
         return context
 
     def statistics_points(self, context, voting):
-        r = {}
-        r["name"] = "Nombre de la votación"
-        r["desc"] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " \
-                    "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-        r["type"] = 'IDENTITY'
-        r["options"] = [
-            {'question': 'unique', 'question_id': 2, 'option': 'a', 'number': 4, 'votes': 7, 'votes_masc': 0,
-             'votes_fem': 4, 'points': 7, 'postproc': 3},
-            {'question': 'unique', 'question_id': 2, 'option': 'b', 'number': 5, 'votes': 6, 'votes_masc': 0,
-             'votes_fem': 5, 'points': 7, 'postproc': 2},
-            {'question': 'unique', 'question_id': 2, 'option': 'c', 'number': 6, 'votes': 4, 'votes_masc': 0,
-             'votes_fem': 1, 'points': 7, 'postproc': 1},
-            {'question': 'unique', 'question_id': 2, 'option': 'd', 'number': 7, 'votes': 9, 'votes_masc': 0,
-             'votes_fem': 1, 'points': 7, 'postproc': 1}]
-        voting = r
+        # r = {}
+        # r["name"] = "Nombre de la votación"
+        # r["desc"] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " \
+        #             "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+        # r["type"] = 'IDENTITY'
+        # r["options"] = [{'question': 'unique', 'question_id': 2, 'option': 'a', 'number': 4, 'votes': 7, 'votes_masc': 0,
+        #                  'votes_fem': 4, 'points': 7, 'postproc': 3},
+        #                 {'question': 'unique', 'question_id': 2, 'option': 'b', 'number': 5, 'votes': 6, 'votes_masc': 0,
+        #                  'votes_fem': 5, 'points': 7, 'postproc': 2},
+        #                 {'question': 'unique', 'question_id': 2, 'option': 'c', 'number': 6, 'votes': 4, 'votes_masc': 0,
+        #                  'votes_fem': 1, 'points': 7, 'postproc': 1},
+        #                 {'question': 'unique', 'question_id': 2, 'option': 'd', 'number': 7, 'votes': 9, 'votes_masc': 0,
+        #                  'votes_fem': 1, 'points': 7, 'postproc': 1}]
         labels = []
         postproc = []
         votes = []
-        points = voting['options'][0]['points']
-        question = voting['options'][0]['question']
-        type = voting['type']
+        points = voting['postproc'][0]['options'][0]['points']
+        question = voting['postproc'][0]['options'][0]['question']
+        type = voting['postproc'][0]["type"]
         name = voting["name"]
         desc = voting["desc"]
-        for option in voting['options']:
+        for option in voting['postproc'][0]['options']:
             labels.append(option['option'])
             postproc.append((option['postproc']))
             votes.append(option['votes'])
@@ -258,8 +274,8 @@ def get_global_view(request):
         porvotm = 0
         vtm = 0
         ctm = 0
-        abstr = 999999999999999999
-        porvotr = 999999999999999999
+        abstr = 100
+        porvotr = 100
         vtr = 999999999999999999
         ctr = 999999999999999999
         tabst = 0
