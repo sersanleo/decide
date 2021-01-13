@@ -10,7 +10,7 @@ services:
     networks:
       - decide
     environment:
-      - POSTGRES_PASSWORD=decide
+      - POSTGRES_PASSWORD = decide
   web:
     restart: always
     container_name: decide_web
