@@ -13,11 +13,16 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from base.tests import BaseTestCase
+from authentication.models import UserProfile
 
 class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
   def setUp(self):
     self.base = BaseTestCase()
     self.base.setUp()
+    user_admin_superuser = UserProfile(username='adminsuper', sex='F', style='N', is_staff=True, is_superuser=True)
+    user_admin_superuser.set_password('qwerty')
+    user_admin_superuser.save()
+    self.base.user_admin = user_admin_superuser
 
     self.driver = webdriver.Firefox()
     self.vars = {}
