@@ -195,7 +195,7 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-
+    '''
     def test_tally_message_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -1227,3 +1227,49 @@ class VotingTestCase(BaseTestCase):
             v.save()
 
         self.assertEqual(IntegrityError, type(raised.exception))
+    '''
+    #Pruebas de modelo para la t046
+
+    #Caso positivo 1
+
+    def test_store_multi_voting_positive_one(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+   
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 1)
+
+    #Caso positivo 2
+
+    def test_store_multi_voting_positive_two(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+
+        q2 = Question(desc='test question 2', option_types=options_type)
+        q2.save()
+        self.assertEqual(Question.objects.count(), 2)
+
+        
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 2)
