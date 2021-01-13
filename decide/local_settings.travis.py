@@ -30,9 +30,9 @@ BASEURL = 'http://localhost:8000'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'decidedb',
+        'NAME': 'test_decide',
         'USER': 'decide',
-	    'PASSWORD': 'complexpassword',
+	'PASSWORD': 'decide',
         'HOST': 'localhost',
         'PORT': '5432',
     }
