@@ -1014,6 +1014,111 @@ class VotingTestCase(BaseTestCase):
         return clear
 
 
+   
+    def store_votes_aux_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a,b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 2
+                    else:
+                        clear[chosen_option.number] = 2
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b })
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
+    def store_votes_aux_fem_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a,b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 2
+                    else:
+                        clear[chosen_option.number] = 2
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b })
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
     def test_complete_unique_option_voting_positive(self):
         v = self.create_voting_variable_option_types(1)
         self.create_voters(v)
@@ -1379,7 +1484,7 @@ class VotingTestCase(BaseTestCase):
         v.save()
 
         number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
+        clear=self.store_votes_aux_negative(v,number_of_voters)
 
         self.login()
         v.tally_votes(self.token)
@@ -1396,7 +1501,7 @@ class VotingTestCase(BaseTestCase):
                     pos = dicc.get(str(indice))
 
                     if pos!=None:
-                        votes = votes + 2
+                        votes = votes + 1
 
 
             for clave in clear.keys():
@@ -1438,3 +1543,38 @@ class VotingTestCase(BaseTestCase):
                 votes_aux = votes_aux + clear[clave]
 
         self.assertEqual(votes, votes_aux)
+
+   #Caso negativo tallyF con votacion de opción múltiple
+    def test_tallyF_multiple_negative_model(self):
+        v=self.create_voting_variable_option_types(2)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux_fem_negative(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
