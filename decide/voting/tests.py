@@ -195,7 +195,7 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-    '''
+    
     def test_tally_message_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -760,7 +760,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(AttributeError, type(raised.exception))
 
-    #Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
+    #Caso negativo 2: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
     #directamente debido a que ahora las question forman parte de un conjunto
 
     def test_multi_voting_two_neg(self):
@@ -1227,7 +1227,7 @@ class VotingTestCase(BaseTestCase):
             v.save()
 
         self.assertEqual(IntegrityError, type(raised.exception))
-    '''
+    
     #Pruebas de modelo para la t046
 
     #Caso positivo 1
@@ -1273,3 +1273,15 @@ class VotingTestCase(BaseTestCase):
             q.append(quest.desc)
 
         self.assertEqual(len(q), 2)
+
+        #Caso negativo 1
+
+    def test_store_multi_voting_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+
+        with self.assertRaises(Exception) as raised:
+            v = Voting(name='test voting multi', question=q1)
+
+        self.assertEqual(TypeError, type(raised.exception))
