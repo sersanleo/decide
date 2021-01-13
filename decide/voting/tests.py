@@ -1866,3 +1866,48 @@ class VotingTestCase(BaseTestCase):
                     opts[opt.number] = votes
 
         self.assertNotEqual(opts, clear)
+
+   #Caso positivo tallyF con votacion de opción ranked order
+    def test_tallyF_ranked_order_positive_model(self):
+        v=self.create_voting_variable_option_types(3)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_ranked_aux_fem(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count=len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range (opt_count):
+                    votes.append(0)
+
+                for dicc in tallyF:
+                    indice = opt.number 
+                    pos = dicc.get(str(indice))
+                    if pos!=None and pos[1]==qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break       
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
