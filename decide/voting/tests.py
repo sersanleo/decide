@@ -195,7 +195,7 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-
+    
     def test_tally_message_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -1227,3 +1227,36 @@ class VotingTestCase(BaseTestCase):
             v.save()
 
         self.assertEqual(IntegrityError, type(raised.exception))
+    
+    #Test de modelo de la t045
+
+    #Caso positivo
+
+    def test_store_unique_question_positive(self):
+        options_type = 3
+        q1 = Question(desc='test question desc 1', option_types=options_type)
+        q1.save()
+
+        q2 = Question(desc='test question desc 2', option_types=options_type)
+        q2.save()
+
+        self.assertEqual(Question.objects.count(), 2)
+        self.assertEqual(q1.desc, 'test question desc 1')
+        self.assertEqual(q2.desc, 'test question desc 2')
+
+    #Caso negativo
+
+    def test_store_unique_question_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question desc 1', option_types=options_type)
+        q1.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(q1.desc, 'test question desc 1')
+
+        q2 = Question(desc='test question desc 1', option_types=options_type)
+        with self.assertRaises(Exception) as raised:
+            q2.save()
+        
+        self.assertEqual(IntegrityError, type(raised.exception))
+        
