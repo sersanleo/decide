@@ -324,3 +324,14 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
 #         self.driver.find_element(By.LINK_TEXT, "Finalizar votación").click()
 
 #         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
+
+    def test_booth_voting_unique_no_option_selected(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        #alert = self.driver.find_element(By.ID, "alertVoteMessage")
+        #self.assertEquals(alert, "Error: Bad Request")
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/1/1/')
