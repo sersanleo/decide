@@ -10,20 +10,9 @@ before_script:
   - psql -U postgres -c "create database test_decide owner decide"
   - psql -U postgres -c "ALTER USER decide CREATEDB"
   - cp decide/local_settings.travis.py decide/local_settings.py
-  - "export DISPLAY=99:0"
+  - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
-  - sleep 3
-  - wget -N 
-  - http://chromedriver.storage.googleapis.com
-    /2.40/chromedriver_linux64.zip -P ~/
-  - unzip ~/chromedriver_linux64.zip -d ~/
-  - rm ~/chromedriver_linux64.zip
-  - sudo mv -f ~/chromedriver /usr/local/share/
-  - sudo chmod +x /usr/local/share/chromedriver
-  - sudo ln -s /usr/local/share/chromedriver 
-   /usr/local/bin/chromedriver
-  - sleep 3
-
+  - sleep 3 
 language: python
 python:
   - "3.6"
@@ -31,6 +20,11 @@ install:
   - pip install -r requirements.txt
   - pip install codacy-coverage
   - pip install selenium
+  - wget -N http://chromedriver.storage.googleapis.com/87.0/chromedriver_linux64.zip -P ~/
+  - unzip ~/chromedriver_linux64.zip -d ~/
+  - rm ~/chromedriver_linux64.zip
+  - sudo mv -f ~/chromedriver /usr/local/share/
+  - sudo chmod +x /usr/local/share/chromedriver
 script:
   - cd decide
   - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
