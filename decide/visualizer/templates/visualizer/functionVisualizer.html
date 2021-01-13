@@ -1,0 +1,75 @@
+{% extends "visualizer/visualizerBase.html" %}
+
+{% block content %}
+<body>
+    <main role="main">
+    <section  class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">{{name|safe}}</h1>
+            <p>{{desc|safe}}</p>
+        </div>
+    </section>
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-4" align="center">Results</h1>
+                    <canvas width="80" height="80" id="graficaPrincipal" ></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h1 class="display-4" align="center">Total Votes</h1>
+                    <canvas width="80" height="80" id="graficaSecundaria"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+</body>
+{% endblock %}
+
+{% block extrabody %}
+<!-- Vuejs -->
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+<script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+    var ctx = document.getElementById('graficaPrincipal').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{labels|safe}},
+            datasets:[{
+                label: 'Grafico de Recuento',
+                backgroundColor: ['#00b7ff', '#ffffc7', '#cd295a', '#ffe98a', 'grey'],
+                borderColor: 'rgb(0,0,0)',
+                data: {{postproc|safe}}
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+<script>
+    var ctx = document.getElementById('graficaSecundaria').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: {{labels|safe}},
+            datasets:[{
+                label: 'Grafico de Votos',
+                backgroundColor: ['#00b7ff', '#ffffc7', '#cd295a', '#ffe98a', 'grey'],
+                borderColor: 'rgb(0,0,0)',
+                data: {{votes|safe}}
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>
+
+{% endblock %}
