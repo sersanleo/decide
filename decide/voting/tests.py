@@ -20,6 +20,7 @@ from django.db.utils import IntegrityError
 from .admin import give_message
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+import sys
 
 
 
@@ -203,7 +204,8 @@ class VotingTestCase(BaseTestCase):
             self.logout()
             voter = voters.pop()
     
-    def test_tally_message_positive(self):
+    def test_tally_message_positive_api(self):
+        mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
@@ -232,12 +234,12 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.json(), 'Voting tallied')
         tally=voting.tally_votes(self.token)
 
-        mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         mensajeObtenido=give_message(voting,tally)
 
         self.assertEqual(mensajeEsperado, mensajeObtenido)
 
-    def test_tally_message_negative(self):
+    def test_tally_message_negative_api(self):
+        mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
@@ -266,10 +268,47 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.json(), 'Voting tallied')
         tally=voting.tally_votes(self.token)
 
-        mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         mensajeObtenido=give_message(voting,tally)
 
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
+
+    def test_tally_message_positive_unit(self):
+        mensajeEsperado='For voting test voting: for question test question for option option 1 it has 3 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes.'
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tally=v.tally
+        questions = v.question.all()
+
+        self.assertEqual(give_message(v,tally),mensajeEsperado)
+
+    def test_tally_message_negative_unit(self):
+        mensajeEsperado='For voting test voting: for question test question for option option 1 it has 0 votes,  for option option 2 it has 3 votes,  for option option 3 it has 0 votes.'
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tally=v.tally
+        questions = v.question.all()
+
+        self.assertNotEqual(give_message(v,tally),mensajeEsperado)
 
 
     def test_tally_masc_positive(self):
