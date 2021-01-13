@@ -100,8 +100,8 @@ def get_global_view(request):
         porvotm = 0
         vtm = 0
         ctm = 0
-        abstr = 999999999999999999
-        porvotr = 999999999999999999
+        abstr = 100
+        porvotr = 100
         vtr = 999999999999999999
         ctr = 999999999999999999
         tabst = 0
