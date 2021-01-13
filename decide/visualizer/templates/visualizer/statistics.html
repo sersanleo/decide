@@ -1,21 +1,8 @@
-{% extends "base.html" %}
+{% extends "visualizer/visualizerBase.html" %}
 {% load i18n static %}
-
-{% block extrahead %}
-    <link type="text/css" rel="stylesheet"
-         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet"
-         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
-{% endblock %}
 
 {% block content %}
     <div id="app-visualizer">
-        <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-        </b-navbar>
-
         <div class="statistics container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
             <h2 class="heading">Statistics:</h2>
