@@ -760,7 +760,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(AttributeError, type(raised.exception))
 
-    #Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
+    #Caso negativo 2: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
     #directamente debido a que ahora las question forman parte de un conjunto
 
     def test_multi_voting_two_neg(self):
@@ -1228,6 +1228,64 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(IntegrityError, type(raised.exception))
     
+    #Pruebas de modelo para la t046
+
+    #Caso positivo 1
+
+    def test_store_multi_voting_positive_one(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+   
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 1)
+
+    #Caso positivo 2
+
+    def test_store_multi_voting_positive_two(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+
+        q2 = Question(desc='test question 2', option_types=options_type)
+        q2.save()
+        self.assertEqual(Question.objects.count(), 2)
+
+        
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 2)
+
+        #Caso negativo 1
+
+    def test_store_multi_voting_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+
+        with self.assertRaises(Exception) as raised:
+            v = Voting(name='test voting multi', question=q1)
+
+        self.assertEqual(TypeError, type(raised.exception))
+        
     #Test de modelo de la t045
 
     #Caso positivo
