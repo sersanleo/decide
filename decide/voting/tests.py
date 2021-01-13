@@ -20,7 +20,6 @@ from django.db.utils import IntegrityError
 from .admin import give_message
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-import sys
 
 
 
@@ -65,7 +64,7 @@ class VotingTestCase(BaseTestCase):
             u.save()
             c = Census(voter_id=u.id, voting_id=v.id)
             c.save()
-    
+
     def create_voters_fem(self, v):
         for i in range(100):
             u, _ = User.objects.get_or_create(username='testvoter{}'.format(i),sex='F')
@@ -73,7 +72,6 @@ class VotingTestCase(BaseTestCase):
             u.save()
             c = Census(voter_id=u.id, voting_id=v.id)
             c.save()
-
 
     def get_or_create_user(self, pk):
         user, _ = User.objects.get_or_create(pk=pk)
@@ -204,7 +202,7 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-
+    
     def test_tally_message_positive(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -769,7 +767,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(AttributeError, type(raised.exception))
 
-    #Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
+    #Caso negativo 2: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
     #directamente debido a que ahora las question forman parte de un conjunto
 
     def test_multi_voting_two_neg(self):
@@ -1118,7 +1116,6 @@ class VotingTestCase(BaseTestCase):
 
             self.logout()
         return clear
-
     def test_complete_unique_option_voting_positive(self):
         v = self.create_voting_variable_option_types(1)
         self.create_voters(v)
@@ -1259,7 +1256,6 @@ class VotingTestCase(BaseTestCase):
 
             self.logout()
         return clear
-
 
     def store_votes_ranked_aux_fem(self, v, number_of_voters):
         voters = list(Census.objects.filter(voting_id=v.id))
@@ -1456,8 +1452,6 @@ class VotingTestCase(BaseTestCase):
 
             self.logout()
         return clear
-
-
     def test_complete_ranked_option_voting_positive(self):
         voting_type = 3
         v = self.create_voting_variable_option_types(voting_type)
@@ -1503,7 +1497,6 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(opts, clear)
 
-
     # Voting points (Recuento proporcional)    
 
     def test_voting_points_positive(self):
@@ -1541,7 +1534,6 @@ class VotingTestCase(BaseTestCase):
 
 
     # Tests de modelo de Task t042
-    # Preguntas con opción única
 
     def test_store_unique_option_question_positive(self):
         options_type = 1
@@ -1568,7 +1560,124 @@ class VotingTestCase(BaseTestCase):
             
         self.assertEqual(IntegrityError, type(raised.exception))
 
-    #Test de modelo de Task t044
+
+    # Tests de modelo de Task t043  
+    
+    def test_store_ranked_option_question_positive(self):
+        options_type = 3
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_voting_points_positive(self):
+        points = 2
+        v = Voting(id=1,name='test voting', points = points)
+        v.save()
+
+        self.assertEqual(Voting.objects.count(), 1)
+        self.assertEqual(points, Voting.objects.all()[0].points)
+
+    def test_store_voting_points_negative(self):
+        points = -2
+        v = Voting(id=1,name='test voting', points = points)
+        with self.assertRaises(Exception) as raised:
+            v.save()
+
+        self.assertEqual(IntegrityError, type(raised.exception))
+    
+    #Pruebas de modelo para la t046
+
+    #Caso positivo 1
+
+    def test_store_multi_voting_positive_one(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+   
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 1)
+
+    #Caso positivo 2
+
+    def test_store_multi_voting_positive_two(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+
+        q2 = Question(desc='test question 2', option_types=options_type)
+        q2.save()
+        self.assertEqual(Question.objects.count(), 2)
+
+        
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 2)
+
+        #Caso negativo 1
+
+    def test_store_multi_voting_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+
+        with self.assertRaises(Exception) as raised:
+            v = Voting(name='test voting multi', question=q1)
+
+        self.assertEqual(TypeError, type(raised.exception))
+        
+    #Test de modelo de la t045
+
+    #Caso positivo
+
+    def test_store_unique_question_positive(self):
+        options_type = 3
+        q1 = Question(desc='test question desc 1', option_types=options_type)
+        q1.save()
+
+        q2 = Question(desc='test question desc 2', option_types=options_type)
+        q2.save()
+
+        self.assertEqual(Question.objects.count(), 2)
+        self.assertEqual(q1.desc, 'test question desc 1')
+        self.assertEqual(q2.desc, 'test question desc 2')
+
+    #Caso negativo
+
+    def test_store_unique_question_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question desc 1', option_types=options_type)
+        q1.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(q1.desc, 'test question desc 1')
+
+        q2 = Question(desc='test question desc 1', option_types=options_type)
+        with self.assertRaises(Exception) as raised:
+            q2.save()
+        
+        self.assertEqual(IntegrityError, type(raised.exception))
+        
+     #Test de modelo de Task t044
 
     #Caso positivo tallyM con votacion de opción única
     def test_tallyM_unique_positive_model(self):
@@ -1985,7 +2094,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(opts, clear)
 
-  #Caso negativo tallyF con votacion de opción ranked order
+    #Caso negativo tallyF con votacion de opción ranked order
     def test_tallyF_ranked_order_negative_model(self):
         v=self.create_voting_variable_option_types(3)
         self.create_voters_fem(v)
@@ -2029,3 +2138,4 @@ class VotingTestCase(BaseTestCase):
                     opts[opt.number] = votes
 
         self.assertNotEqual(opts, clear)
+        
