@@ -7,7 +7,6 @@ addons:
 before_script:
   - psql -c "create user decide with password 'decide'" 
   - psql -c "create database decide owner decide"
-  - python manage.py migrate
   - cp decide/local_settings.travis.py decide/local_settings.py
 language: python
 python:
