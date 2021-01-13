@@ -203,7 +203,8 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
-    
+    #Pruebas de API Task t050
+    #Caso positivo
     def test_tally_message_positive_api(self):
         mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         voting = self.create_voting()
@@ -237,7 +238,8 @@ class VotingTestCase(BaseTestCase):
         mensajeObtenido=give_message(voting,tally)
 
         self.assertEqual(mensajeEsperado, mensajeObtenido)
-
+    
+    #Caso negativo
     def test_tally_message_negative_api(self):
         mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         voting = self.create_voting()
@@ -271,7 +273,8 @@ class VotingTestCase(BaseTestCase):
         mensajeObtenido=give_message(voting,tally)
 
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
-
+    #Pruebas unitarias Task t019
+    #Caso positivo 
     def test_tally_message_positive_unit(self):
         mensajeEsperado='For voting test voting: for question test question for option option 1 it has 3 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes.'
         v=self.create_voting_variable_option_types(1)
@@ -291,6 +294,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(give_message(v,tally),mensajeEsperado)
 
+    #Caso negativo
     def test_tally_message_negative_unit(self):
         mensajeEsperado='For voting test voting: for question test question for option option 1 it has 0 votes,  for option option 2 it has 3 votes,  for option option 3 it has 0 votes.'
         v=self.create_voting_variable_option_types(1)
@@ -309,9 +313,89 @@ class VotingTestCase(BaseTestCase):
         questions = v.question.all()
 
         self.assertNotEqual(give_message(v,tally),mensajeEsperado)
+    #Pruebas unitarias t024
+    #Caso positivo masculino
+    def test_tally_masc_positive_unit(self):
+        tallyMesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters(v)
 
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
 
-    def test_tally_masc_positive(self):
+        number_of_voters=3
+        clear=self.store_votes_aux(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM=v.tallyM
+        questions = v.question.all()
+
+        self.assertEqual(tallyM,tallyMesperado)
+    
+    #Caso negativo masculino
+    def test_tally_masc_negative_unit(self):
+        tallyMNoEsperado=[{'0': [0, 1]}, {'0': [0, 1]}, {'1': [0, 1]}]
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM=v.tallyM
+        questions = v.question.all()
+
+        self.assertNotEqual(tallyM,tallyMNoEsperado)
+
+    #Caso positivo femenino
+    def test_tally_fem_positive_unit(self):
+        tallyFesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux_fem(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        self.assertEqual(tallyF,tallyFesperado)
+
+    #Caso negativo femenino
+    def test_tally_fem_negative_unit(self):
+        tallyFNoEsperado=[{'1': [0, 1]}, {'0': [0, 1]}, {'0': [0, 1]}]
+        v=self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date=timezone.now()
+        v.save()
+
+        number_of_voters=3
+        clear=self.store_votes_aux_fem(v,number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF=v.tallyF
+        questions = v.question.all()
+
+        self.assertNotEqual(tallyF,tallyFNoEsperado)
+    #Pruebas de API t056
+    #Caso positivo masculino
+    def test_tally_masc_positive_api(self):
 
         voting = self.create_voting()
         self.create_voters(voting)
@@ -385,8 +469,8 @@ class VotingTestCase(BaseTestCase):
         resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 1}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 0}, {'Option:': 'option 5', 'has this male votes:': 0}]"
         self.assertEqual(str(opts),resultadoEsperado)
 
-
-    def test_tally_masc_negative(self):
+    #Caso negativo masculino
+    def test_tally_masc_negative_api(self):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
@@ -458,8 +542,8 @@ class VotingTestCase(BaseTestCase):
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 0}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 1}, {'Option:': 'option 5', 'has this male votes:': 0}]"
         self.assertNotEqual(str(opts),resultadoEsperado)
-
-    def test_tally_fem_positive(self):
+    #Caso positivo femenino
+    def test_tally_fem_positive_api(self):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
@@ -531,8 +615,8 @@ class VotingTestCase(BaseTestCase):
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 1}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 0}, {'Option:': 'option 5', 'has this female votes:': 0}]"
         self.assertEqual(str(opts),resultadoEsperado)
-
-    def test_tally_fem_negative(self):
+    #Caso negativo femenino
+    def test_tally_fem_negative_api(self):
         voting = self.create_voting()
         self.create_voters(voting)
         voting.create_pubkey()
