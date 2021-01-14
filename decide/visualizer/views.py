@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 
 from base import mods
 from voting.models import Voting
@@ -10,62 +10,93 @@ from voting.models import Question
 from census.models import Census
 from store.models import Vote
 from authentication.models import UserProfile
-
 from datetime import datetime
+
 
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         vid = kwargs.get('voting_id', 0)
 
         try:
-            # voting = Voting.objects.get(pk = vid)
             r = mods.get('voting', params={'id': vid})
             voting = r[0]
-            # context['voting'] = json.dumps(voting)
+            # census = Census.objects.get(voting_id=vid, voter_id=self.request.user.id) #Obtenemos el censo donde el usuario está registrado
 
-            # Mostramos las gráficas de las votaciones finalizadas
-            if not voting['end_date'] == None:
-                postproc = voting ['postproc']
-                # self.statistics_identity(r[0],context)
-                # if voting.type == 'EQUALITY':
-                # self.statistics_equality(context, voting)
-                #elif voting.type == 'IDENTITY':
+            # Solo se mostrarán las gráficas de aquellas votaciones finalizadas y postprocesadas. Además se verifica que el usuario es un superuser o pertenece al algún censo de la votación
+            if voting['end_date'] != None and voting['postproc'][0] != None and (self.request.user.is_superuser or census != None):
 
-                # else:
-                context = self.statistics_points(context, voting)
+                postproc = voting['postproc'][0]
+                if postproc['type'] == 'IDENTITY':
+                    self.statistics_identity(r[0],context)
 
+                elif postproc['type'] == 'EQUALITY':
+                    self.statistics_equality(context, voting)
 
+                else:
+                    self.statistics_points(context, voting)
+            
+                context['postproc_type'] = voting['postproc'][0]['type']
+
+            context['voting'] = voting
         except:
-            raise Http404
-
+                raise Http404
         return context
 
     def statistics_equality(self, context, voting):
-
-        postproc = [
-            {'option': 'Option 1', 'number': 1, 'votes_men': 2, 'votes_women': 3, 'postproc': 4},
-            {'option': 'Option 3', 'number': 3, 'votes_men': 3, 'votes_women': 1, 'postproc': 4},
-            {'option': 'Option 2', 'number': 2, 'votes_men': 0, 'votes_women': 4, 'postproc': 3},
-            {'option': 'Option 5', 'number': 5, 'votes_men': 1, 'votes_women': 3, 'postproc': 3},
-            {'option': 'Option 6', 'number': 6, 'votes_men': 1, 'votes_women': 1, 'postproc': 2},
-            {'option': 'Option 4', 'number': 4, 'votes_men': 1, 'votes_women': 0, 'postproc': 1}]
-
         options = []
-        v_men = []
-        v_women = []
+        votes_men = []
+        votes_women = []
+        gender_census = []
+        results = []
+        men_census = 0
+        women_census = 0
 
-        for opt in postproc:
+        # Obtenemos las opciones de la votación
+        aux = voting['question'][0]['options']
+        for opt in aux:
             options.append(opt['option'])
-            v_men.append(opt['votes_men'])
-            v_women.append(opt['votes_women'])
+        
+        # Obtenemos el número de votos según el género
+        for votes in voting['postproc'][0]['options']:
+            votes_men.append(votes['votes_masc'])
+            votes_women.append(votes['votes_fem'])
+        
+
+        # Obtenemos el censo según el género
+        census = Census.objects.filter(voting_id=voting['id']).all()
+        for c in census:
+            user = UserProfile.objects.get(id=c.voter_id)
+            gender = user.sex
+            if gender == 'F':
+                women_census += 1
+
+            else:    
+                men_census += 1
+
+        gender_census.append(men_census)
+        gender_census.append(women_census)
+
+        # Obtenemos el resultado de la votación para mostrarlo graficamente
+        total = 0
+        postproc = voting['postproc'][0]['options']
+        print(postproc)
+        for opt in postproc:
+            total += opt['postproc']
+        
+        for i in range(len(postproc)):
+            results.append(round((postproc[i]['postproc'] * 100)/total, 2))
+
+        # Agregamos todos los parámetro que necesitamos al context
 
         context['options'] = options
-        context['v_men'] = v_men
-        context['v_women'] = v_women
+        context['votes_men'] = votes_men
+        context['votes_women'] = votes_women
+        context['gender_census'] = gender_census
+        context['results'] = results
+        
 
     def statistics_points(self, context, voting):
         # r = {}
@@ -109,11 +140,11 @@ class VisualizerView(TemplateView):
     def statistics_identity(self, voting, context):
         labels = []
         data = []
-        postproc = voting.get('postproc')
+        postproc = voting.get('postproc')[0]['options']
 
-        for voting in postproc[0]:
-            labels.append(voting['option'])
-            data.append(int(voting['postproc']))
+        for option in postproc:
+            labels.append(option['option'])
+            data.append(int(option['postproc']))
         context['labels'] = labels
         context['data'] = data
 

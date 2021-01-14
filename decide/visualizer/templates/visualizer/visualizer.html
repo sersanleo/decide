@@ -2,237 +2,143 @@
 {% load i18n static %}
 
 {% block content %}
-    <div id="app-visualizer">
-
-<!--        &lt;!&ndash; Navbar &ndash;&gt;-->
-<!--        <b-navbar type="dark" variant="secondary">-->
-<!--            <b-navbar-brand tag="h1">Decide</b-navbar-brand>-->
-<!--        </b-navbar>-->
-        <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-            <div id="buttons_zoom"> 
-                <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
-                <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+<body>
+    <main role="main">
+    <section  class="jumbotron text-center">
+        <div class="container">
+            <h1 class="jumbotron-heading">{{voting.name|safe}}</h1>
+            <p>{{voting.desc|safe}}</p>
+        </div>
+    </section>
+        <div class="container">
+            <div v-if="voting.postproc" class="row align-items-center">
+                <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                    <canvas id="genderGraph"></canvas>
+                </div>
+                <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                    <canvas id="genderCensusChart"></canvas>
+                </div>
+                <div v-else-if="postproc_type == 'IDENTITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                    <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
+                </div>
+                <div v-else id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                    <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
+                </div>
             </div>
-        </b-navbar>
-
-<!--        <div class="voting container">-->
-<!--            <h1>[[ voting.id ]] - [[ voting.name ]] </h1>-->
-<!--            <h5>[[ voting.desc ]]</h5>-->
-<!--            <div v-if="!voting.start_date">-->
-<!--            <h4>La votación aun no ha comenzado. Hasta ahora hay [[stats.census]] personas censadas.</h4>-->
-
-
-<!--            </div>-->
-<!--            <div v-else-if="!voting.end_date">-->
-<!--                <p></p>-->
-<!--                <h4>Votación en curso. La votación esta sujeta a cambios.</h4>-->
-<!--                <p></p>-->
-<!--                <h2 class="heading">Progreso de la votación:</h2>-->
-<!--                <table class="table table-bordered table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>Numero de Votos</th>-->
-<!--                            <th>Porcentaje de Voto</th>-->
-<!--                            <th>Numero de Personas sin Votar</th>-->
-<!--                            <th>Porcentaje de Personas sin Votar</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                        <tr>-->
-<!--                            <td>[[stats.votes]]</td>-->
-<!--                            <td>[[(stats.votes/stats.census)*100]]%</td>-->
-<!--                            <td>[[stats.census-stats.votes]]</td>-->
-<!--                            <td>[[((stats.votes/stats.census)-1)*(-100)]]%</td>-->
-<!--                        </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-
-<!--            </div>-->
-<!--            <div v-else>-->
-<!--                <p></p>-->
-<!--                <h2 class="heading">Resultados:</h2>-->
-<!--                <p></p>-->
-<!--                <table class="table table-bordered table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>Opción</th>-->
-<!--                            <th>Puntuación</th>-->
-<!--                            <th>Votos</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                     {% for dict in postproc %}-->
-<!--                        <tr>-->
-<!--                            <th>{{ dict.option }}</th>-->
-<!--                            <td>{{ dict.postproc }}</td>-->
-<!--                            <td class="text-muted">{{ dict.votes }}</td>-->
-<!--                        </tr>-->
-<!--                    {% endfor %}-->
-<!--                    </tbody>-->
-<!--                </table>-->
-
-<!--                <h2 class="heading">Estadísticas porcentuales:</h2>-->
-<!--                <table class="table table-bordered table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>Opción</th>-->
-<!--                            <th>Porcentaje de Puntuación</th>-->
-<!--                            <th>Porcentaje de Votos</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                        <tr v-for="opt in voting.postproc" :key="opt.number">-->
-<!--                            <td>[[opt.option]]</td>-->
-<!--                            <td>[[(opt.postproc/stats.votes)*100]]%</td>-->
-<!--                            <td>[[(opt.votes/stats.votes)*100]]%</td>-->
-<!--                        </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-
-<!--                <h2 class="heading">Estadísticas totales:</h2>-->
-<!--                <table class="table table-bordered table-striped">-->
-<!--                    <thead>-->
-<!--                        <tr>-->
-<!--                            <th>Numero de Votos</th>-->
-<!--                            <th>Porcentaje de Voto</th>-->
-<!--                            <th>Numero de Personas sin Votar</th>-->
-<!--                            <th>Porcentaje de Abstención</th>-->
-<!--                        </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody>-->
-<!--                        <tr>-->
-<!--                            <td>[[stats.votes]]</td>-->
-<!--                            <td>[[(stats.votes/stats.census)*100]]%</td>-->
-<!--                            <td>[[stats.census-stats.votes]]</td>-->
-<!--                            <td>[[((stats.votes/stats.census)-1)*(-100)]]%</td>-->
-<!--                        </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--            </div>-->
-
-    <!-- Gráfica sexo por opción de una votación-->
-    <div id="container" style="width: 75%; margin: 0 auto; position: relative;">
-        <canvas id="canvas"></canvas>
-    </div>
-<!--        <div class="voting container">-->
-<!--            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>-->
-
-<!--            <h2 v-if="!voting.start_date">Votación no comenzada</h2>-->
-<!--            <h2 v-else-if="!voting.end_date">Votación en curso</h2>-->
-<!--            <div v-else>-->
-<!--                <h2 class="heading">Resultados:</h2>-->
-
-    <script>
-        var barChartData = {
-            labels: {{options|safe}},
-            datasets: [
-                {
-                    label: 'Masculino',
-                    backgroundColor: 'rgb(249, 231, 159)',
-                    borderColor: 'rgb(249, 231, 159)',
-                    borderWidth: 1,
-                    data: {{v_men|safe}}
-                },
-                {
-                    label: 'Femenino',
-                    backgroundColor: 'rgb(187, 143, 206)',
-                    borderColor: 'rgb(187, 143, 206)',
-                    borderWidth: 1,
-                    data: {{v_women|safe}}
-                }
-            ]
-        }
+        </div>
         
-        var chartOptions = {
-            responsive: true,
-            maintainAspectRatio: true,
-            legend: {
-                position: "right"
-            },
-            title: {
-                display: true,
-                fontSize: 25,
-                padding: 20,
-                text: "Número de votos según el sexo"
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                    beginAtZero: true,
-                    stepSize: 1
-                    }
-                }]
-            },
-            layout: {
-                padding: {
-                    left: 50,
-                    right: 0,
-                    top: 0,
-                    bottom: 0
-                }
-            }
-        }
-        
-        window.onload = function() {
-            var ctx = document.getElementById("canvas").getContext("2d");
-            window.myBar = new Chart(ctx, {
-            type: "bar",
-            data: barChartData,
-            options: chartOptions
-            });
-        };
-    </script>
+    </main>
 
-
-    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-        <canvas id="grafica" ></canvas>
-    </div>
-
-        <script>
-            window.onload = function() {
-                var ctx = document.getElementById('grafica').getContext('2d');
-                var chart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: {{labels|safe}},
-                        datasets:[{
-                            label: 'Resultados',
-                            backgroundColor: ['black', 'grey', 'brown'],
-                            borderColor: 'black',
-                            data: {{data|safe}}
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
-            };
-
-        </script>
-
+    
+</body>
 
 {% endblock %}
 
 {% block extrabody %}
-    <!-- Vuejs -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+   
+    <!--Chart.js-->
+    <script>
+        var ctx = document.getElementById('genderGraph').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{options|safe}},
+                datasets: [
+                    {
+                        label: 'Men',
+                        backgroundColor: 'rgb(173, 173, 173)',
+                        borderColor: 'rgb(173, 173, 173)',
+                        borderWidth: 1,
+                        data: {{votes_men|safe}}
+                    },
+                    {
+                        label: 'Women',
+                        backgroundColor: 'rgb(99, 98, 98)',
+                        borderColor: '(99, 98, 98)',
+                        borderWidth: 1,
+                        data: {{votes_women|safe}}
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                legend: {
+                    position: "top"
+                },
+                title: {
+                    display: true,
+                    fontSize: 25,
+                    padding: 20,
+                    text: "Number of votes according to gender and options"
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                        beginAtZero: true,
+                        stepSize: 1
+                        }
+                    }]
+                },
+                layout: {
+                    padding: {
+                        left: 50,
+                        right: 0,
+                        top: 70,
+                        bottom: 70
+                    }
+                }
+            }
+        });
+    </script>
 
     <script>
-        var voting = {{voting|safe}};
-        var stats = {{stats|safe}};
-        var app = new Vue({
-            delimiters: ['[[', ']]'],
-            el: '#app-visualizer',
+        var ctx = document.getElementById('genderCensusChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'doughnut',
             data: {
-                voting: voting,
-                stats: stats
+                labels: [
+                    'Men',
+                    'Women'
+                ],
+                datasets: [{
+                    backgroundColor: [
+                        'rgb(173, 173, 173)',
+                        'rgb(99, 98, 98)',
+                    ],
+                    borderColor: [
+                        'rgb(173, 173, 173)',
+                        'rgb(99, 98, 98)',
+                    ],
+                    borderWidth: 1,
+                    data: {{gender_census|safe}}
+                }]
+                
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                legend: {
+                    position: "right"
+                },
+                rotation: 1 * Math.PI,
+                circumference: 1 * Math.PI,
+                title: {
+                    display: true,
+                    fontSize: 25,
+                    padding: 20,
+                    text: "Census according to gender"
+                },
+                layout: {
+                    padding: {
+                        left: 50,
+                        right: 0,
+                        top: 70,
+                        bottom: 70
+                    }
+                }
             }
-        })
-
+        });
     </script>
 
 {% endblock %}
