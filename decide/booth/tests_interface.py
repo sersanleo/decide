@@ -7,7 +7,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
 from booth.tests import BoothTests
+from voting.models import Voting, Question, QuestionOption
+from census.models import Census
+from django.utils import timezone
+from django.conf import settings
+from mixnet.models import Auth
+from authentication.models import UserProfile
 
+from base import mods
 import time
 
 #---------------------------------------------------------------------------------------------
@@ -226,50 +233,90 @@ class AccesibilityInterfaceTests(StaticLiveServerTestCase):
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
 
-# class BoothInterfaceTests(StaticLiveServerTestCase):
-#     def setUp(self):
-#         self.booth = BoothTests()
-#         self.booth.setUp()
+class BoothInterfaceTests(StaticLiveServerTestCase):
+    def setUp(self):
+        self.booth = BoothTests()
+        self.booth.setUp()
 
-#         options = webdriver.ChromeOptions()
-#         options.headless = True
-#         self.driver = webdriver.Chrome(options=options)
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        u = UserProfile(id=1, username='voter1', sex='M')
+        u.set_password('123')
+        u.save()
+        token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
+        # Add session token
+        session = self.client.session
+        session['user_token'] = token
+        session.save()
 
-#         super().setUp()
+        q2 = Question(id=2,desc='Multiple option question', option_types=2)
+        q2.save()
+        for i in range(4):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
 
-#     def tearDown(self):
-#         super().tearDown()
-#         self.booth.tearDown()
-#         self.driver.quit()
+       
+        q3 = Question(id=3,desc='Rank order scale question', option_types=3)
+        q3.save()
+        for i in range(5):
+            opt = QuestionOption(question=q3, option='option {}'.format(i+1))
+            opt.save()
 
-#     def test_booth_voting_success(self):
-#         self.driver.get(f'{self.live_server_url}/booth/')
-#         self.driver.find_element(By.ID, "username").send_keys("voter1")
-#         self.driver.find_element(By.ID, "password").send_keys("123")
-#         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-#         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-#         options = self.driver.find_elements(By.TAG_NAME, "label")
-#         options[0].click()
-#         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-#         alert = self.driver.find_element(By.ID, "alertVoteMessage")
-#         self.assertEquals(alert, "Conglatulations. Your vote has been sent")
-#         self.driver.find_element(By.LINK_TEXT, "Siguiente pregunta >>").click()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,gitdefaults={'me':True,'name':'base'})
+        a.save()
+        v2 = Voting(id=2, name='Rank question voting',desc='Rank question voting...', points=1, start_date=timezone.now())
+        v2.save()
+        v2.question.add(q3)
+        v3 = Voting(id=3, name='Multiple question voting',desc='Multiple question voting...', points=1, start_date=timezone.now())
+        v3.save()
+        v3.question.add(q2)
 
-#         options = self.driver.find_elements(By.TAG_NAME, "label")
-#         options[1].click()
-#         options[2].click()
-#         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-#         alert = self.driver.find_element(By.ID, "alertVoteMessage")
-#         self.assertEquals(alert, "Conglatulations. Your vote has been sent")
-#         self.driver.find_element(By.LINK_TEXT, "Siguiente pregunta >>").click()
+        v2.auths.add(a)
+        Voting.create_pubkey(v2)
+        #Add user to census
+        census = Census(voting_id=v2.id, voter_id=u.id)
+        census.save()
+        
+        v3.auths.add(a)
+        Voting.create_pubkey(v3)
+        #Add user to census
+        census = Census(voting_id=v3.id, voter_id=u.id)
+        census.save()
 
-#         options = self.driver.find_elements(By.TAG_NAME, "label")
-#         options[1].click()
-#         options[2].click()
-#         options[5].click()
-#         options[4].click()
-#         options[3].click()
-#         self.driver.find_element(By.ID, "rankSendButton").click()
-#         self.driver.find_element(By.LINK_TEXT, "Finalizar votación").click()
+        super().setUp()
 
-#         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
+    def tearDown(self):
+        super().tearDown()
+        self.booth.tearDown()
+        self.driver.quit()
+
+
+    def test_booth_voting_unique_no_option_selected(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/1/1/')
+
+
+    def test_booth_voting_multiple_no_option_selected(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Multiple question voting").click()
+        self.driver.find_element(By.LINK_TEXT, "Enviar").click()
+        self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/3/2/')
+
+
+    def test_booth_voting_rank_no_option_selected(self):
+        self.driver.get(f'{self.live_server_url}/booth/')
+        self.driver.find_element(By.ID, "username").send_keys("voter1")
+        self.driver.find_element(By.ID, "password").send_keys("123")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.find_element(By.LINK_TEXT, "Rank question voting").click()
+        rankButton = self.driver.find_elements(By.ID, "rankSendButton")
+        self.assertTrue(len(rankButton)<1)
