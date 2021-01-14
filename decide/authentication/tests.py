@@ -96,6 +96,30 @@ class AuthTestCase(APITestCase):
         response = self.client.post('/authentication/changestyle/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
+    def test_changestyle_tritanopia(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+
+        token = response.json().get('token')
+        
+        data = {'token': token, 'style': 'T'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_changestyle_night(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Token.objects.filter(user__username='voter1').count(), 1)
+
+        token = response.json().get('token')
+        
+        data = {'token': token, 'style': 'O'}
+        response = self.client.post('/authentication/changestyle/', data, format='json')
+        self.assertEqual(response.status_code, 200)    
+
     def test_changestyle_inexistent_style(self):
         data = {'username': 'voter1', 'password': '123'}
         response = self.client.post('/authentication/login/', data, format='json')
