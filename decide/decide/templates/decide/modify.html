@@ -6,7 +6,7 @@
 
 
     <b-form-group id="input-group-1" label="Username" label-for="input-1">
-        <b-form-input id="input-1" v-model="formModify.username"  required></b-form-input>
+        <b-form-input id="input-1" v-model="formModify.username" required></b-form-input>
     </b-form-group>
 
     <b-form-group id="input-group-2" label="Email" label-for="input-2">
@@ -14,8 +14,6 @@
         </b-form-input>
     </b-form-group>
 
-    </b-form-group>
-    </b-form-group>
     <b-form-group id="input-group-3" label="Style" v-slot="{ ariaDescribedby }">
         {% for style in user_styles %}
         <b-form-radio v-model="formModify.style" :aria-describedby="ariaDescribedby" name="style"
@@ -31,8 +29,7 @@
     </b-form-group>
 
 
-    <b-button type="submit" variant="primary">Submit</b-button>
-    <b-button type="reset" variant="danger">Reset</b-button>
+    <b-button type="submit"  variant="primary">Submit</b-button>
 </b-form>
 
 {% endblock %}
@@ -50,8 +47,11 @@ email:''
 
 
 <script>
+
     {% block vue_methods %}
     onSubmitModify(evt){
+        evt.preventDefault()
+
         var data = {
             token: this.token, username: this.formModify.username
         };
@@ -68,10 +68,15 @@ email:''
             .catch(error => {
                 this.showAlert("danger", 'Error: ' + error);
             });
+
+    
     },
+
     {% endblock %}
 </script>
 {% block vue_after_getuser %}
-formModify.username = this.user.username
-formModify.sex = this.user.sex
+this.formModify.username = this.user.username
+this.formModify.sex = this.user.sex
+this.formModify.email = this.user.email
+this.formModify.style = this.user.style
 {% endblock %}

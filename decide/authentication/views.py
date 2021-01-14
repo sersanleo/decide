@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.status import (
-        HTTP_201_CREATED,
-        HTTP_400_BAD_REQUEST,
-        HTTP_401_UNAUTHORIZED
+    HTTP_201_CREATED,
+    HTTP_400_BAD_REQUEST,
+    HTTP_401_UNAUTHORIZED
 )
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -39,7 +39,8 @@ class ChangeStyleView(APIView):
     def post(self, request):
         # validating token
         token = request.data.get('token')
-        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user = mods.post('authentication',
+                         entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
         if not user_id:
@@ -56,11 +57,13 @@ class ChangeStyleView(APIView):
 
         return Response({})
 
+
 class ChangeSexView(APIView):
     def post(self, request):
         # validating token
         token = request.data.get('token')
-        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user = mods.post('authentication',
+                         entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
         if not user_id:
@@ -77,11 +80,13 @@ class ChangeSexView(APIView):
 
         return Response({})
 
+
 class ChangeEmailView(APIView):
     def post(self, request):
         # validating token
         token = request.data.get('token')
-        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user = mods.post('authentication',
+                         entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
         if not user_id:
@@ -103,8 +108,10 @@ class PageLoginView(APIView):
     def post(self, request):
         username = request.data.get('username', '')
         password = request.data.get('password', '')
-        token = mods.post('authentication', entry_point='/login/', json={'username': username, 'password': password})
-        voter = mods.post('authentication', entry_point='/getuser/', json=token)
+        token = mods.post('authentication', entry_point='/login/',
+                          json={'username': username, 'password': password})
+        voter = mods.post('authentication',
+                          entry_point='/getuser/', json=token)
 
         voter_id = voter.get('id', None)
         if voter_id == None:
@@ -116,7 +123,7 @@ class PageLoginView(APIView):
         request.session.modified = True
         for key, value in self.request.session.items():
             print('{} => {}'.format(key, value))
-        
+
         return Response(token)
 
 
@@ -125,7 +132,8 @@ class PageLogoutView(APIView):
         token = self.request.session.get('user_token')
 
         if token:
-            mods.post('authentication', entry_point='/logout/', json={'token':token})
+            mods.post('authentication', entry_point='/logout/',
+                      json={'token': token})
             del self.request.session['user_token']
             del self.request.session['voter_id']
             del self.request.session['username']
@@ -156,11 +164,13 @@ class RegisterView(APIView):
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
 
+
 class ModifyView(APIView):
     def post(self, request):
-          # validating token
+        # validating token
         token = request.data.get('token')
-        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user = mods.post('authentication',
+                         entry_point='/getuser/', json={'token': token})
         user_id = user.get('id', None)
 
         if not user_id:
@@ -168,10 +178,9 @@ class ModifyView(APIView):
 
         u = UserProfile.objects.get(pk=user_id)
 
-
         newusername = request.data.get('username')
-
         u.username = newusername
+
         u.save(update_fields=['username'])
 
         return Response({})
