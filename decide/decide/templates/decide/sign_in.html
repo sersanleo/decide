@@ -80,9 +80,18 @@ onSubmitRegister(evt) {
     evt.preventDefault();
     this.postData("/gateway/authentication/register/", this.formSignIn)
         .then(data => {
-            window.location.href='/';
             this.showAlert("info", 'User successfully created');
             alert ("User successfully created");
+            this.postData("/gateway/authentication/page-login/", this.formSignIn)
+            .then(data => {
+                document.cookie = 'decide=' + data.token + '; path=/; max-age=7200;';
+                this.token = data.token;
+                this.getUser();
+                window.location.href='/';
+            })
+            .catch(error => {
+                this.showAlert("danger", 'Error: ' + error);
+            });
         })
         .catch(error => {
             this.showAlert("danger", 'Error: ' + error);
