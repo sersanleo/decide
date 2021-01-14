@@ -22,8 +22,10 @@ class MixnetCase(APITestCase):
         p, g, y = pk
         k = MixCrypt(bits=bits)
         k.k = ElGamal.construct((p, g, y))
-
-        cipher = [k.encrypt(i) for i in msgs]
+        cipher = []
+        for vote in msgs:
+            a, b = k.encrypt(vote[0])
+            cipher.append([a,b,vote[1],vote[2]])
         return cipher
 
     def test_create(self):
@@ -43,13 +45,14 @@ class MixnetCase(APITestCase):
         self.assertEqual(type(key["g"]), int)
         self.assertEqual(type(key["p"]), int)
         self.assertEqual(type(key["y"]), int)
-'''
+
     def test_shuffle(self):
         self.test_create()
 
-        clear = [2, 3, 4, 5]
+        clear = [[2,0,1], [3,0,1], [4,0,1], [5,0,1]]
         pk = self.key["p"], self.key["g"], self.key["y"]
         encrypt = self.encrypt_msgs(clear, pk)
+        print(encrypt)
         data = {
             "msgs": encrypt
         }
@@ -60,7 +63,7 @@ class MixnetCase(APITestCase):
         shuffled = response.json()
 
         self.assertNotEqual(shuffled, encrypt)
-
+'''
     def test_shuffle2(self):
         self.test_create()
 
@@ -104,19 +107,18 @@ class MixnetCase(APITestCase):
 
     def test_multiple_auths(self):
 
-        This test emulates a two authorities shuffle and decryption.
+        #This test emulates a two authorities shuffle and decryption.
 
-        We create two votings, one with id 1 and another one with id 2, to
-        have this separated in the test db.
+        #We create two votings, one with id 1 and another one with id 2, to
+        #have this separated in the test db.
 
-        Then we compose the PublicKey of both auths.
+        #Then we compose the PublicKey of both auths.
 
-        Then we encrypt the text with the PK and shuffle two times, once
-        with each voting/auth.
+        #Then we encrypt the text with the PK and shuffle two times, once
+        #with each voting/auth.
 
-        Then we decrypt with the first voting/auth and decrypt the result
-        with the second voting/auth.
-
+        #Then we decrypt with the first voting/auth and decrypt the result
+        #with the second voting/auth.
 
         data = { "voting": 1, "auths": [ { "name": "auth1", "url": "http://localhost:8000" } ] }
         response = self.client.post('/mixnet/', data, format='json')
@@ -188,4 +190,4 @@ class MixnetCase(APITestCase):
 
         self.assertNotEqual(clear, clear1)
         self.assertEqual(sorted(clear), sorted(clear1))
-'''
+        '''
