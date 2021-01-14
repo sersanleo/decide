@@ -263,7 +263,7 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
             opt = QuestionOption(question=q3, option='option {}'.format(i+1))
             opt.save()
 
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,gitdefaults={'me':True,'name':'base'})
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,defaults={'me':True,'name':'base'})
         a.save()
         v2 = Voting(id=2, name='Rank question voting',desc='Rank question voting...', points=1, start_date=timezone.now())
         v2.save()
