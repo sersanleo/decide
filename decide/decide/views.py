@@ -40,4 +40,5 @@ class SignInView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['user_styles'] = UserProfile.styles;
+        context['user_sex'] = UserProfile.sex_types;
         return context
