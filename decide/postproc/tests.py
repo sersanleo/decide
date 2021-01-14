@@ -741,13 +741,13 @@ class PostProcTestCase(APITestCase):
         expected_result = [{
             'type': 'HARE',
             'options': [
-                { 'option': 'Option A', 'number': 1, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 15 },
-                { 'option': 'Option B', 'number': 2, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
-                { 'option': 'Option C', 'number': 3, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
-                { 'option': 'Option D', 'number': 4, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
-                { 'option': 'Option E', 'number': 5, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
-                { 'option': 'Option F', 'number': 6, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
-                { 'option': 'Option G', 'number': 7, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+                { 'option': 'Option A', 'number': 1, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option B', 'number': 2, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option C', 'number': 3, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option D', 'number': 4, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option E', 'number': 5, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option F', 'number': 6, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
+                { 'option': 'Option G', 'number': 7, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 0 },
             ]
         }]
 
