@@ -38,15 +38,18 @@
     <div id="header">
         <div id="branding">
            
-        {% block branding %}{% endblock %}
+            {% block branding %}{% endblock %}
             <div id="buttons_zoom"> 
                 <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
                 <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+            
+                
             </div>
-        
+
+            
         </div>
         {% block usertools %}
-
+       
 
         {% if has_permission %}
         
@@ -140,4 +143,3 @@ function logoutmessage(){
 }
 
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
