@@ -3,6 +3,14 @@ body,h3,a{
     font-size:1em;
 }
 
+#app-decide {
+    background-color:#F8DFE9;
+}
+
+.bg-primary {
+    background-color: #116D72 !important;
+}
+
 h1{
     font-size:1.4285em;
 }
@@ -316,4 +324,14 @@ h1{
 
 #text-voice-assistants {
     margin: 40px;
+}
+
+#signInDiv {
+    float:right;
+}
+
+#formSignUpDiv {
+    align-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
 }

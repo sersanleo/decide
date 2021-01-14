@@ -1,7 +1,18 @@
 
 body,h3,a{
     font-size:1em;
+    color:white;
 }
+
+#app-decide {
+    background-color:#5D6D7E;
+}
+
+.bg-primary {
+    background-color: #17202A !important;
+}
+
+
 
 h1{
     font-size:1.4285em;
@@ -321,6 +332,7 @@ h1{
 	padding: 20px;
 	text-align: center;
     width: 600px;
+    color: #17202A;
 }
 
 .popup .btn-cerrar-popup{
@@ -329,7 +341,7 @@ h1{
 	display: block;
 	text-align: right;
 	transition: .3s ease all;
-	color: #90A7C0;
+	color: #17202A;
 }
 
 .popup .btn-cerrar-popup:hover {
@@ -340,7 +352,7 @@ h1{
     float: right;
 }
 .popup h4 {
-    color: #90A7C0 !important;
+    color: #17202A !important;
     font-family: serif !important;
     font-size: 36px;
     font-weight: 600;
@@ -354,4 +366,14 @@ h1{
 
 #text-voice-assistants {
     margin: 40px;
+}
+
+#signInDiv {
+    float:right;
+}
+
+#formSignUpDiv {
+    align-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
 }

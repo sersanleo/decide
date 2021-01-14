@@ -93,23 +93,21 @@ class PageLogoutView(APIView):
 
 class RegisterView(APIView):
     def post(self, request):
-        key = request.data.get('token', '')
-        tk = get_object_or_404(Token, key=key)
-        if not tk.user.is_superuser:
-            return Response({}, status=HTTP_401_UNAUTHORIZED)
 
         username = request.data.get('username', '')
         sex = request.data.get('sex', '')
+        email = request.data.get('email', '')
         style = request.data.get('style', '')
         pwd = request.data.get('password', '')
         if not username or not pwd or not sex or not style:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
         try:
-            user = UserProfile(username=username, sex=sex, style=style)
+            user = UserProfile(username=username, sex=sex, style=style, email=email)
             user.set_password(pwd)
             user.save()
             token, _ = Token.objects.get_or_create(user=user)
         except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
-        return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
+
+        return Response( HTTP_201_CREATED)

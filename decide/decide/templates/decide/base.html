@@ -107,6 +107,7 @@
                 <!-- Non authenticated user -->
                 <b-navbar-nav class="ml-auto" v-if="user == null">
                     <b-button onclick="openPopUp();" variant="light" id="btn-abrir-popup">{% trans "Login" %}</b-button>
+                    <b-button variant="secondary" onclick="location.href='/sign-in/'" id="signIn" class="signIn">Sign up</b-button>
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
@@ -139,6 +140,9 @@
                         </b-form>
                     </b-col>
                 </b-row>
+                <div id="signInDiv">
+                    <b-button variant="secondary" onclick="location.href='/sign-in/'" id="signIn" class="signIn">Sign up</b-button>
+                </div>
             </div>
         </div>
 
@@ -272,6 +276,7 @@
                 {% block vue_methods %}{% endblock %}
             },
         })
+        
     </script>
    
    
