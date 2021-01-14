@@ -627,3 +627,36 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
     
+    def test_hare_without_votes(self):
+
+        data = [{
+            'type': 'HARE',
+            'options': [
+                { 'option': 'Option A', 'number': 1, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+                { 'option': 'Option B', 'number': 2, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+                { 'option': 'Option C', 'number': 3, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+                { 'option': 'Option D', 'number': 4, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+                { 'option': 'Option E', 'number': 5, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+                { 'option': 'Option F', 'number': 6, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+                { 'option': 'Option G', 'number': 7, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0 },
+            ]
+        }]
+
+        expected_result = [{
+            'type': 'HARE',
+            'options': [
+                { 'option': 'Option A', 'number': 1, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 15 },
+                { 'option': 'Option B', 'number': 2, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+                { 'option': 'Option C', 'number': 3, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+                { 'option': 'Option D', 'number': 4, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+                { 'option': 'Option E', 'number': 5, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+                { 'option': 'Option F', 'number': 6, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+                { 'option': 'Option G', 'number': 7, 'points': 21, 'votes_masc': 0, 'votes_fem': 0, 'votes': 0, 'postproc': 1 },
+            ]
+        }]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
