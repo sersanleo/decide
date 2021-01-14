@@ -160,6 +160,23 @@ html, body{
     margin: 40px;
 }
 
+.translate{
+    background-color:#ff6e92;
+    margin:auto;
+    border-radius: .3rem;
+    border-color: #ff6e92;
+    color:white;
+}
+
+#signInDiv {
+    float:right;
+}
+
+#formSignUpDiv {
+    align-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
+}
 
 /*
 ESTO FUE LO K AÑADIO MOISES AL ESTILO DE CABINA SIN QUERER. POR SI HACE FALTA

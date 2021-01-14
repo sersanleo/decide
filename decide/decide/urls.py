@@ -28,6 +28,7 @@ urlpatterns = [
     path('gateway/', include('gateway.urls')),
     path('helpvoiceassistant/', views.HelpVoiceAssistantView.as_view(), name="helpVoiceAssistant"),
     path('modifyProfileData/', views.ModifyProfileDateView.as_view(), name="modifyProfileData"),
+    path('sign-in/', views.SignInView.as_view(), name="signIn"),
     path('', views.IndexView.as_view(), name="index")
 ]
 

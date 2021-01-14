@@ -9,6 +9,12 @@ from voting.serializers import MinimalVotingSerializer
 from authentication.models import UserProfile
 
 from base import mods
+from django.http import HttpResponse
+from django.utils.translation import ugettext as _
+
+def index(request):
+    output = _('StatusMsg')
+    return HttpResponse(output)
 
 class IndexView(TemplateView):
     template_name = 'decide/index.html'
@@ -42,3 +48,14 @@ class ModifyProfileDateView(TemplateView):
         context['user_styles'] = UserProfile.styles;
         context['user_sex'] = UserProfile.sex_types;
         return context
+      
+class SignInView(TemplateView):
+    template_name='decide/sign_in.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['user_styles'] = UserProfile.styles;
+        context['user_sex'] = UserProfile.sex_types;
+        return context
+

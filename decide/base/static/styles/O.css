@@ -250,14 +250,6 @@ h1{
     cursor: pointer;
 }
 
-.datetimeshortcuts .date-icon {
-    background: url(../img/icon-calendar.svg) 0 0 no-repeat;
-    top: -1px;
-    background: #17202A;
-    color: white !important;
-    margin: 2px;
-}
-
 .calendar td a{
     display: block;
     font-weight: 400;
@@ -366,4 +358,14 @@ h1{
 
 #text-voice-assistants {
     margin: 40px;
+}
+
+#signInDiv {
+    float:right;
+}
+
+#formSignUpDiv {
+    align-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
 }
