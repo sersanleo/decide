@@ -26,6 +26,10 @@ install:
   - rm chromedriver_linux64.zip
   - sudo mv -f chromedriver /usr/bin
   - sudo chmod +x /usr/bin/chromedriver
+  - wget "https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz"
+  - tar xfz geckodriver-v0.24.0-linux64.tar.gz
+  - sudo mv -f geckodriver /usr/bin
+  - sudo chmod +x /usr/bin/geckodriver
 script:
   - cd decide
   - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
