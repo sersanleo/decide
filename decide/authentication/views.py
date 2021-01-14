@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .serializers import UserSerializer
 
 from base import mods
+import re
 
 
 class GetUserView(APIView):
@@ -99,8 +100,12 @@ class RegisterView(APIView):
         email = request.data.get('email', '')
         style = request.data.get('style', '')
         pwd = request.data.get('password', '')
-        if not username or not pwd or not sex or not style:
+        if not username or not pwd or not re.match("^.{8,}$", pwd) or not sex or not style:
             return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        if email:
+            if "@" not in email:
+                return Response({}, status=HTTP_400_BAD_REQUEST)
 
         try:
             user = UserProfile(username=username, sex=sex, style=style, email=email)
@@ -110,4 +115,4 @@ class RegisterView(APIView):
         except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
 
-        return Response( HTTP_201_CREATED)
+        return Response({})
