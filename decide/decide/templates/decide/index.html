@@ -1,15 +1,19 @@
 {% extends "decide/base.html" %}
 {% load i18n static %}
 
+
+
+
 {% block content %}
+
 <b-row>
-  <b-col>Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account
+  <b-col class="lang" id="welcome">Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account
     and press booth to vote or press visualizer to see the results.</b-col>
 </b-row>
 <!-- Mini dashboard -->
 <b-row v-if="user != null">
   <b-col sm="12" md="6">
-    <h1>{% trans "My pending votings" %}</h1>
+    <h1 class="lang" id="pendingId">{% trans "My pending votings" %}</h1>
     <b-list-group>
       <b-list-group-item variant="secondary" v-if="pending_votings.length <= 0">
         {% trans "No pending votings" %}
@@ -19,7 +23,7 @@
     </b-list-group>
   </b-col>
   <b-col sm="12" md="6">
-    <h1>{% trans "My votings results" %}</h1>
+    <h1 class="lang" id="resultsId">{% trans "My votings results" %}</h1>
     <b-list-group>
       <b-list-group-item variant="secondary" v-if="past_votings.length <= 0">
         {% trans "No results" %}
@@ -31,11 +35,13 @@
 </b-row>
 <b-row class="pt-5">
   <b-col>
-    You need some help on accesibility?</strong></br>
+    <b class="lang" id="questionHelp">You need some help on accesibility?</b></strong></br>
     <b-button pill onclick="location.href='helpvoiceassistant'" class="mt-2" size="lg">Voice assistant</b-button>
   </b-col>
 </b-row>
 {% endblock %}
+
+
 
 {% block vue_data %}
 pending_votings: null,
@@ -52,6 +58,7 @@ getVotings(evt) {
       })
 }
 {% endblock %}
+
 
 {% block vue_after_getuser %}
 this.getVotings();
