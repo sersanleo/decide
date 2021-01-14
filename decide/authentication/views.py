@@ -56,6 +56,48 @@ class ChangeStyleView(APIView):
 
         return Response({})
 
+class ChangeSexView(APIView):
+    def post(self, request):
+        # validating token
+        token = request.data.get('token')
+        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user_id = user.get('id', None)
+
+        if not user_id:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        # validating sex
+        newsex = request.data.get('sex')
+        if not newsex in [i[0] for i in UserProfile.sex_types]:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        u = UserProfile.objects.get(pk=user_id)
+        u.sex = newsex
+        u.save(update_fields=['sex'])
+
+        return Response({})
+
+class ChangeEmailView(APIView):
+    def post(self, request):
+        # validating token
+        token = request.data.get('token')
+        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user_id = user.get('id', None)
+
+        if not user_id:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        # validating sex
+        newemail = request.data.get('email')
+        if not newemail:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        u = UserProfile.objects.get(pk=user_id)
+        u.email = newemail
+        u.save(update_fields=['email'])
+
+        return Response({})
+
 
 class PageLoginView(APIView):
     def post(self, request):
@@ -113,3 +155,23 @@ class RegisterView(APIView):
         except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
+
+class ModifyView(APIView):
+    def post(self, request):
+          # validating token
+        token = request.data.get('token')
+        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user_id = user.get('id', None)
+
+        if not user_id:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
+        u = UserProfile.objects.get(pk=user_id)
+
+
+        newusername = request.data.get('username')
+
+        u.username = newusername
+        u.save(update_fields=['username'])
+
+        return Response({})
