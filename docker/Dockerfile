@@ -10,7 +10,7 @@ RUN pip install ipython
 
 WORKDIR /app
 
-RUN git clone https://github.com/egc-guadalentin/decide.git .
+RUN git clone --branch votaciones-docker https://github.com/egc-guadalentin/decide.git .
 RUN pip install -r requirements.txt
 
 WORKDIR /app/decide
