@@ -18,6 +18,10 @@
     </script>
     <!-- Zoom -->
     <script src="{% static 'js/zoom.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    
+    <!-- Translation -->
     <!-- Popups -->
     <script>
         function openPopUp() {
@@ -67,14 +71,26 @@
                         <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button>
                         <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
                     </div>
+                    
+
+                    <div id="translate"> 
+                        <button class="translate" id="es">Español</button>
+                        <button class="translate" id="en">English</button>
+                        
+                    </div>
+                   
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
                 <!-- Authenticated user -->
                 <b-navbar-nav class="ml-auto" v-if="user != null">
+
                     <b-navbar-brand>
-                        <strong>
-                            {% trans "Welcome" %}, [[this.user.username]]!
+                        <strong class="lang" id="welcomeID">
+                            {% trans "Welcome" %}
+                        </strong>
+                        <strong >
+                             [[this.user.username]]!
                         </strong>
                     </b-navbar-brand>
                     <b-nav-item-dropdown text="{% trans " Change style" %}" right>
@@ -91,6 +107,7 @@
                 <!-- Non authenticated user -->
                 <b-navbar-nav class="ml-auto" v-if="user == null">
                     <b-button onclick="openPopUp();" variant="light" id="btn-abrir-popup">{% trans "Login" %}</b-button>
+                    <b-button variant="secondary" onclick="location.href='/sign-in/'" id="signIn" class="signIn">Sign up</b-button>
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
@@ -108,19 +125,24 @@
                 <b-row v-if="user == null" align-h="center">
                     <b-col cols="4" class="text-center">
                         <b-form @submit="onSubmitLogin">
-                            <b-form-group class="text-justify" label="{% trans " Username" %}" label-for="username">
+                            <b-form-group class="text-justify" label-for="username">
+                                <b class="text-justify lang" id="user">Username</b>
                                 <b-form-input id="username" type="text" v-model="form.username" autocomplete="username"
                                     required />
                             </b-form-group>
-                            <b-form-group class="text-justify" label="{% trans " Password" %}" label-for="password">
+                            <b-form-group class="text-justify" label-for="password">
+                                <b class="text-justify lang" id="pass">Password</b>
                                 <b-form-input id="password" type="password" autocomplete="current-password"
                                     v-model="form.password" required />
                             </b-form-group>
-                            <b-button onclick="closePopUp();" class="mt-3" type="submit" variant="primary" size="lg">
+                            <b-button onclick="closePopUp();" class="mt-3 " type="submit" variant="primary" size="lg">
                                 {% trans "Login" %}</b-button>
                         </b-form>
                     </b-col>
                 </b-row>
+                <div id="signInDiv">
+                    <b-button variant="secondary" onclick="location.href='/sign-in/'" id="signIn" class="signIn">Sign up</b-button>
+                </div>
             </div>
         </div>
 
@@ -129,10 +151,12 @@
             <!-- Footer -->
             <b-row class="pt-5">
                 <b-img center src="{% static 'img/footer.png' %}"></b-img>
+                
             </b-row>
         </b-container>
     </div>
     {% block extrabody %}{% endblock %}
+    <script src="{% static 'js/script.js' %}"></script>
     <!-- Vue -->
     <script>
         var app = new Vue({
@@ -252,7 +276,11 @@
                 {% block vue_methods %}{% endblock %}
             },
         })
+        
     </script>
+   
+   
 </body>
+
 
 </html>
