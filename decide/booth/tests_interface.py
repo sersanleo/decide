@@ -293,37 +293,6 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         self.booth.tearDown()
         self.driver.quit()
 
-#     def test_booth_voting_success(self):
-#         self.driver.get(f'{self.live_server_url}/booth/')
-#         self.driver.find_element(By.ID, "username").send_keys("voter1")
-#         self.driver.find_element(By.ID, "password").send_keys("123")
-#         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-#         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-#         options = self.driver.find_elements(By.TAG_NAME, "label")
-#         options[0].click()
-#         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-#         alert = self.driver.find_element(By.ID, "alertVoteMessage")
-#         self.assertEquals(alert, "Conglatulations. Your vote has been sent")
-#         self.driver.find_element(By.LINK_TEXT, "Siguiente pregunta >>").click()
-
-#         options = self.driver.find_elements(By.TAG_NAME, "label")
-#         options[1].click()
-#         options[2].click()
-#         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
-#         alert = self.driver.find_element(By.ID, "alertVoteMessage")
-#         self.assertEquals(alert, "Conglatulations. Your vote has been sent")
-#         self.driver.find_element(By.LINK_TEXT, "Siguiente pregunta >>").click()
-
-#         options = self.driver.find_elements(By.TAG_NAME, "label")
-#         options[1].click()
-#         options[2].click()
-#         options[5].click()
-#         options[4].click()
-#         options[3].click()
-#         self.driver.find_element(By.ID, "rankSendButton").click()
-#         self.driver.find_element(By.LINK_TEXT, "Finalizar votación").click()
-
-#         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/dashboard/')
 
     def test_booth_voting_unique_no_option_selected(self):
         self.driver.get(f'{self.live_server_url}/booth/')
@@ -333,6 +302,7 @@ class BoothInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
         self.driver.find_element(By.LINK_TEXT, "Enviar").click()
         self.assertEquals(self.driver.current_url,f'{self.live_server_url}/booth/1/1/')
+
 
     def test_booth_voting_multiple_no_option_selected(self):
         self.driver.get(f'{self.live_server_url}/booth/')
