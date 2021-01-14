@@ -39,6 +39,16 @@ class HelpVoiceAssistantView(TemplateView):
         context['user_styles'] = UserProfile.styles;
         return context
 
+class ModifyProfileDateView(TemplateView):
+    template_name = 'decide/modify.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['user_styles'] = UserProfile.styles;
+        context['user_sex'] = UserProfile.sex_types;
+        return context
+      
 class SignInView(TemplateView):
     template_name='decide/sign_in.html'
 
