@@ -52,7 +52,6 @@ class MixnetCase(APITestCase):
         clear = [[2,0,1], [3,0,1], [4,0,1], [5,0,1]]
         pk = self.key["p"], self.key["g"], self.key["y"]
         encrypt = self.encrypt_msgs(clear, pk)
-        print(encrypt)
         data = {
             "msgs": encrypt
         }
@@ -63,11 +62,11 @@ class MixnetCase(APITestCase):
         shuffled = response.json()
 
         self.assertNotEqual(shuffled, encrypt)
-'''
+
     def test_shuffle2(self):
         self.test_create()
 
-        clear = [2, 3, 4, 5]
+        clear = [[2,0,1], [3,0,1], [4,0,1], [5,0,1]]
         pk = self.key["p"], self.key["g"], self.key["y"]
         encrypt = self.encrypt_msgs(clear, pk)
         data = {
@@ -81,7 +80,7 @@ class MixnetCase(APITestCase):
         shuffled = response.json()
 
         self.assertNotEqual(shuffled, encrypt)
-
+'''
     def test_decrypt(self):
         self.test_create()
 
