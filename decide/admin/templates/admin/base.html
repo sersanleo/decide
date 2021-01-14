@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 <script src="{% static 'js/zoom.js' %}"></script>
 <script src="{% static 'js/popup.js' %}"></script>
+
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 {% block extrahead %}{% endblock %}
@@ -37,13 +38,19 @@
     <div id="header">
         <div id="branding">
            
-        {% block branding %}{% endblock %}
+            {% block branding %}{% endblock %}
             <div id="buttons_zoom"> 
                 <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
                 <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+            
+                
             </div>
+
+            
         </div>
         {% block usertools %}
+       
+
         {% if has_permission %}
         
         <div id="user-tools">
