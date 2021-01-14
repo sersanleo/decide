@@ -14,7 +14,10 @@ class PostProcView(APIView):
             raise(Exception('Bad request: There are no options'))
 
         for opt in options:
-            ei = math.floor(opt['votes'] / q)
+            if q == 0:
+                ei = 0
+            else:
+                ei = math.floor(opt['votes'] / q)
             e.append(ei)
             r.append(opt['votes'] - q * ei)
 
@@ -163,8 +166,10 @@ class PostProcView(APIView):
             if points is None: points = opt['points']
             total_votes += opt['votes']
 
-        q = round(total_votes / points)
-
+            if points == 0:
+                q = 0
+            else:
+                q = round(total_votes / points)
         return self.largest_remainder(options, q, points)
 
     def post(self, request):
