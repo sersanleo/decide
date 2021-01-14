@@ -1,10 +1,7 @@
 from django.urls import path
-
 from .views import VisualizerViewPointsInclude
 from .views import StatisticsView
-
 from .views import get_list_votings
-
 from .views import VisualizerView, get_global_view
 
 urlpatterns = [
