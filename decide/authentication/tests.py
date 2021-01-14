@@ -118,66 +118,43 @@ class AuthTestCase(APITestCase):
         response = self.client.post('/authentication/changestyle/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    def test_register_bad_permissions(self):
-        data = {'username': 'voter1', 'password': '123'}
-        response = self.client.post('/authentication/login/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-        token = response.json()
-
-        token.update({'username': 'user1'})
-        response = self.client.post('/authentication/register/', token, format='json')
-        self.assertEqual(response.status_code, 401)
-
-    def test_register_bad_request(self):
-        data = {'username': 'admin', 'password': 'admin'}
-        response = self.client.post('/authentication/login/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-        token = response.json()
-
-        token.update({'username': 'user1'})
-        response = self.client.post('/authentication/register/', token, format='json')
+    # Test del método de registro que se usa en la vista signin.html en /sign-in/
+    def test_signin_username_required(self):
+        data = {'password':'test1234','sex':'M','style':'T'}
+        response = self.client.post('/authentication/register/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    def test_register_bad_request_sex_required(self):
-        data = {'username': 'admin', 'password': 'admin' }
-        response = self.client.post('/authentication/login/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-        token = response.json()
-
-        token.update({'username': 'user1', 'password': 'pwd1', 'style': 'N'})
-        response = self.client.post('/authentication/register/', token, format='json')
+    def test_signin_password_required(self):
+        data = {'username':'user1234','sex':'M','style':'O'}
+        response = self.client.post('/authentication/register/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    def test_register_bad_request_style_required(self):
-        data = {'username': 'admin', 'password': 'admin' }
-        response = self.client.post('/authentication/login/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-        token = response.json()
-
-        token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'M'})
-        response = self.client.post('/authentication/register/', token, format='json')
+    def test_signin_sex_required(self):
+        data = {'username':'user1234','password':'test1234','style':'T','email':'user1234@gmail.com'}
+        response = self.client.post('/authentication/register/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    def test_register_user_already_exist(self):
-        data = {'username': 'admin', 'password': 'admin'}
-        response = self.client.post('/authentication/login/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-        token = response.json()
-
-        token.update(data)
-        response = self.client.post('/authentication/register/', token, format='json')
+    def test_signin_style_required(self):
+        data = {'username':'user1234','password':'test1234','sex':'F','email':'user1234@gmail.com'}
+        response = self.client.post('/authentication/register/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+        
+    def test_signin_email_format_invalid(self):
+        data = {'username':'user1234','password':'test1234','sex':'F','style':'T','email':'prueba'}
+        response = self.client.post('/authentication/register/', data, format='json')
         self.assertEqual(response.status_code, 400)
 
-    def test_register(self):
-        data = {'username': 'admin', 'password': 'admin'}
-        response = self.client.post('/authentication/login/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-        token = response.json()
+    def test_signin_password_format_invalid(self):
+        data = {'username':'user1234','password':'test','sex':'F','style':'T','email':'prueba@gmail.com'}
+        response = self.client.post('/authentication/register/', data, format='json')
+        self.assertEqual(response.status_code, 400)
 
-        token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'M', 'style': 'N'})
-        response = self.client.post('/authentication/register/', token, format='json')
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(
-            sorted(list(response.json().keys())),
-            ['token', 'user_pk']
-        )
+    def test_signin_user_already_exist(self):
+        data = {'username':'admin','password':'admin','sex':'M','style':'N','email':'admin@gmail.com'}
+        response = self.client.post('/authentication/register/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_signin_success(self):
+        data = {'username':'user1234','password':'test1234','sex':'F','style':'T','email':'prueba@gmail.com'}
+        response = self.client.post('/authentication/register/', data, format='json')
+        self.assertEqual(response.status_code, 200)
