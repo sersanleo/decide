@@ -162,7 +162,7 @@ class BoothTests(TestCase):
         session = self.client.session
         session['user_token'] = token
         session.save()
-        
+
         #Create voting
 
         #Create question 1
@@ -190,7 +190,7 @@ class BoothTests(TestCase):
         v.save()
         v.question.add(q1), v.question.add(q2), v.question.add(q3)
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'base'})    
+                                          defaults={'me': True, 'name': 'base'})
         a.save()
         v.auths.add(a)
         Voting.create_pubkey(v)
@@ -256,18 +256,19 @@ class LoginTest(TestCase):
 #---------------------------------------------------------------------------------------------
 class DashboardTest(TestCase):
     def setUp(self):
-        #Create user
+        #Create user 1
         self.client = APIClient()
         mods.mock_query(self.client)
-        u = UserProfile(id=1, username='voter1', sex='M')
-        u.set_password('123')
-        u.save()
-        token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
-        #Add session token
+        u1 = UserProfile(id=1, username='voter1', sex='M')
+        u1.set_password('123')
+        u1.save()
+        token1 = mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
+        #Add session token 1
         session = self.client.session
-        session['user_token'] = token
-        session['voter_id'] = u.id
+        session['user_token'] = token1
+        session['voter_id'] = u1.id
         session.save()
+
         #Create voting 1
 
         #Create question 1
@@ -290,7 +291,7 @@ class DashboardTest(TestCase):
         for i in range(5):
             opt = QuestionOption(question=q3, option='option {}'.format(i+1))
             opt.save()
-        
+
         v1 = Voting(id=1, name='Single question voting',desc='Single question voting...', points=1, start_date=timezone.now())
         v1.save()
         v1.question.add(q1), v1.question.add(q2), v1.question.add(q3)
@@ -315,7 +316,7 @@ class DashboardTest(TestCase):
         for i in range(4):
             opt = QuestionOption(question=q5, option='option {}'.format(i+1))
             opt.save()
-        
+
         #Create question 6
         q6 = Question(id=6, desc='Rank order scale question 2', option_types=3)
         q6.save()
@@ -330,26 +331,53 @@ class DashboardTest(TestCase):
         Voting.create_pubkey(v2)
 
         #Add user to census
-        census1 = Census(voting_id=v1.id, voter_id=u.id)
+        census1 = Census(voting_id=v1.id, voter_id=u1.id)
         census1.save()
-        census2 = Census(voting_id=v2.id, voter_id=u.id)
+        census2 = Census(voting_id=v2.id, voter_id=u1.id)
         census2.save()
 
         #Create suggestion 1
-        s1 = SuggestingForm(id=1, user_id=u.id, title="Suggesting title", suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE, is_approved=True)
+        s1 = SuggestingForm(id=1, user_id=u1.id, title="Suggesting title", suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE, is_approved=True)
         s1.save()
 
     def tearDown(self):
         super().tearDown()
 
     def test_dashboard_details(self):
+        #Create user 2
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u2 = UserProfile(id=2, username='voter2', sex='M')
+        u2.set_password('123')
+        u2.save()
+        token2 = mods.post('authentication', entry_point='/login/', json={'username':'voter2', 'password': '123'})
+        #Add session token 2
+        session = self.client.session
+        session['user_token'] = token2
+        session['voter_id'] = u2.id
+        session.save()
         response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(response.status_code, 200)
+
+    def test_available_votings_user(self):
+        response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(len(response.context['vot_dis']), 1)
+
+    def test_last_12_months_votings_user(self):
+        response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEquals(sumalista(response.context['votaciones_por_meses']), 1)
         self.assertEquals(len(response.context['months']), 12)
+
+    def test_votings_user_by_type(self):
+        response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(response.context['tipo_votaciones'][0], 1)
         self.assertEqual(response.context['tipo_votaciones'][1], 1)
         self.assertEqual(response.context['tipo_votaciones'][2], 1)
+
+    def test_suggestions_approved(self):
+        response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(len(response.context['approved_suggestions']), 1)
+
+    def test_suggestions_recent(self):
+        response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(len(response.context['recent_suggestions']), 1)

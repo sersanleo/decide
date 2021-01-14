@@ -138,7 +138,7 @@ def dashboard_details(voter_id):
         available_votings = available_votings_user(list_vid, voter_id)
         votings_by_month, months = last_12_months_votings_user(list_vid)
         votings_by_type = votings_user_by_type(list_vid)
-        
+
     approved_suggestions = suggestions_approved(voter_id)
     recent_suggestions = suggestions_recent(voter_id)
 
