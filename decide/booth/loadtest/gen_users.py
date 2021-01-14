@@ -1,21 +1,18 @@
 import json
 import requests
 
-# from rest_framework.test import APIClient
-
-
-
 HOST = "http://localhost:8000"
-USER = "juacormun"
-PASS = "JCus2021"
 
+# IMPORTANTE: Es necesario tener creado un superusuario con estas credenciales,
+# o en su defecto se deben modificar las dos siguientes líneas
+USER = "admin"
+PASS = "administrator"
 
 def create_users(filename):
     """
     Create voters with requests library from filename.json, where key are
     usernames and values are the passwords.
     """
-
 
     with open(filename) as f:
         voters = json.loads(f.read())
@@ -36,5 +33,5 @@ def create_users(filename):
     return voters_pk, invalid_voters
 
 
-voters, invalids = create_users('voters.json')
+voters, invalids = create_users('users.json')
 print("Create voters with pk={0} \nInvalid usernames={1}".format(voters, invalids))

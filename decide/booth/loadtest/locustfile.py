@@ -1,6 +1,4 @@
 import json
-import datetime
-from django.utils import timezone
 
 from random import choice
 
@@ -23,35 +21,24 @@ class DefSuggestions(SequentialTaskSet):
             self.voters = json.loads(f.read())
         self.voter = choice(list(self.voters.items()))
 
+
     @task
     def login(self):
+        response = self.client.get("/booth/")
         username, pwd = self.voter
-        self.token = self.client.post("/authentication/login/", {
-            "username": username,
-            "password": pwd,
-        }).json()
+        csrftoken = response.cookies['csrftoken']
+        self.client.post("/booth/dashboard/", {'username': username, 'password': pwd, "csrfmiddlewaretoken": csrftoken},
+                          headers={"X-CSRFToken": csrftoken},
+                          cookies={"csrftoken": csrftoken})
 
     @task
-    def getuser(self):
-        self.usr= self.client.post("/authentication/getuser/", self.token).json()
-        print( str(self.user))
-
-    # @task
-    # def suggestion(self):
-    #     headers = {
-    #         'Authorization': 'Token ' + self.token.get('token'),
-    #         'content-type': 'application/json'
-    #     }
-    #     self.client.post("/booth/suggesting/", json.dumps({
-    #         "token": self.token.get('token'),
-    #         "suggesting": {
-    #             "user_id" : self.usr.get('id', None),
-    #             "title" : "test",
-    #             "suggesting_date" : "2021-12-12T00:00:00.000",
-    #             "content" : "test",
-    #             "send_date" : "2021-01-14T00:00:00.000"
-    #         }
-    #     }), headers=headers)
+    def suggestion(self):
+        response = self.client.get('/booth/suggesting/')
+        csrftoken = response.cookies['csrftoken']
+        data = {'suggesting-title': 'Suggestsing', 'suggesting-date': "2025-12-12", 'suggesting-content': 'Full suggesting content...', "csrfmiddlewaretoken": csrftoken}
+        self.client.post("/booth/suggesting/send/", data,
+                            headers={"X-CSRFToken": csrftoken},
+                            cookies={"csrftoken": csrftoken})
 
 
     def on_quit(self):
