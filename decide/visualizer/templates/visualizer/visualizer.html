@@ -19,7 +19,7 @@
                     <canvas id="genderCensusChart"></canvas>
                 </div>
                 <div v-else-if="postproc_type == 'IDENTITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
+                    <canvas id="identityChart"></canvas>
                 </div>
                 <div v-else id="container" style="width: 90%; margin: 0 auto; position: relative;">
                     <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
@@ -139,6 +139,28 @@
                 }
             }
         });
+    </script>
+
+    <script>
+        window.onload = function() {
+            var ctx = document.getElementById('identityChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: {{labels|safe}},
+                    datasets:[{
+                        label: 'Resultados',
+                        backgroundColor: ['black', 'grey', 'brown'],
+                        borderColor: 'black',
+                        data: {{data|safe}}
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        };
+
     </script>
 
 {% endblock %}
