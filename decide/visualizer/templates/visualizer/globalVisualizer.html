@@ -21,7 +21,7 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Total number of votes</th>
+                            <th>Total number of votings</th>
                             <th>Total votes</th>
                             <th>Total number of people registered</th>
                             <th>Average votes per voting</th>
@@ -32,13 +32,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr v-if="nvoting">
                             <td>[[nvoting]]</td>
                             <td>[[votes]]</td>
                             <td>[[census]]</td>
                             <td>[[votes/nvoting]]</td>
                             <td>[[census/nvoting]]</td>
                             <td>[[porvot/nvoting]]%</td>
-                            <td>[[abst/nvoting]]%</td>
+                            <td>[[abst/nvoting]]%</td>                            
+                        </tr>
+                        <tr v-else>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0%</td>
+                            <td>0%</td>                            
                         </tr>
                     </tbody>
 
@@ -53,10 +63,17 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr v-if="nvoting">
                             <td>[[votesm]]</td>
                             <td>[[votesr]]</td>
                             <td>[[censusm]]</td>
                             <td>[[censusr]]</td>
+                        </tr>
+                        <tr v-else>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
                         </tr>
                     </tbody>
                 </table>
@@ -70,10 +87,17 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr v-if="nvoting">
                             <td>[[porvotm]]%</td>
                             <td>[[porvotr]]%</td>
                             <td>[[abstm]]%</td>
                             <td>[[abstr]]%</td>
+                        </tr>
+                        <tr v-else>
+                            <td>0%</td>
+                            <td>0%</td>
+                            <td>0%</td>
+                            <td>0%</td>
                         </tr>
                     </tbody>
                 </table>

@@ -6,9 +6,12 @@ from django.http import Http404, HttpResponseForbidden
 
 from base import mods
 from voting.models import Voting
+from voting.models import Question
 from census.models import Census
 from store.models import Vote
 from authentication.models import UserProfile
+from datetime import datetime
+
 
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
@@ -20,7 +23,7 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             voting = r[0]
-            census = Census.objects.get(voting_id=vid, voter_id=self.request.user.id) #Obtenemos el censo donde el usuario está registrado
+            # census = Census.objects.get(voting_id=vid, voter_id=self.request.user.id) #Obtenemos el censo donde el usuario está registrado
 
             # Solo se mostrarán las gráficas de aquellas votaciones finalizadas y postprocesadas. Además se verifica que el usuario es un superuser o pertenece al algún censo de la votación
             if voting['end_date'] != None and voting['postproc'][0] != None and (self.request.user.is_superuser or census != None):
@@ -39,12 +42,7 @@ class VisualizerView(TemplateView):
 
             context['voting'] = voting
         except:
-            if permission == False:
-                raise HttpResponseForbidden
-
-            else:
                 raise Http404
-
         return context
 
     def statistics_equality(self, context, voting):
@@ -92,13 +90,13 @@ class VisualizerView(TemplateView):
             results.append(round((postproc[i]['postproc'] * 100)/total, 2))
 
         # Agregamos todos los parámetro que necesitamos al context
+
         context['options'] = options
         context['votes_men'] = votes_men
         context['votes_women'] = votes_women
         context['gender_census'] = gender_census
         context['results'] = results
         
-
 
     def statistics_points(self, context, voting):
         # r = {}
@@ -114,6 +112,7 @@ class VisualizerView(TemplateView):
         #                  'votes_fem': 1, 'points': 7, 'postproc': 1},
         #                 {'question': 'unique', 'question_id': 2, 'option': 'd', 'number': 7, 'votes': 9, 'votes_masc': 0,
         #                  'votes_fem': 1, 'points': 7, 'postproc': 1}]
+
         labels = []
         postproc = []
         votes = []
@@ -138,16 +137,17 @@ class VisualizerView(TemplateView):
 
         return context
 
-    def statistics_identity(self,voting, context):
+    def statistics_identity(self, voting, context):
         labels = []
         data = []
-        postproc = voting.get('postproc')
+        postproc = voting.get('postproc')[0]['options']
 
-        for voting in postproc[0]:
-            labels.append(voting['option'])
-            data.append(int(voting['postproc']))
+        for option in postproc:
+            labels.append(option['option'])
+            data.append(int(option['postproc']))
         context['labels'] = labels
         context['data'] = data
+
 
 class VisualizerViewPointsInclude(TemplateView):
     template_name = 'visualizer/functionVisualizer.html'
@@ -225,23 +225,80 @@ class StatisticsView(TemplateView):
         vid = kwargs.get('voting_id', 0)
 
         try:
+            males_c = 0
+            females_c = 0
             r = mods.get('voting', params={'id': vid})
             census = Census.objects.filter(voting_id=vid).all()
             votes = Vote.objects.filter(voting_id=vid).all()
             c=census.count()
             v=votes.count()
-            stat = {"census":c}
-            stat["votes"] = v
+            stat = {"census": c, "votes": v}
+            males = 0
+            females = 0
             if v>0:
                 stat["percentage"] = round(v/c*100,2);
             else:
                 stat["percentage"] = 0;
+
+            voting = Voting.objects.filter(id=vid).all()[0]
+            start = voting.start_date
+            end = voting.end_date
+            if start is None:
+                stat["start"] = "Not started yet"
+            else:
+                stat["start"] = datetime.strftime(start, "%b %d %Y %H:%M:%S")
+            if end is None:
+                stat["end"] = "Not finished yet"
+            else:
+                stat["end"] = datetime.strftime(end, "%b %d %Y %H:%M:%S")
+            if start is not None and end is not None:
+                stat["time"]=str(end-start)
+            else:
+                stat["time"]="Not finished yet"
+            if voting.postproc is not None:
+                stat["type"] = voting.postproc[0]["type"]
+            else:
+                stat["type"] = "Undefined"
+            if voting.tally is not None or voting.tallyF is not None or voting.tallyM is not None:
+                stat["tally"] = "Finished"
+            else:
+                stat["tally"] = "Not started"
+            for vote in votes:
+                voter = list(UserProfile.objects.filter(id=vote.voter_id))[0]
+                if voter is not None:
+                    if(voter.sex=="M"):
+                        males=males+1
+                    if(voter.sex=="F"):
+                        females=females+1
+            for cen in census:
+                user = list(UserProfile.objects.filter(id=cen.voter_id))[0]
+                if user is not None:
+                    if(user.sex=="M"):
+                        males_c=males+1
+                    if(user.sex=="F"):
+                        females_c=females+1
+            stat["males_v"] = males
+            stat["females_v"] = females
+            if(males_c+females_c>0):
+                stat["males_c"] = round(males_c / (males_c+females_c) *100,2)
+                stat["females_c"] = round(females_c / (males_c+females_c) *100,2)
+            else:
+                stat["males_c"] = 0
+                stat["females_c"] = 0
+            if (males + females > 0):
+                stat["males_v_percentage"] = round(males / (males + females) * 100, 2)
+                stat["females_v_percentage"] = round(females / (males + females) * 100, 2)
+            else:
+                stat["males_v_percentage"] = 0
+                stat["females_v_percentage"] = 0
+
             context['voting'] = json.dumps(r[0])
             context['stats'] = json.dumps(stat)
         except:
             raise Http404
 
         return context
+
 
 def get_list_votings(request):
     filter = request.GET.get('filter')
@@ -254,6 +311,8 @@ def get_list_votings(request):
             list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=True).all()
         elif filter == 'S':
             list = Voting.objects.filter(start_date__isnull=True, end_date__isnull=True).all()
+        elif filter == 'Fn':
+            list = Voting.objects.filter(start_date__isnull=False, end_date__isnull=False, postproc__isnull=True).all()
         else:
             if busqueda is None:
                 list = Voting.objects.all()
@@ -261,7 +320,7 @@ def get_list_votings(request):
                 list = Voting.objects.filter(name__contains=busqueda).all()
     except:
         raise Http404
-    #Si no soy superuser solo veo las votaciones en las que estoy censado
+    # Si no soy superuser solo veo las votaciones en las que estoy censado
     if not request.user.is_superuser:
         census = Census.objects.filter(voter_id=request.user.id).all()
         new_list = []
@@ -273,10 +332,28 @@ def get_list_votings(request):
         user = False
     else:
         user = True
-    return render(request, 'visualizer/listVisualizer.html', {'votings': list, 'user': user})
+    questions = []
+    for voting in list:
+        question = Question.objects.filter(voting__id=voting.id).all()
+        types = []
+        for q in question:
+            if q.type == 0:
+                types.append('IDENTITY')
+            if q.type == 1:
+                types.append('BORDA')
+            if q.type == 3:
+                types.append('EQUALITY')
+            if q.type == 2:
+                types.append('HONDT')
+            if q.type == 4:
+                types.append('DROOP')
+            if q.type == 5:
+                types.append('IMPERIALI')
+        questions.append(types)
+    return render(request, 'visualizer/listVisualizer.html', {'votings': list, 'questions': questions, 'user': user})
+
 
 def get_global_view(request):
-
     vt = 0
     ct = 0
     nvs = 0
@@ -287,8 +364,8 @@ def get_global_view(request):
         porvotm = 0
         vtm = 0
         ctm = 0
-        abstr = 999999999999999999
-        porvotr = 999999999999999999
+        abstr = 100
+        porvotr = 100
         vtr = 999999999999999999
         ctr = 999999999999999999
         tabst = 0
@@ -298,40 +375,42 @@ def get_global_view(request):
                 vid = vot.id
                 census = Census.objects.filter(voting_id=vid).all().count()
                 votes = Vote.objects.filter(voting_id=vid).all().count()
-                #Votos totales y mayor / menor
+                # Votos totales y mayor / menor
                 vt = vt + votes
                 if vtm < votes:
                     vtm = votes
                 if vtr > votes:
                     vtr = votes
-                #Censo total y mayor / menor
+                # Censo total y mayor / menor
                 ct = ct + census
                 if ctm < census:
-                    ctm = census 
+                    ctm = census
                 if ctr > census:
                     ctr = census
 
-                #Numero de votaciones
+                # Numero de votaciones
                 nvs = nvs + 1
-                #Porcentaje de abstencion y mayor / menor
+                # Porcentaje de abstencion y mayor / menor
                 if census != 0:
-                    abst = ((votes/census)-1)*(-100)
+                    abst = ((votes / census) - 1) * (-100)
                     tabst = tabst + abst
                     if abstm < abst:
                         abstm = abst
                     if abstr > abst:
                         abstr = abst
-                #Porcentaje de voto y mayor / menor
-                    porvot = (votes/census)*100
+                    # Porcentaje de voto y mayor / menor
+                    porvot = (votes / census) * 100
                     tporvot = tporvot + porvot
                     if porvotm < porvot:
                         porvotm = porvot
                     if porvotr > porvot:
                         porvotr = porvot
-                        
+
     except:
-            
+
         raise Http404
-        
-    return render(request, 'visualizer/globalVisualizer.html', {'votes': vt, 'votesm': vtm, 'census': ct, 'censusm': ctm, 'nvoting': nvs, 
-    'abst': tabst, 'abstm': abstm, 'porvot': tporvot, 'porvotm': porvotm, 'porvotr': porvotr, 'abstr': abstr, 'votesr': vtr, 'censusr': ctr})
+
+    return render(request, 'visualizer/globalVisualizer.html',
+                  {'votes': vt, 'votesm': vtm, 'census': ct, 'censusm': ctm, 'nvoting': nvs,
+                   'abst': tabst, 'abstm': abstm, 'porvot': tporvot, 'porvotm': porvotm, 'porvotr': porvotr,
+                   'abstr': abstr, 'votesr': vtr, 'censusr': ctr})
