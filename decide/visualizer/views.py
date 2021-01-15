@@ -37,7 +37,7 @@ class VisualizerView(TemplateView):
                 postproc = voting['postproc'][0]
 
                 if postproc['type'] == 'IDENTITY':
-                    self.statistics_identity(r[0],context)
+                    self.statistics_identity(context, voting)
 
                 elif postproc['type'] == 'EQUALITY':
                     self.statistics_equality(context, voting)
@@ -149,7 +149,7 @@ class VisualizerView(TemplateView):
 
         return context
 
-    def statistics_identity(self, voting, context):
+    def statistics_identity(self, context, voting):
         labels = []
         data = []
         postproc = voting.get('postproc')[0]['options']
