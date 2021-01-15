@@ -28,7 +28,7 @@ class MixnetCase(APITestCase):
             a, b = k.encrypt(vote[0])
             cipher.append([a,b,vote[1],vote[2]])
         return cipher
-
+    
     def test_create(self):
         data = {
             "voting": 1,
@@ -111,7 +111,7 @@ class MixnetCase(APITestCase):
                 clear2sublist.append(int(i[j][1]))
                 clear2keys.append(clear2sublist)
 
-        self.assertEqual(sorted(clear),sorted(clear2keys))
+        self.assertEqual(sorted(clear,key=operator.itemgetter(0)),sorted(clear2keys,key=operator.itemgetter(0)))
 
     def test_multiple_auths(self):
 
@@ -175,8 +175,9 @@ class MixnetCase(APITestCase):
                 clear2keys.append(clear2sublist)
         
         self.assertNotEqual(clear, clear2)
-        self.assertEqual(sorted(clear), sorted(clear2keys,key=operator.itemgetter(0)))
-'''
+        self.assertEqual(sorted(clear,key=operator.itemgetter(0)), sorted(clear2keys,key=operator.itemgetter(0)))
+
+
     def test_multiple_auths_mock(self):
 
         #This test emulates a two authorities shuffle and decryption.
@@ -193,7 +194,7 @@ class MixnetCase(APITestCase):
         key = response.json()
         pk = key["p"], key["g"], key["y"]
 
-        clear = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        clear = [[2,0,1], [3,1,1], [4,2,1], [5,0,1]]
         encrypt = self.encrypt_msgs(clear, pk)
 
         data = { "msgs": encrypt, "pk": key }
@@ -204,7 +205,14 @@ class MixnetCase(APITestCase):
         data = { "msgs": shuffled, "pk": key }
         response = self.client.post('/mixnet/decrypt/1/', data, format='json')
         clear1 = response.json()
+        clear1keys = []
+        for i in clear1:
+            for j in i.keys():
+                clear1sublist = []
+                clear1sublist.append(int(j))
+                clear1sublist.append(int(i[j][0]))
+                clear1sublist.append(int(i[j][1]))
+                clear1keys.append(clear1sublist)
 
         self.assertNotEqual(clear, clear1)
-        self.assertEqual(sorted(clear), sorted(clear1))
-        '''
+        self.assertEqual(sorted(clear), sorted(clear1keys,key=operator.itemgetter(0)))
