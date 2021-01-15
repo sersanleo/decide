@@ -34,7 +34,7 @@ install:
   - sudo chmod +x /usr/bin/geckodriver
 script:
   - cd decide
-  - coverage run --branch --source=. ./manage.py test voting/selenium --keepdb --with-xunit
+  - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
   - coverage xml
   - python-codacy-coverage -r coverage.xml
 notifications:
