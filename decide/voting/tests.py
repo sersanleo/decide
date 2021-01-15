@@ -8,6 +8,7 @@ from django.test import TestCase
 from django.db.utils import IntegrityError
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
+from rest_framework import generics, status
 
 from base import mods
 from base.tests import BaseTestCase
@@ -113,8 +114,6 @@ class VotingTestCase(BaseTestCase):
                     mods.post('store', json=data)
         return clear
 
-
-
     # def test_duplicate_voting_name(self):
     #     v1 = self.create_voting()
     #     with self.assertRaises(Exception) as raised:
@@ -203,6 +202,9 @@ class VotingTestCase(BaseTestCase):
             mods.post('store', json=data)
             self.logout()
             voter = voters.pop()
+
+
+
     #Pruebas de API Task t050
     #Caso positivo
     def test_tally_message_positive_api(self):
@@ -2331,3 +2333,55 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already stopped')
 
+
+
+    #Pruebas de modelo Task t060
+
+    #Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+    def test_duplicate_voting_name_positive_model(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v1 = Voting(name="test voting 2")
+        
+        v1.save()
+        v1.question.add(q)
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+        v2 = Voting(name="test voting 3")
+        v2.save()
+        v2.question.add(q)
+        v2.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 2)
+
+        self.assertNotEqual(v1,v2)
+
+    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+    def test_duplicate_voting_name_negative_model(self):
+        q = Question(desc='test question', option_types=1,type=0)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(id=1,name='test voting')
+
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
