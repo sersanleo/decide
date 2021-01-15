@@ -31,6 +31,7 @@
 <b-row v-if="user == null">
     <div class="formSignUpDiv" id="formSignUpDiv"> 
         <b-form @submit="onSubmitRegister" >
+            {% csrf_token %}
             <b-form-group class="text-justify" label="{% trans " Username" %}" label-for="username">
                 <b-form-input id="username" type="text" v-model="formSignIn.username" autocomplete="username"
                     required size="lg" style="width: 350px" />
@@ -78,20 +79,11 @@ formSignIn: {
 {% block vue_methods %}
 onSubmitRegister(evt) {
     evt.preventDefault();
-    this.postData("/gateway/authentication/register/", this.formSignIn)
+    this.postData("{% url 'gateway' 'authentication' '/register/' %}", this.formSignIn)
         .then(data => {
             this.showAlert("info", 'User successfully created');
             alert ("User successfully created");
-            this.postData("/gateway/authentication/page-login/", this.formSignIn)
-            .then(data => {
-                document.cookie = 'decide=' + data.token + '; path=/; max-age=7200;';
-                this.token = data.token;
-                this.getUser();
-                window.location.href='/';
-            })
-            .catch(error => {
-                this.showAlert("danger", 'Error: ' + error);
-            });
+            window.location.href='/';
         })
         .catch(error => {
             this.showAlert("danger", 'Error: ' + error);
