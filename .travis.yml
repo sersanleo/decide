@@ -7,6 +7,7 @@ before_script:
 - psql -U postgres -c "create user decide password 'decide'"
 - psql -U postgres -c "create database test_decide owner decide"
 - psql -U postgres -c "ALTER USER decide CREATEDB"
+- python decide/manage.py migrate
 language: python
 python:
 - '3.6'
@@ -16,8 +17,6 @@ install:
 script:
 - cd decide
 - cp travis_local_settings.py local_settings.py
-- ./manage.py makemigrations
-- ./manage.py migrate
 - coverage run --branch --source=. ./manage.py test postproc --keepdb
 - coverage xml
 - python-codacy-coverage -r coverage.xml
