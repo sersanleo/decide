@@ -161,10 +161,10 @@ html, body{
 }
 
 .translate{
-    background-color:#ff6e92;
     margin:auto;
     border-radius: .3rem;
-    border-color: #ff6e92;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
     color:white;
 }
 
