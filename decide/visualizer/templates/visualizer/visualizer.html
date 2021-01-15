@@ -10,22 +10,26 @@
             <p>{{voting.desc|safe}}</p>
         </div>
     </section>
-        <div class="container">
-            <div v-if="voting.postproc" class="row align-items-center">
-                <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <canvas id="genderGraph"></canvas>
-                </div>
-                <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <canvas id="genderCensusChart"></canvas>
-                </div>
-                <div v-else-if="postproc_type == 'IDENTITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <canvas id="identityChart"></canvas>
-                </div>
-                <div v-else id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
-                </div>
+    <section class="jumbotron">
+    <div class="container bg-light">
+        <div v-if="voting.postproc" class="row align-items-center">
+            <div v-if="postproc_type == 'EQUALITY'" id="chart" style="width: 90%; margin: 0 auto; position: relative;  padding-top: 50px;">
+            </div>
+            <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                <canvas id="genderGraph" class="bg-light" ></canvas>
+            </div>
+            <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                <canvas id="genderCensusChart" class="bg-light"></canvas>
+            </div>
+            <div v-else-if="postproc_type == 'IDENTITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                <canvas id="identityChart"></canvas>
+            </div>
+            <div v-else id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
             </div>
         </div>
+    </div>
+</section>
         
     </main>
 
@@ -35,8 +39,9 @@
 {% endblock %}
 
 {% block extrabody %}
-   
-    <!--Chart.js-->
+
+   <!--Chart.js-->
+
     <script>
         var ctx = document.getElementById('genderGraph').getContext('2d');
         var chart = new Chart(ctx, {
@@ -46,15 +51,15 @@
                 datasets: [
                     {
                         label: 'Men',
-                        backgroundColor: 'rgb(173, 173, 173)',
-                        borderColor: 'rgb(173, 173, 173)',
+                        backgroundColor: 'rgba(0, 143, 251, 0.85)',
+                        borderColor: 'rgba(0, 143, 251, 0.85)',
                         borderWidth: 1,
                         data: {{votes_men|safe}}
                     },
                     {
                         label: 'Women',
-                        backgroundColor: 'rgb(99, 98, 98)',
-                        borderColor: '(99, 98, 98)',
+                        backgroundColor: 'rgba(254, 176, 25, 0.85)',
+                        borderColor: 'rgba(254, 176, 25, 0.85)',
                         borderWidth: 1,
                         data: {{votes_women|safe}}
                     }
@@ -64,13 +69,14 @@
                 responsive: true,
                 maintainAspectRatio: true,
                 legend: {
-                    position: "top"
+                    position: "left"
                 },
                 title: {
                     display: true,
-                    fontSize: 25,
-                    padding: 20,
-                    text: "Number of votes according to gender and options"
+                    fontSize: 30,
+                    padding: 30,
+                    text: "Number of votes according to gender and options",
+                    fontColor:  'rgb(38, 50, 56)'
                 },
                 scales: {
                     yAxes: [{
@@ -103,12 +109,12 @@
                 ],
                 datasets: [{
                     backgroundColor: [
-                        'rgb(173, 173, 173)',
-                        'rgb(99, 98, 98)',
+                        'rgba(254, 176, 25, 0.85)',
+                        'rgba(0, 227, 150, 0.85)',
                     ],
                     borderColor: [
-                        'rgb(173, 173, 173)',
-                        'rgb(99, 98, 98)',
+                        'rgba(254, 176, 25, 0.85)',
+                        'rgba(0, 227, 150, 0.85)',
                     ],
                     borderWidth: 1,
                     data: {{gender_census|safe}}
@@ -125,9 +131,10 @@
                 circumference: 1 * Math.PI,
                 title: {
                     display: true,
-                    fontSize: 25,
+                    fontSize: 30,
                     padding: 20,
-                    text: "Census according to gender"
+                    text: "Census according to gender",
+                    fontColor:  'rgb(38, 50, 56)'
                 },
                 layout: {
                     padding: {
@@ -160,7 +167,90 @@
                 }
             });
         };
-
     </script>
+
+    <!--ApexChart.js-->
+
+    <script>
+        var options = {
+        series: {{results|safe}},
+        chart: {
+        height: 500,
+        type: 'radialBar',
+        },
+        title: {
+            text: 'Results',
+            align: 'center',
+            margin: 10,
+            padding: 30,
+            offsetX: 0,
+            offsetY: 0,
+            floating: true,
+            style: {
+            fontSize:  '32px',
+            fontWeight:  'bold',
+            fontFamily:  undefined,
+            color:  '#263238'
+            },
+        },
+        plotOptions: {
+        radialBar: {
+            offsetY: 0,
+            startAngle: 0,
+            endAngle: 270,
+            hollow: {
+            margin: 20,
+            size: '25%',
+            background: 'transparent',
+            image: undefined,
+            },
+            dataLabels: {
+            name: {
+                show: false,
+            },
+            value: {
+                fontSize: '25px',
+                show: true,
+                fontWeight:  'bold',
+                offsetY: 0,
+            }
+            }
+        }
+        },
+        labels: {{options|safe}},
+        legend: {
+        show: true,
+        floating: true,
+        fontSize: '18px',
+        position: 'right',
+        offsetX: 50,
+        offsetY: 150,
+        fontWeight:  'bold',
+        labels: {
+            useSeriesColors: true,
+        },
+        markers: {
+            size: 0
+        },
+        formatter: function(seriesName, opts) {
+            return seriesName
+        },
+        itemMargin: {
+            vertical: 11
+        }
+        },
+        responsive: [{
+        breakpoint: 480,
+        options: {
+            legend: {
+                show: false
+            }
+        }
+        }]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+</script>
 
 {% endblock %}
