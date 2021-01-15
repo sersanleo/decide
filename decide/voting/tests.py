@@ -200,6 +200,1026 @@ class VotingTestCase(BaseTestCase):
             self.logout()
             voter = voters.pop()
 
+#-----------------------------------------------------------------------------------------------------------------------
+    #MÉTODOS AUXILIARES
+
+    def create_voting_prueba(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i + 1))
+            opt.save()
+        v = Voting(name='test voting 2')
+
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def create_question(self):
+        q = Question(desc='test question')
+        q.save()
+        return q
+
+
+    def create_voting_multi(self):
+        q1 = Question(desc='test1 question', option_types=2)
+        q2 = Question(desc='test2 question', option_types=2)
+
+        q1.save()
+        q2.save()
+
+        for i in range(5):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt.save()
+
+        for i in range(5):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
+
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def create_voting_variable_option_types(self, option_type, points=1):
+        q = Question(desc='test question', option_types=option_type)
+        if option_type == 3:
+            q.type = 1
+        q.save()
+
+        for i in range(3):
+            opt = QuestionOption(question=q, option='option {}'.format(i + 1), number=i + 1)
+            opt.save()
+        v = Voting(name='test voting', points=points)
+
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def store_votes_aux(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 1
+                    else:
+                        clear[chosen_option.number] = 1
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
+    def store_votes_aux_fem(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 1
+                    else:
+                        clear[chosen_option.number] = 1
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
+    def store_votes_aux_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 2
+                    else:
+                        clear[chosen_option.number] = 2
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
+    def store_votes_aux_fem_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+            votos = []
+            qs = v.question.all()
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+
+                if q.option_types == 1:
+                    random_amount = 1
+                else:
+                    random_amount = random.randint(1, count_options)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+
+                    if chosen_option.number in clear:
+                        clear[chosen_option.number] += 2
+                    else:
+                        clear[chosen_option.number] = 2
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+            self.logout()
+        return clear
+
+    def store_votes_ranked_aux(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+                random_amount = random.randint(1, count_options)
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 1
+                        clear[opt_number][pos] = sum
+
+                    else:
+                        clear[opt_number] = zeros.copy()
+                        sum = clear[opt_number][pos] + 1
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1
+
+            self.logout()
+        return clear
+
+    def store_votes_ranked_aux_fem(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+                random_amount = random.randint(1, count_options)
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 1
+                        clear[opt_number][pos] = sum
+
+                    else:
+                        clear[opt_number] = zeros.copy()
+                        sum = clear[opt_number][pos] + 1
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1
+
+            self.logout()
+        return clear
+
+    def store_votes_ranked_aux_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user(voter.voter_id)
+            self.login(user=main_voter.username)
+
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+                random_amount = random.randint(1, count_options)
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 2
+                        clear[opt_number][pos] = sum
+
+                    else:
+                        clear[opt_number] = zeros.copy()
+                        sum = clear[opt_number][pos] + 2
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1
+
+            self.logout()
+        return clear
+
+    def store_votes_ranked_aux_fem_negative(self, v, number_of_voters):
+        voters = list(Census.objects.filter(voting_id=v.id))
+
+        clear = {}
+        for i in range(number_of_voters):
+            voter = voters.pop()
+            main_voter = self.get_or_create_user_fem(voter.voter_id)
+            self.login(user=main_voter.username)
+
+            qs = v.question.all()
+            votos = []
+            for q in qs:
+                options = q.options.all()
+                count_options = len(options)
+                a, b = None, None
+                random_amount = random.randint(1, count_options)
+                orden_opciones_voto = []
+
+                zeros = []
+                for element in options:
+                    zeros.append(0)
+
+                for j in range(0, random_amount):
+                    chosen_option = options[j]
+                    orden_opciones_voto.append(chosen_option.number)
+
+                    x, y = self.encrypt_msg(chosen_option.number, v)
+
+                    if a and b:
+                        a = a + ',' + str(x) + ''
+                        b = b + ',' + str(y) + ''
+
+                    else:
+                        a = str(x)
+                        b = str(y)
+
+                votos.append({'a': a, 'b': b})
+
+                data = {
+                    'voting': v.id,
+                    'voter': voter.voter_id,
+                    'vote': votos,
+                    'question_id': q.id,
+                    'token': self.token
+                }
+                mods.post('store', json=data)
+
+                pos = 0
+                for opt_number in orden_opciones_voto:
+                    if opt_number in clear:
+                        sum = clear[opt_number][pos] + 2
+                        clear[opt_number][pos] = sum
+
+                    else:
+                        clear[opt_number] = zeros.copy()
+                        sum = clear[opt_number][pos] + 2
+                        clear[opt_number][pos] = sum
+                    pos = pos + 1
+
+            self.logout()
+        return clear
+
+
+    #-----------------------------------------------------------------------------------------------------------------------
+    #PRUEBAS UNITARIAS
+
+    # Test Unitarios para la task 018
+
+    # Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+
+    def test_duplicate_voting_name_positive(self):
+        v1 = self.create_voting()
+        v2 = self.create_voting_prueba()
+        self.assertNotEqual(v1, v2)
+
+    # Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+
+    def test_duplicate_voting_name_negative(self):
+        v1 = self.create_voting()
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+        # Pruebas unitarias Task t019
+
+        # Caso positivo
+
+    def test_tally_message_positive_unit(self):
+        mensajeEsperado = 'For voting test voting: for question test question for option option 1 it has 3 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes.'
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tally = v.tally
+        questions = v.question.all()
+
+        self.assertEqual(give_message(v, tally), mensajeEsperado)
+
+    # Caso negativo
+
+    def test_tally_message_negative_unit(self):
+        mensajeEsperado = 'For voting test voting: for question test question for option option 1 it has 0 votes,  for option option 2 it has 3 votes,  for option option 3 it has 0 votes.'
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tally = v.tally
+        questions = v.question.all()
+
+        self.assertNotEqual(give_message(v, tally), mensajeEsperado)
+
+        # Test Unitarios para la creación de Question con descripción única
+
+        # Caso positivo: se crean dos Question con descripciones distintas y no surgen errores
+
+    def test_question_unique_pos(self):
+        v = self.create_question()
+        q = Question(desc='test question2')
+        q.save()
+        self.assertEqual(q.desc, 'test question2')
+
+        # Caso negativo: se crean dos Question con descripcionres repetidas y se lanza un error que impide crearla
+
+    def test_question_unique_neg(self):
+        v = self.create_question()
+        with self.assertRaises(Exception) as raised:
+            self.create_question()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
+
+    def test_create_question_restriction_pos(self):
+        q = self.create_question()
+        q.option_types = 3
+        q.type = 1
+        q.clean()
+        q.save()
+
+        self.assertEqual(q.option_types, 3)
+        self.assertEqual(q.type, 1)
+
+        # Caso positivo: se crea una question respetando la restriccion
+
+    def test_create_question_restriction_neg(self):
+        q = self.create_question()
+        q.option_types = 3
+        q.type = 2
+
+        with self.assertRaises(Exception) as raised:
+            q.clean()
+            q.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+
+        # Caso negativo: se crea una question sin respetar la restriccion
+
+    # Test Unitarios para creación de una question con valores de option_type y type no validos.
+
+    def test_create_question_optiontypes_neg(self):
+        q = self.create_question()
+        q.option_types = 9999
+        q.type = 2
+
+        with self.assertRaises(Exception) as raised:
+            q.full_clean()
+            q.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+
+        # Caso negativo: se crea una question y se asignan valores no válidos a option_types
+
+    def test_create_question_type_neg(self):
+        q = self.create_question()
+        q.option_types = 1
+        q.type = 9999
+
+        with self.assertRaises(Exception) as raised:
+            q.full_clean()
+            q.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+
+        # Caso negativo: se crea una question y se asignan valores no válidos a type
+
+    # Test Unitarios para creación de una voting y autoincluirse en el censo.
+
+    def test_create_voting_autocensus_pos(self):
+
+        v = self.create_voting()
+        # Ha seleccionado autocenso (hacer con selenium)
+        if True:
+            c = Census.objects.get_or_create(voter_id=1, voting_id=v.id)
+        self.assertTrue(c)
+
+        # Caso positivo: se crea una voting y se asigna el creador al censo.
+
+    def test_create_voting_noautocensus_neg(self):
+
+        v = self.create_voting()
+        # No ha seleccionado autocenso (hacer con selenium)
+        if False:
+            Census.objects.get_or_create(voter_id=1, voting_id=v.id)
+
+        with self.assertRaises(Exception) as raised:
+            Census.objects.get(voter_id=1, voting_id=v.id)
+        self.assertEqual(Census.DoesNotExist, type(raised.exception))
+
+        # Caso negativo: se crea una voting y no se asigna el creador al censo.
+
+    # Pruebas unitarias t024
+
+    # Caso positivo masculino
+
+    def test_tally_masc_positive_unit(self):
+
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        tallyMReal = 0
+        tallyMEsperado = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        tallyMReal = tallyMReal + 1
+
+            for clave in clear.keys():
+                tallyMEsperado = tallyMEsperado + clear[clave]
+
+        self.assertEqual(tallyMReal, tallyMEsperado)
+
+    # Caso negativo masculino
+
+    def test_tally_masc_negative_unit(self):
+        tallyMNoEsperado = [{'0': [0, 1]}, {'0': [0, 1]}, {'1': [0, 1]}]
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        self.assertNotEqual(tallyM, tallyMNoEsperado)
+
+    # Caso positivo femenino
+
+    def test_tally_fem_positive_unit(self):
+
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_fem(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        tallyFReal = 0
+        tallyFEsperado = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        tallyFReal = tallyFReal + 1
+
+            for clave in clear.keys():
+                tallyFEsperado = tallyFEsperado + clear[clave]
+
+        self.assertEqual(tallyFReal, tallyFEsperado)
+
+    # Caso negativo femenino
+
+    def test_tally_fem_negative_unit(self):
+        tallyFNoEsperado = [{'1': [0, 1]}, {'0': [0, 1]}, {'0': [0, 1]}]
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_fem(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        self.assertNotEqual(tallyF, tallyFNoEsperado)
+
+    # Pruebas unitarias para la funcionalidad de crear votaciones con múltiples question
+
+    # Caso positivo 1: se crea correctamente una votación con una única question
+
+    def test_multi_voting_simple_pos(self):
+        v1 = self.create_voting()
+        self.assertEqual(v1.name, 'test voting')
+
+        q = []
+        for quest in v1.question.all():
+            q.append(quest.desc)
+
+        desc = q[0]
+        self.assertEqual(desc, 'test question')
+
+        longitud = len(q)
+        self.assertEqual(longitud, 1)
+
+    # Caso positivo 2: se crea correctamente una votación con dos question
+
+    def test_multi_voting_two_pos(self):
+        v1 = self.create_voting_multi()
+        self.assertEqual(v1.name, 'test voting multi')
+
+        q = []
+        for quest in v1.question.all():
+            q.append(quest.desc)
+
+        desc1 = q[0]
+        desc2 = q[1]
+        self.assertEqual(desc1, 'test1 question')
+        self.assertEqual(desc2, 'test2 question')
+
+        longitud = len(q)
+        self.assertEqual(longitud, 2)
+
+    # Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (1 question)
+    # directamente debido a que ahora las question forman parte de un conjunto
+
+    def test_multi_voting_simple_neg(self):
+        v1 = self.create_voting()
+
+        with self.assertRaises(Exception) as raised:
+            option = v1.question.options.all()
+
+        self.assertEqual(AttributeError, type(raised.exception))
+
+    # Caso negativo 2: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
+    # directamente debido a que ahora las question forman parte de un conjunto
+
+    def test_multi_voting_two_neg(self):
+        v1 = self.create_voting_multi()
+
+        with self.assertRaises(Exception) as raised:
+            option = v1.question.options.all()
+
+        self.assertEqual(AttributeError, type(raised.exception))
+
+    # Test Unitarios de Task t026
+
+    def test_complete_unique_option_voting_positive(self):
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    def test_complete_multiple_option_voting_positive(self):
+        v = self.create_voting_variable_option_types(2)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    # Test Unitarios de Task t027
+    # Rank order (Opciones )
+
+    def test_complete_ranked_option_voting_positive(self):
+        voting_type = 3
+        v = self.create_voting_variable_option_types(voting_type)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux(v, number_of_voters)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count = len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range(opt_count):
+                    votes.append(0)
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+                    if pos != None and pos[1] == qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
+
+    # Voting points (Recuento proporcional)
+
+    def test_voting_points_positive(self):
+        points = 4
+        voting_type = 3
+        v = self.create_voting_variable_option_types(voting_type, points)
+        v.points = points
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 4
+        self.store_votes_ranked_aux(v, number_of_voters)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        v.tally
+        postp = v.postproc
+
+        for dicc in postp:
+            options = dicc["options"]
+            for dicc_aux in options:
+                self.assertEqual(points, dicc_aux["points"])
+
+    def test_voting_points_negative(self):
+        points = -1
+
+        with self.assertRaises(Exception) as raised:
+            v = self.create_voting_variable_option_types(3, points)
+
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    
+
     #Pruebas de API Task t050
 
     #Caso positivo
@@ -275,171 +1295,10 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
 
 
-    #Pruebas unitarias Task t019
-
-    #Caso positivo 
-
-    def test_tally_message_positive_unit(self):
-        mensajeEsperado='For voting test voting: for question test question for option option 1 it has 3 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes.'
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tally=v.tally
-        questions = v.question.all()
-
-        self.assertEqual(give_message(v,tally),mensajeEsperado)
-
-    #Caso negativo
-
-    def test_tally_message_negative_unit(self):
-        mensajeEsperado='For voting test voting: for question test question for option option 1 it has 0 votes,  for option option 2 it has 3 votes,  for option option 3 it has 0 votes.'
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tally=v.tally
-        questions = v.question.all()
-
-        self.assertNotEqual(give_message(v,tally),mensajeEsperado)
-    
-    
-    #Pruebas unitarias t024
-
-    #Caso positivo masculino
-
-    def test_tally_masc_positive_unit(self):
-
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-
-        tallyMReal = 0
-        tallyMEsperado = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyM:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        tallyMReal = tallyMReal + 1
-
-
-            for clave in clear.keys():
-                tallyMEsperado = tallyMEsperado + clear[clave]
-
-        self.assertEqual(tallyMReal, tallyMEsperado)
 
     
-    #Caso negativo masculino
+    
 
-    def test_tally_masc_negative_unit(self):
-        tallyMNoEsperado=[{'0': [0, 1]}, {'0': [0, 1]}, {'1': [0, 1]}]
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        self.assertNotEqual(tallyM,tallyMNoEsperado)
-
-    #Caso positivo femenino
-
-    def test_tally_fem_positive_unit(self):
-        
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_fem(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-        
-        tallyFReal = 0
-        tallyFEsperado = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyF:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        tallyFReal = tallyFReal + 1
-
-
-            for clave in clear.keys():
-                tallyFEsperado = tallyFEsperado + clear[clave]
-
-        self.assertEqual(tallyFReal, tallyFEsperado)
-        
-
-    #Caso negativo femenino
-
-    def test_tally_fem_negative_unit(self):
-        tallyFNoEsperado=[{'1': [0, 1]}, {'0': [0, 1]}, {'0': [0, 1]}]
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_fem(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        self.assertNotEqual(tallyF,tallyFNoEsperado)
     
     
     #Pruebas de API t056
@@ -870,838 +1729,13 @@ class VotingTestCase(BaseTestCase):
     #     self.assertEqual(response.json(), 'Voting already tallied')
 
 
-    #Pruebas unitarias para la funcionalidad de crear votaciones con múltiples question
-
-    def create_voting_multi(self):
-        q1 = Question(desc='test1 question', option_types=2)
-        q2 = Question(desc='test2 question', option_types=2)
-
-        q1.save()
-        q2.save()
-
-        for i in range(5):
-            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
-            opt.save()
-
-        for i in range(5):
-            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
-            opt.save()
-
-        v = Voting(name='test voting multi')
-        v.save()
-        v.question.add(q1)
-        v.question.add(q2)
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                           defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-
-        return v
-
-    #Caso positivo 1: se crea correctamente una votación con una única question
-
-    def test_multi_voting_simple_pos(self):
-        v1 = self.create_voting()
-        self.assertEqual(v1.name, 'test voting')
 
 
-        q = []
-        for quest in v1.question.all():
-            q.append(quest.desc)
-
-        desc = q[0]
-        self.assertEqual(desc, 'test question')
-
-        longitud = len(q)
-        self.assertEqual(longitud, 1)
-
-    #Caso positivo 2: se crea correctamente una votación con dos question
-
-    def test_multi_voting_two_pos(self):
-        v1 = self.create_voting_multi()
-        self.assertEqual(v1.name, 'test voting multi')
 
 
-        q = []
-        for quest in v1.question.all():
-            q.append(quest.desc)
 
-        desc1 = q[0]
-        desc2 = q[1]
-        self.assertEqual(desc1, 'test1 question')
-        self.assertEqual(desc2, 'test2 question')
-
-        longitud = len(q)
-        self.assertEqual(longitud, 2)
-
-    #Caso negativo 1: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (1 question)
-    #directamente debido a que ahora las question forman parte de un conjunto
-
-    def test_multi_voting_simple_neg(self):
-        v1 = self.create_voting()
-
-        with self.assertRaises(Exception) as raised:
-            option = v1.question.options.all()
-
-        self.assertEqual(AttributeError, type(raised.exception))
-
-    #Caso negativo 2: se lanza el error cuando se intenta acceder a las opciones de la pregunta de la votación (2 question)
-    #directamente debido a que ahora las question forman parte de un conjunto
-
-    def test_multi_voting_two_neg(self):
-        v1 = self.create_voting_multi()
-
-        with self.assertRaises(Exception) as raised:
-            option = v1.question.options.all()
-
-        self.assertEqual(AttributeError, type(raised.exception))
-
-
-    # Test Unitarios para la creación de Question con descripción única
-
-    def create_question(self):
-        q = Question(desc='test question')
-        q.save()
-        return q
-
-        # Caso positivo: se crean dos Question con descripciones distintas y no surgen errores
-
-    def test_question_unique_pos(self):
-        v = self.create_question()
-        q = Question(desc='test question2')
-        q.save()
-        self.assertEqual(q.desc, 'test question2')
-
-        #Caso negativo: se crean dos Question con descripcionres repetidas y se lanza un error que impide crearla
-
-    def test_question_unique_neg(self):
-        v = self.create_question()
-        with self.assertRaises(Exception) as raised:
-            self.create_question()
-        self.assertEqual(IntegrityError, type(raised.exception))
-
-        # Test Unitarios para creación de una pregunta teniendo en cuenta la restricción de option_types y type
-
-    def test_create_question_restriction_pos(self):
-        q = self.create_question()
-        q.option_types = 3
-        q.type = 1
-        q.clean()
-        q.save()
-
-        self.assertEqual(q.option_types,3)
-        self.assertEqual(q.type, 1)
-
-        # Caso positivo: se crea una question respetando la restriccion
-
-    def test_create_question_restriction_neg(self):
-        q = self.create_question()
-        q.option_types = 3
-        q.type = 2
-
-        with self.assertRaises(Exception) as raised:
-            q.clean()
-            q.save()
-        self.assertEqual(ValidationError, type(raised.exception))
-
-        # Caso negativo: se crea una question sin respetar la restriccion
-
-    # Test Unitarios para creación de una question con valores de option_type y type no validos.
-
-    def test_create_question_optiontypes_neg(self):
-        q = self.create_question()
-        q.option_types = 9999
-        q.type = 2
-
-        with self.assertRaises(Exception) as raised:
-            q.full_clean()
-            q.save()
-        self.assertEqual(ValidationError, type(raised.exception))
-
-        # Caso negativo: se crea una question y se asignan valores no válidos a option_types
-
-    def test_create_question_type_neg(self):
-        q = self.create_question()
-        q.option_types = 1
-        q.type = 9999
-
-        with self.assertRaises(Exception) as raised:
-            q.full_clean()
-            q.save()
-        self.assertEqual(ValidationError, type(raised.exception))
-
-        # Caso negativo: se crea una question y se asignan valores no válidos a type
-
-
-    #Test Unitarios para creación de una voting y autoincluirse en el censo.
-
-    def test_create_voting_autocensus_pos(self):
-
-        v = self.create_voting()
-        # Ha seleccionado autocenso (hacer con selenium)
-        if True:
-            c = Census.objects.get_or_create(voter_id=1, voting_id=v.id)
-        self.assertTrue(c)
-
-        # Caso positivo: se crea una voting y se asigna el creador al censo.
-
-    def test_create_voting_noautocensus_neg(self):
-
-        v = self.create_voting()
-        # No ha seleccionado autocenso (hacer con selenium)
-        if False:
-            Census.objects.get_or_create(voter_id=1, voting_id=v.id)
-
-        with self.assertRaises(Exception) as raised:
-            Census.objects.get(voter_id=1, voting_id=v.id)
-        self.assertEqual(Census.DoesNotExist, type(raised.exception))
-
-        # Caso negativo: se crea una voting y no se asigna el creador al censo.
     
 
-    # Test Unitarios de Task t026
-
-    def create_voting_variable_option_types(self, option_type, points = 1):
-        q = Question(desc='test question', option_types=option_type)
-        if option_type == 3:
-            q.type = 1
-        q.save()
-
-        for i in range(3):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1), number=i+1)
-            opt.save()
-        v = Voting(name='test voting', points=points)
-        
-        v.save()
-        v.question.add(q)
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-
-        return v
-   
-    def store_votes_aux(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user(voter.voter_id)
-            self.login(user=main_voter.username)
-            votos = []
-            qs = v.question.all()
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-
-                if q.option_types == 1:
-                    random_amount = 1
-                else:
-                    random_amount = random.randint(1, count_options)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-
-                    if chosen_option.number in clear:
-                        clear[chosen_option.number] += 1
-                    else:
-                        clear[chosen_option.number] = 1
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b:
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }
-                mods.post('store', json=data)
-
-            self.logout()
-        return clear
-    
-    def store_votes_aux_fem(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user_fem(voter.voter_id)
-            self.login(user=main_voter.username)
-            votos = []
-            qs = v.question.all()
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-
-                if q.option_types == 1:
-                    random_amount = 1
-                else:
-                    random_amount = random.randint(1, count_options)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-
-                    if chosen_option.number in clear:
-                        clear[chosen_option.number] += 1
-                    else:
-                        clear[chosen_option.number] = 1
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b:
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }
-                mods.post('store', json=data)
-
-            self.logout()
-        return clear
-
-    def store_votes_aux_negative(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user(voter.voter_id)
-            self.login(user=main_voter.username)
-            votos = []
-            qs = v.question.all()
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-
-                if q.option_types == 1:
-                    random_amount = 1
-                else:
-                    random_amount = random.randint(1, count_options)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-
-                    if chosen_option.number in clear:
-                        clear[chosen_option.number] += 2
-                    else:
-                        clear[chosen_option.number] = 2
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b:
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }
-                mods.post('store', json=data)
-
-            self.logout()
-        return clear
-
-    def store_votes_aux_fem_negative(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user_fem(voter.voter_id)
-            self.login(user=main_voter.username)
-            votos = []
-            qs = v.question.all()
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-
-                if q.option_types == 1:
-                    random_amount = 1
-                else:
-                    random_amount = random.randint(1, count_options)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-
-                    if chosen_option.number in clear:
-                        clear[chosen_option.number] += 2
-                    else:
-                        clear[chosen_option.number] = 2
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b:
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }
-                mods.post('store', json=data)
-
-            self.logout()
-        return clear
-
-    def test_complete_unique_option_voting_positive(self):
-        v = self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
-
-        number_of_voters = 3
-        clear = self.store_votes_aux(v, number_of_voters)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        tally = v.tally
-
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-
-                for dicc in tally:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    def test_complete_multiple_option_voting_positive(self):
-        v = self.create_voting_variable_option_types(2)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
-
-        number_of_voters = 3
-        clear = self.store_votes_aux(v, number_of_voters)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        tally = v.tally
-
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tally:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    
-    # Test Unitarios de Task t027
-    # Rank order (Opciones )
-
-    def store_votes_ranked_aux(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user(voter.voter_id)
-            self.login(user=main_voter.username)
-           
-            qs = v.question.all()
-            votos = []
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-                random_amount = random.randint(1, count_options) 
-                orden_opciones_voto = []
-
-                zeros = []
-                for element in options:
-                    zeros.append(0)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-                    orden_opciones_voto.append(chosen_option.number)
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b: 
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-                        
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-                
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }                
-                mods.post('store', json=data)
-
-
-                
-                pos = 0
-                for opt_number in orden_opciones_voto:
-                    if opt_number in clear:
-                        sum = clear[opt_number][pos] + 1
-                        clear[opt_number][pos] = sum
-                        
-                    else: 
-                        clear[opt_number] = zeros.copy()               
-                        sum = clear[opt_number][pos] + 1      
-                        clear[opt_number][pos] = sum
-                    pos = pos + 1 
-
-            self.logout()
-        return clear
-
-    def store_votes_ranked_aux_fem(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user_fem(voter.voter_id)
-            self.login(user=main_voter.username)
-           
-            qs = v.question.all()
-            votos = []
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-                random_amount = random.randint(1, count_options) 
-                orden_opciones_voto = []
-
-                zeros = []
-                for element in options:
-                    zeros.append(0)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-                    orden_opciones_voto.append(chosen_option.number)
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b: 
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-                        
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-                
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }                
-                mods.post('store', json=data)
-
-
-                
-                pos = 0
-                for opt_number in orden_opciones_voto:
-                    if opt_number in clear:
-                        sum = clear[opt_number][pos] + 1
-                        clear[opt_number][pos] = sum
-                        
-                    else: 
-                        clear[opt_number] = zeros.copy()               
-                        sum = clear[opt_number][pos] + 1      
-                        clear[opt_number][pos] = sum
-                    pos = pos + 1 
-
-            self.logout()
-        return clear
-
-    def store_votes_ranked_aux_negative(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user(voter.voter_id)
-            self.login(user=main_voter.username)
-           
-            qs = v.question.all()
-            votos = []
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-                random_amount = random.randint(1, count_options) 
-                orden_opciones_voto = []
-
-                zeros = []
-                for element in options:
-                    zeros.append(0)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-                    orden_opciones_voto.append(chosen_option.number)
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b: 
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-                        
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-                
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }                
-                mods.post('store', json=data)
-
-
-                
-                pos = 0
-                for opt_number in orden_opciones_voto:
-                    if opt_number in clear:
-                        sum = clear[opt_number][pos] + 2
-                        clear[opt_number][pos] = sum
-                        
-                    else: 
-                        clear[opt_number] = zeros.copy()               
-                        sum = clear[opt_number][pos] + 2   
-                        clear[opt_number][pos] = sum
-                    pos = pos + 1 
-
-            self.logout()
-        return clear
-
-    def store_votes_ranked_aux_fem_negative(self, v, number_of_voters):
-        voters = list(Census.objects.filter(voting_id=v.id))
-
-        clear = {}
-        for i in range(number_of_voters):
-            voter = voters.pop()
-            main_voter = self.get_or_create_user_fem(voter.voter_id)
-            self.login(user=main_voter.username)
-           
-            qs = v.question.all()
-            votos = []
-            for q in qs:
-                options = q.options.all()
-                count_options = len(options)
-                a,b = None, None
-                random_amount = random.randint(1, count_options) 
-                orden_opciones_voto = []
-
-                zeros = []
-                for element in options:
-                    zeros.append(0)
-
-                for j in range(0, random_amount):
-                    chosen_option = options[j]
-                    orden_opciones_voto.append(chosen_option.number)
-
-                    x, y = self.encrypt_msg(chosen_option.number, v)
-
-                    if a and b: 
-                        a = a + ',' + str(x) + ''
-                        b = b + ',' + str(y) + ''
-                        
-                    else:
-                        a = str(x)
-                        b = str(y)
-
-                votos.append({'a': a, 'b': b })
-                
-                data = {
-                    'voting': v.id,
-                    'voter': voter.voter_id,
-                    'vote': votos,
-                    'question_id': q.id,
-                    'token': self.token
-                }                
-                mods.post('store', json=data)
-
-
-                
-                pos = 0
-                for opt_number in orden_opciones_voto:
-                    if opt_number in clear:
-                        sum = clear[opt_number][pos] + 2
-                        clear[opt_number][pos] = sum
-                        
-                    else: 
-                        clear[opt_number] = zeros.copy()               
-                        sum = clear[opt_number][pos] + 2   
-                        clear[opt_number][pos] = sum
-                    pos = pos + 1 
-
-            self.logout()
-        return clear
-    
-    def test_complete_ranked_option_voting_positive(self):
-        voting_type = 3
-        v = self.create_voting_variable_option_types(voting_type)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
-
-        number_of_voters = 3
-        clear = self.store_votes_ranked_aux(v, number_of_voters)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        tally = v.tally    
-        
-        questions = v.question.all()
-        opts = {}
-        for qs in questions:
-            opciones = qs.options.all()
-            opt_count=len(opciones)
-            for opt in opciones:
-                votes = []
-
-                for i in range (opt_count):
-                    votes.append(0)
-
-                for dicc in tally:
-                    indice = opt.number 
-                    pos = dicc.get(str(indice))
-                    if pos!=None and pos[1]==qs.id:
-                        votes[pos[0]] = votes[pos[0]] + 1
-
-                empty = True
-                for element in votes:
-                    if element != 0:
-                        empty = False
-                        break       
-
-                if empty == False:
-                    opts[opt.number] = votes
-
-        self.assertEqual(opts, clear)
-
-    # Voting points (Recuento proporcional)    
-
-    def test_voting_points_positive(self):
-        points = 4
-        voting_type = 3
-        v = self.create_voting_variable_option_types(voting_type, points)
-        v.points = points
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
-
-        number_of_voters = 4
-        self.store_votes_ranked_aux(v, number_of_voters)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        v.tally    
-        postp = v.postproc
-
-        for dicc in postp:
-            options = dicc["options"]
-            for dicc_aux in options:
-                self.assertEqual(points, dicc_aux["points"])
-
-    def test_voting_points_negative(self):
-        points = -1
-
-        with self.assertRaises(Exception) as raised:
-            v = self.create_voting_variable_option_types(3, points)
-
-        self.assertEqual(IntegrityError, type(raised.exception))
 
 
     # Tests de modelo de Task t042
