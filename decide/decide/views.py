@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import Http404
 from django.core import serializers
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from voting.serializers import MinimalVotingSerializer
 from authentication.models import UserProfile
@@ -59,3 +59,41 @@ class SignInView(TemplateView):
         context['user_sex'] = UserProfile.sex_types;
         return context
 
+def login(request):
+    response = redirect('index')
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        
+        token = mods.post('authentication', entry_point='/login/',json={'username': username, 'password': password})
+        user = mods.post('authentication', entry_point='/getuser/', json=token)
+
+        user_id = user.get('id', None)
+        if user_id == None:
+            response['Location'] += '?failedlogin'
+            return response
+
+        request.session['user_token'] = token
+        request.session['voter_id'] = user_id
+        request.session['username'] = user.get('username', '')
+        request.session.modified = True
+        
+        response.set_cookie('decide', token.get('token', ''), path='/')
+
+    return response
+
+def logout(request):
+    response = redirect('index')
+    response.delete_cookie('decide')
+
+    token = request.session.get('user_token')
+
+    if token:
+        mods.post('authentication', entry_point='/logout/', json={'token': token})
+
+        del request.session['user_token']
+        del request.session['voter_id']
+        del request.session['username']
+        request.session.modified = True
+
+    return response
