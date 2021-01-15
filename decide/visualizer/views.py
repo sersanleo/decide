@@ -29,8 +29,8 @@ class VisualizerView(TemplateView):
             if voting['end_date'] != None and voting['postproc'][0] != None and (self.request.user.is_superuser or census != None):
 
                 postproc = voting['postproc'][0]
-                if postproc['type'] == 'IDENTITY':
-                    self.statistics_identity(r[0],context)
+                if postproc['type'] == 'IDENTITY' or postproc['type'] == 'BORDA':
+                    self.statistics_identity(context, voting)
 
                 elif postproc['type'] == 'EQUALITY':
                     self.statistics_equality(context, voting)
@@ -99,20 +99,6 @@ class VisualizerView(TemplateView):
         
 
     def statistics_points(self, context, voting):
-        # r = {}
-        # r["name"] = "Nombre de la votación"
-        # r["desc"] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " \
-        #             "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-        # r["type"] = 'IDENTITY'
-        # r["options"] = [{'question': 'unique', 'question_id': 2, 'option': 'a', 'number': 4, 'votes': 7, 'votes_masc': 0,
-        #                  'votes_fem': 4, 'points': 7, 'postproc': 3},
-        #                 {'question': 'unique', 'question_id': 2, 'option': 'b', 'number': 5, 'votes': 6, 'votes_masc': 0,
-        #                  'votes_fem': 5, 'points': 7, 'postproc': 2},
-        #                 {'question': 'unique', 'question_id': 2, 'option': 'c', 'number': 6, 'votes': 4, 'votes_masc': 0,
-        #                  'votes_fem': 1, 'points': 7, 'postproc': 1},
-        #                 {'question': 'unique', 'question_id': 2, 'option': 'd', 'number': 7, 'votes': 9, 'votes_masc': 0,
-        #                  'votes_fem': 1, 'points': 7, 'postproc': 1}]
-
         labels = []
         postproc = []
         votes = []
@@ -137,7 +123,7 @@ class VisualizerView(TemplateView):
 
         return context
 
-    def statistics_identity(self, voting, context):
+    def statistics_identity(self, context, voting):
         labels = []
         data = []
         postproc = voting.get('postproc')[0]['options']

@@ -11,19 +11,29 @@
         </div>
     </section>
         <div class="container">
-            <div v-if="voting.postproc" class="row align-items-center">
-                <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+            <div v-if="voting.postproc">
+                {% if postproc_type == 'EQUALITY' %}
+                <div v-if="postproc_type == 'EQUALITY'" id="container">
                     <canvas id="genderGraph"></canvas>
                 </div>
-                <div v-if="postproc_type == 'EQUALITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
+                <div >
                     <canvas id="genderCensusChart"></canvas>
                 </div>
-                <div v-else-if="postproc_type == 'IDENTITY'" id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
+                {% elif postproc_type == 'IDENTITY' or postproc_type == 'BORDA'%}
+                <div>
+                    <canvas id="identityChart"></canvas>
                 </div>
-                <div v-else id="container" style="width: 90%; margin: 0 auto; position: relative;">
-                    <!--<canvas id="ponAquiTuGraficaId"></canvas>-->
+                {% else %}
+                <div class="container">
+
+                        <h1 class="text-center">Votes</h1>
+                        <canvas id="pointsVotesChart"></canvas>
+
+                    <h1 class="text-center">Tally</h1>
+                    <canvas id="pointsPostprocChart"></canvas>
+
                 </div>
+                {% endif %}
             </div>
         </div>
         
@@ -139,6 +149,84 @@
                 }
             }
         });
+    </script>
+
+    <script>
+        window.onload = function() {
+            var ctx = document.getElementById('identityChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: {{labels|safe}},
+                    datasets:[{
+                        label: 'Resultados',
+                        backgroundColor: ['black', 'grey', 'brown'],
+                        borderColor: 'black',
+                        data: {{data|safe}}
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        };
+
+    </script>
+
+
+    <script>
+            var pointsPostprocChart = document.getElementById('pointsPostprocChart').getContext('2d');
+            var pointsVotesChart = document.getElementById('pointsVotesChart').getContext('2d');
+
+            var chart = new Chart(pointsPostprocChart, {
+                type: 'pie',
+                data: {
+                    labels: {{labels|safe}},
+                    datasets:[{
+                        label: 'Tally',
+                        backgroundColor: ['black', 'grey', 'brown'],
+                        borderColor: 'black',
+                        data: {{postproc|safe}}
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+            var chart = new Chart(pointsVotesChart, {
+                type: 'pie',
+                data: {
+                    labels: {{labels|safe}},
+                    datasets:[{
+                        label: 'Votes',
+                        backgroundColor: ['black', 'grey', 'brown'],
+                        borderColor: 'black',
+                        data: {{votes|safe}}
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+    </script>
+
+    <script>
+            var ctx = document.getElementById('pointsVotesChart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: {{labels|safe}},
+                    datasets:[{
+                        label: 'Votes',
+                        backgroundColor: ['black', 'grey', 'brown'],
+                        borderColor: 'black',
+                        data: {{votes|safe}}
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
     </script>
 
 {% endblock %}
