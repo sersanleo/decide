@@ -125,7 +125,7 @@ class GetUserVotingsView(APIView):
                 
                 if votes == 0 and voting.start_date != None and voting.end_date == None:
                     pending_votings.append(voting)
-                elif votes > 0 and voting.start_date != None and voting.end_date != None and voting.tally != None:
+                elif voting.tally != None:
                     past_votings.append(voting)
             except:
                 pass
