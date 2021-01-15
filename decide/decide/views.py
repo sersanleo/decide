@@ -28,6 +28,8 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        print(UserProfile.styles_verbose)
+
         context['user_styles'] = UserProfile.styles;
         return context
 
