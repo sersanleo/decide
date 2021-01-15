@@ -11,6 +11,7 @@ from census.models import Census
 from store.models import Vote
 from authentication.models import UserProfile
 from datetime import datetime
+from django.core.exceptions import PermissionDenied
 
 
 class VisualizerView(TemplateView):
@@ -23,12 +24,18 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             voting = r[0]
-            # census = Census.objects.get(voting_id=vid, voter_id=self.request.user.id) #Obtenemos el censo donde el usuario está registrado
+            
+            # Obtenemos el censo de la votación en la que el usuario está registrado.
+            census = Census.objects.get(voting_id=vid, voter_id=self.request.user.id)
 
-            # Solo se mostrarán las gráficas de aquellas votaciones finalizadas y postprocesadas. Además se verifica que el usuario es un superuser o pertenece al algún censo de la votación
-            if voting['end_date'] != None and voting['postproc'][0] != None and (self.request.user.is_superuser or census != None):
-
+            # Se verifica que el usuario es un superuser o pertenece al algún censo de la votación. 
+            if self.request.user.is_superuser == False or census == None:
+                raise PermissionDenied
+            
+            # Solo se mostrarán las gráficas de aquellas votaciones finalizadas y postprocesadas.
+            if voting['end_date'] != None and voting['postproc'][0] != None:
                 postproc = voting['postproc'][0]
+
                 if postproc['type'] == 'IDENTITY' or postproc['type'] == 'BORDA':
                     self.statistics_identity(context, voting)
 
@@ -41,8 +48,13 @@ class VisualizerView(TemplateView):
                 context['postproc_type'] = voting['postproc'][0]['type']
 
             context['voting'] = voting
+
+        except PermissionDenied:
+            raise HttpResponseForbidden
+
         except:
-                raise Http404
+            raise Http404
+
         return context
 
     def statistics_equality(self, context, voting):
@@ -87,7 +99,7 @@ class VisualizerView(TemplateView):
             total += opt['postproc']
         
         for i in range(len(postproc)):
-            results.append(round((postproc[i]['postproc'] * 100)/total, 2))
+            results.append(round((postproc[i]['postproc']/total)*100, 2))
 
         # Agregamos todos los parámetro que necesitamos al context
 
