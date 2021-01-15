@@ -10,7 +10,7 @@ urlpatterns = [
     path('getuser/', GetUserView.as_view()),
     path('changestyle/', ChangeStyleView.as_view()),
     path('register/', RegisterView.as_view()),
-    path('modify/', ModifyView.as_view()),
+    path('modify/', ModifyView.as_view(), name="register"),
     path('changesex/', ChangeSexView.as_view()),
     path('changeemail/', ChangeEmailView.as_view()),
 ]
