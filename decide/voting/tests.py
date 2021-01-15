@@ -57,8 +57,6 @@ class VotingTestCase(BaseTestCase):
 
         return v
 
-
-
     def create_voters(self, v):
         for i in range(100):
             u, _ = User.objects.get_or_create(username='testvoter{}'.format(i))
@@ -82,7 +80,6 @@ class VotingTestCase(BaseTestCase):
         user.sex = 'M'
         user.save()
         return user
-
 
     def get_or_create_user_fem(self, pk):
         user, _ = User.objects.get_or_create(pk=pk)
@@ -161,7 +158,6 @@ class VotingTestCase(BaseTestCase):
             self.logout()
             voter = voters.pop()
 
-
     def store_votes_unique_option_fem(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
@@ -203,10 +199,10 @@ class VotingTestCase(BaseTestCase):
             self.logout()
             voter = voters.pop()
 
-
-
     #Pruebas de API Task t050
+
     #Caso positivo
+
     def test_tally_message_positive_api(self):
         mensajeEsperado="For voting test voting: for question test question for option option 1 it has 1 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         voting = self.create_voting()
@@ -242,6 +238,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(mensajeEsperado, mensajeObtenido)
     
     #Caso negativo
+
     def test_tally_message_negative_api(self):
         mensajeEsperado="For voting test bad voting : for question test question for option option 1 it has 0 votes,  for option option 2 it has 0 votes,  for option option 3 it has 1 votes,  for option option 4 it has 0 votes,  for option option 5 it has 0 votes."
         voting = self.create_voting()
@@ -275,8 +272,12 @@ class VotingTestCase(BaseTestCase):
         mensajeObtenido=give_message(voting,tally)
 
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
+
+
     #Pruebas unitarias Task t019
+
     #Caso positivo 
+
     def test_tally_message_positive_unit(self):
         mensajeEsperado='For voting test voting: for question test question for option option 1 it has 3 votes,  for option option 2 it has 0 votes,  for option option 3 it has 0 votes.'
         v=self.create_voting_variable_option_types(1)
@@ -297,6 +298,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(give_message(v,tally),mensajeEsperado)
 
     #Caso negativo
+
     def test_tally_message_negative_unit(self):
         mensajeEsperado='For voting test voting: for question test question for option option 1 it has 0 votes,  for option option 2 it has 3 votes,  for option option 3 it has 0 votes.'
         v=self.create_voting_variable_option_types(1)
@@ -315,8 +317,12 @@ class VotingTestCase(BaseTestCase):
         questions = v.question.all()
 
         self.assertNotEqual(give_message(v,tally),mensajeEsperado)
+    
+    
     #Pruebas unitarias t024
+
     #Caso positivo masculino
+
     def test_tally_masc_positive_unit(self):
         tallyMesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
@@ -337,6 +343,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(tallyM,tallyMesperado)
     
     #Caso negativo masculino
+
     def test_tally_masc_negative_unit(self):
         tallyMNoEsperado=[{'0': [0, 1]}, {'0': [0, 1]}, {'1': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
@@ -357,6 +364,7 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(tallyM,tallyMNoEsperado)
 
     #Caso positivo femenino
+
     def test_tally_fem_positive_unit(self):
         tallyFesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
@@ -377,6 +385,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(tallyF,tallyFesperado)
 
     #Caso negativo femenino
+
     def test_tally_fem_negative_unit(self):
         tallyFNoEsperado=[{'1': [0, 1]}, {'0': [0, 1]}, {'0': [0, 1]}]
         v=self.create_voting_variable_option_types(1)
@@ -395,7 +404,10 @@ class VotingTestCase(BaseTestCase):
         questions = v.question.all()
 
         self.assertNotEqual(tallyF,tallyFNoEsperado)
+    
+    
     #Pruebas de API t056
+
     #Caso positivo masculino
     def test_tally_masc_positive_api(self):
 
@@ -472,6 +484,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(str(opts),resultadoEsperado)
 
     #Caso negativo masculino
+
     def test_tally_masc_negative_api(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -544,7 +557,9 @@ class VotingTestCase(BaseTestCase):
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 0}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 1}, {'Option:': 'option 5', 'has this male votes:': 0}]"
         self.assertNotEqual(str(opts),resultadoEsperado)
+    
     #Caso positivo femenino
+
     def test_tally_fem_positive_api(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -617,7 +632,9 @@ class VotingTestCase(BaseTestCase):
 
         resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 1}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 0}, {'Option:': 'option 5', 'has this female votes:': 0}]"
         self.assertEqual(str(opts),resultadoEsperado)
+    
     #Caso negativo femenino
+
     def test_tally_fem_negative_api(self):
         voting = self.create_voting()
         self.create_voters(voting)
@@ -693,7 +710,6 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(str(opts),resultadoEsperado)
 
 
-
     def test_started_by_positive(self):
         voting = self.create_voting()
         voting_id = voting.id
@@ -737,6 +753,8 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
         self.assertNotEqual(voting.started_by, user.username)
+
+
     # def test_update_voting(self):
     #     voting = self.create_voting()
 
@@ -904,8 +922,6 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(AttributeError, type(raised.exception))
 
 
-
-
     # Test Unitarios para la creación de Question con descripción única
 
     def create_question(self):
@@ -982,7 +998,7 @@ class VotingTestCase(BaseTestCase):
         # Caso negativo: se crea una question y se asignan valores no válidos a type
 
 
-#Test Unitarios para creación de una voting y autoincluirse en el censo.
+    #Test Unitarios para creación de una voting y autoincluirse en el censo.
 
     def test_create_voting_autocensus_pos(self):
 
@@ -1006,9 +1022,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(Census.DoesNotExist, type(raised.exception))
 
         # Caso negativo: se crea una voting y no se asigna el creador al censo.
-
-
-
+    
 
     # Test Unitarios de Task t026
 
@@ -1083,7 +1097,7 @@ class VotingTestCase(BaseTestCase):
 
             self.logout()
         return clear
-
+    
     def store_votes_aux_fem(self, v, number_of_voters):
         voters = list(Census.objects.filter(voting_id=v.id))
 
@@ -1136,8 +1150,6 @@ class VotingTestCase(BaseTestCase):
             self.logout()
         return clear
 
-
-   
     def store_votes_aux_negative(self, v, number_of_voters):
         voters = list(Census.objects.filter(voting_id=v.id))
 
@@ -1241,6 +1253,7 @@ class VotingTestCase(BaseTestCase):
 
             self.logout()
         return clear
+
     def test_complete_unique_option_voting_positive(self):
         v = self.create_voting_variable_option_types(1)
         self.create_voters(v)
@@ -1314,7 +1327,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(votes, votes_aux)
 
-
+    
     # Test Unitarios de Task t027
     # Rank order (Opciones )
 
@@ -1446,7 +1459,6 @@ class VotingTestCase(BaseTestCase):
             self.logout()
         return clear
 
-
     def store_votes_ranked_aux_negative(self, v, number_of_voters):
         voters = list(Census.objects.filter(voting_id=v.id))
 
@@ -1511,9 +1523,6 @@ class VotingTestCase(BaseTestCase):
             self.logout()
         return clear
 
-
-
-
     def store_votes_ranked_aux_fem_negative(self, v, number_of_voters):
         voters = list(Census.objects.filter(voting_id=v.id))
 
@@ -1577,6 +1586,7 @@ class VotingTestCase(BaseTestCase):
 
             self.logout()
         return clear
+    
     def test_complete_ranked_option_voting_positive(self):
         voting_type = 3
         v = self.create_voting_variable_option_types(voting_type)
@@ -1685,7 +1695,7 @@ class VotingTestCase(BaseTestCase):
             
         self.assertEqual(IntegrityError, type(raised.exception))
 
-
+    
     # Tests de modelo de Task t043  
     
     def test_store_ranked_option_question_positive(self):
@@ -1712,6 +1722,58 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(IntegrityError, type(raised.exception))
     
+    
+    # Tests de modelo de Task t053
+
+    def test_complete_unique_option_voting_positive_api(self):
+        voting = self.create_voting_variable_option_types(1)
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)
+
+        questions = voting.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+
     #Pruebas de modelo para la t046
 
     #Caso positivo 1
@@ -1770,6 +1832,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(TypeError, type(raised.exception))
         
+
     #Test de modelo de la t045
 
     #Caso positivo
@@ -1805,6 +1868,7 @@ class VotingTestCase(BaseTestCase):
      #Test de modelo de Task t044
 
     #Caso positivo tallyM con votacion de opción única
+
     def test_tallyM_unique_positive_model(self):
         v=self.create_voting_variable_option_types(1)
         self.create_voters(v)
@@ -1840,6 +1904,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(votes, votes_aux)
 
     #Caso negativo tallyM con votacion de opción única
+
     def test_tallyM_unique_negative_model(self):
         v=self.create_voting_variable_option_types(1)
         self.create_voters(v)
@@ -1875,6 +1940,7 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(votes, votes_aux)
 
     #Caso positivo tallyF con votacion de opción única
+
     def test_tallyF_unique_positive_model(self):
         v=self.create_voting_variable_option_types(1)
         self.create_voters_fem(v)
@@ -1909,7 +1975,8 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(votes, votes_aux)
 
-   #Caso negativo tallyF con votacion de opción única
+    #Caso negativo tallyF con votacion de opción única
+
     def test_tallyF_unique_negative_model(self):
         v=self.create_voting_variable_option_types(1)
         self.create_voters_fem(v)
@@ -1945,6 +2012,7 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(votes, votes_aux)
 
     #Caso positivo tallyM con votacion de opción múltiple
+
     def test_tallyM_multiple_positive_model(self):
         v=self.create_voting_variable_option_types(2)
         self.create_voters(v)
@@ -1980,6 +2048,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(votes, votes_aux)
 
     #Caso negativo tallyM con votacion de opción múltiple
+
     def test_tallyM_multiple_negative_model(self):
         v=self.create_voting_variable_option_types(2)
         self.create_voters(v)
@@ -2015,6 +2084,7 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(votes, votes_aux)
 
     #Caso positivo tallyF con votacion de opción múltiple
+
     def test_tallyF_multiple_positive_model(self):
         v=self.create_voting_variable_option_types(2)
         self.create_voters_fem(v)
@@ -2049,7 +2119,8 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(votes, votes_aux)
 
-   #Caso negativo tallyF con votacion de opción múltiple
+    #Caso negativo tallyF con votacion de opción múltiple
+
     def test_tallyF_multiple_negative_model(self):
         v=self.create_voting_variable_option_types(2)
         self.create_voters_fem(v)
@@ -2085,6 +2156,7 @@ class VotingTestCase(BaseTestCase):
         self.assertNotEqual(votes, votes_aux)
 
     #Caso positivo tallyM con votacion de opción ranked order
+
     def test_tallyM_ranked_order_positive_model(self):
         v=self.create_voting_variable_option_types(3)
         self.create_voters(v)
@@ -2129,7 +2201,8 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(opts, clear)
 
-   #Caso negativo tallyM con votacion de opción ranked order
+    #Caso negativo tallyM con votacion de opción ranked order
+
     def test_tallyM_ranked_order_negative_model(self):
         v=self.create_voting_variable_option_types(3)
         self.create_voters(v)
@@ -2174,7 +2247,8 @@ class VotingTestCase(BaseTestCase):
 
         self.assertNotEqual(opts, clear)
 
-   #Caso positivo tallyF con votacion de opción ranked order
+    #Caso positivo tallyF con votacion de opción ranked order
+
     def test_tallyF_ranked_order_positive_model(self):
         v=self.create_voting_variable_option_types(3)
         self.create_voters_fem(v)
@@ -2220,6 +2294,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(opts, clear)
 
     #Caso negativo tallyF con votacion de opción ranked order
+
     def test_tallyF_ranked_order_negative_model(self):
         v=self.create_voting_variable_option_types(3)
         self.create_voters_fem(v)
@@ -2264,6 +2339,7 @@ class VotingTestCase(BaseTestCase):
 
         self.assertNotEqual(opts, clear)
          
+
     # Pruebas de API para la t049: votacion con múltiples preguntas
 
     def test_update_voting(self):
@@ -2332,7 +2408,6 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already stopped')
-
 
 
     #Pruebas de modelo Task t060
