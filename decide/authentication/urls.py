@@ -9,8 +9,6 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     path('getuser/', GetUserView.as_view()),
     path('changestyle/', ChangeStyleView.as_view()),
-    path('page-login/', PageLoginView.as_view()),
-    path('page-logout/', PageLogoutView.as_view()),
     path('register/', RegisterView.as_view()),
     path('modify/', ModifyView.as_view()),
     path('changesex/', ChangeSexView.as_view()),
