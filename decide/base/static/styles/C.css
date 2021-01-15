@@ -48,13 +48,23 @@ font-size:1.1428em;
  p,td,span{
      font-size:0.9285em;
  }
+
 #zoomIn,#zoomOut{
     border-radius: .3rem;
-    background-color:#f8b679;
-    border-color: #e7901f;
+    background-color:#e7901f;
+    border-color: #f8b679;
     color:white;
 
 }
+
+.translate{
+    margin:auto;
+    border-radius: .3rem;
+    background-color:#e7901f;
+    border-color: #f8b679;
+    color:white;
+}
+
 .colMS {
     background-color:#f8b679 !important;
 }

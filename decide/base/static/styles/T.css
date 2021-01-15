@@ -25,6 +25,7 @@ font-size:1.1428em;
  p,td,span{
      font-size:0.9285em;
  }
+
 #zoomIn,#zoomOut{
     border-radius: .3rem;
     background-color:#F8DFE9;
@@ -33,6 +34,13 @@ font-size:1.1428em;
 
 }
 
+.translate{
+    margin:auto;
+    border-radius: .3rem;
+    background-color:#F8DFE9;
+    border-color: #BB688A;
+    color:black;
+}
 
 .colMS {
     background-color:#F8DFE9 !important;
