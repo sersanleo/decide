@@ -1,3 +1,4 @@
+
 import random
 import itertools
 from django.utils import timezone
@@ -2809,3 +2810,28 @@ class VotingTestCase(BaseTestCase):
         with self.assertRaises(Exception) as raised:
             Census.objects.get(voter_id=1, voting_id=v1.id)
         self.assertEqual(Census.DoesNotExist, type(raised.exception))
+
+                        pos = dicc.get(str(indice))
+
+                        if pos!=None and pos[1]==q.id:
+                            votesF[pos[0]] = votesF[pos[0]] + 1
+                else:
+                    votesM = 0
+                    votesF = 0
+                    for dicc in tallyM:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesM = votesM + 1
+                    for dicc in tallyF:
+                        indice = opt.number
+                        pos = dicc.get(str(indice))
+                        if pos!=None and pos[1]==q.id:
+                            votesF = votesF + 1
+                opts.append({
+                    'Option:': opt.option,
+                    'has this male votes:': votesM
+                })
+
+        resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 0}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 1}, {'Option:': 'option 5', 'has this male votes:': 0}]"
+        self.assertNotEqual(str(opts),resultadoEsperado)
