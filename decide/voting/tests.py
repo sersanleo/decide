@@ -2362,3 +2362,26 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(Voting.objects.count(), 2)
 
         self.assertNotEqual(v1,v2)
+
+    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+    def test_duplicate_voting_name_negative_model(self):
+        q = Question(desc='test question', option_types=1,type=0)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(id=1,name='test voting')
+
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
