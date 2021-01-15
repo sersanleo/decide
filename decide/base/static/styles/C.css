@@ -3,6 +3,14 @@ body,h3,a{
     font-size:1em;
 }
 
+body {
+    background-color:#f8b679;
+}
+
+#app-decide {
+    background-color:#f8b679;
+}
+
 h1{
     font-size:1.4285em;
 }
