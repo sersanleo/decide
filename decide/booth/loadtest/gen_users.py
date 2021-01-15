@@ -2,22 +2,15 @@ import json
 import requests
 
 HOST = "http://localhost:8000"
-
-# IMPORTANTE: Es necesario tener creado un superusuario con estas credenciales,
-# o en su defecto se deben modificar las dos siguientes líneas
-USER = "admin"
-PASS = "administrator"
+USUARIO = "admin"
+CONT = "admin12345"
 
 def create_users(filename):
-    """
-    Create voters with requests library from filename.json, where key are
-    usernames and values are the passwords.
-    """
 
     with open(filename) as f:
         voters = json.loads(f.read())
 
-    data = {'username': USER, 'password': PASS, 'sex': 'M', 'style': 'N'}
+    data = {'username': USUARIO, 'password': CONT, 'sex': 'M', 'style': 'N'}
     response = requests.post(HOST + '/authentication/login/', data=data)
     token = response.json()
 

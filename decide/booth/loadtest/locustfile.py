@@ -1,11 +1,10 @@
 import json
 
-from random import choice
+from random import SystemRandom
 
 from locust import (
     HttpUser,
     SequentialTaskSet,
-    TaskSet,
     task,
     between
 )
@@ -17,9 +16,10 @@ HOST = "http://localhost:8000"
 class DefSuggestions(SequentialTaskSet):
 
     def on_start(self):
+        cryptogen = SystemRandom()
         with open('users.json') as f:
             self.voters = json.loads(f.read())
-        self.voter = choice(list(self.voters.items()))
+        self.voter = cryptogen.choice(list(self.voters.items()))
 
 
     @task
