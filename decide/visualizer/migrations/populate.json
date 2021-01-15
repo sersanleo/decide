@@ -924,6 +924,74 @@
       "auths": [10]
     }
   },
+   {
+    "model": "voting.voting",
+    "pk": 23,
+    "fields": {
+      "name": "[popultate]Votacion colores finalizada Hondt again",
+      "desc": "desc de prueba",
+      "question": [13],
+      "start_date": "2020-11-11T22:00:00Z",
+      "started_by": "decide",
+      "end_date": "2020-11-15T22:00:00Z",
+      "pub_key": 13,
+      "tally": [{"2": [0, 13]}, {"4": [0, 13]}, {"4": [0, 13]}, {"4": [0, 13]}, {"1": [0, 13]}, {"3": [0, 13]}, {"1": [0, 13]}, {"1": [0, 13]}, {"1": [0, 13]}, {"4": [0, 13]}, {"4": [0, 13]}, {"4": [0, 13]}, {"1": [0, 13]}, {"2": [0, 13]}, {"1": [0, 13]}, {"3": [0, 13]}, {"1": [0, 13]}, {"2": [0, 13]}, {"3": [0, 13]}, {"1": [0, 13]}, {"2": [0, 13]}, {"4": [0, 13]}, {"4": [0, 13]}, {"1": [0, 13]}, {"3": [0, 13]}],
+      "tallyM": [],
+      "tallyF": [],
+      "postproc": [
+        {
+    "type": "HONDT",
+    "options": [
+      {
+        "votes": 9,
+        "number": 1,
+        "option": "Rojo",
+        "points": 5,
+        "postproc": 0,
+        "question": "1233567800",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 13
+      },
+      {
+        "votes": 8,
+        "number": 4,
+        "option": "Azul",
+        "points": 5,
+        "postproc": 1,
+        "question": "1233567800",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 13
+      },
+      {
+        "votes": 4,
+        "number": 3,
+        "option": "Amarillo",
+        "points": 5,
+        "postproc": 2,
+        "question": "1233567800",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 13
+      },
+      {
+        "votes": 4,
+        "number": 2,
+        "option": "Verde",
+        "points": 5,
+        "postproc": 2,
+        "question": "1233567800",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 13
+      }
+    ]
+  }
+],
+      "auths": [10]
+    }
+  },
   {
     "model": "voting.voting",
     "pk": 24,
