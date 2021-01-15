@@ -325,7 +325,7 @@ class VotingTestCase(BaseTestCase):
     #Caso positivo masculino
 
     def test_tally_masc_positive_unit(self):
-        tallyMesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
+
         v=self.create_voting_variable_option_types(1)
         self.create_voters(v)
 
@@ -341,7 +341,25 @@ class VotingTestCase(BaseTestCase):
         tallyM=v.tallyM
         questions = v.question.all()
 
-        self.assertEqual(tallyM,tallyMesperado)
+
+        tallyMReal = 0
+        tallyMEsperado = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        tallyMReal = tallyMReal + 1
+
+
+            for clave in clear.keys():
+                tallyMEsperado = tallyMEsperado + clear[clave]
+
+        self.assertEqual(tallyMReal, tallyMEsperado)
+
     
     #Caso negativo masculino
 
@@ -367,7 +385,7 @@ class VotingTestCase(BaseTestCase):
     #Caso positivo femenino
 
     def test_tally_fem_positive_unit(self):
-        tallyFesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
+        
         v=self.create_voting_variable_option_types(1)
         self.create_voters_fem(v)
 
@@ -382,8 +400,25 @@ class VotingTestCase(BaseTestCase):
         v.tally_votes(self.token)
         tallyF=v.tallyF
         questions = v.question.all()
+        
+        tallyFReal = 0
+        tallyFEsperado = 0
+        for qs in questions:
+            for opt in qs.options.all():
 
-        self.assertEqual(tallyF,tallyFesperado)
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        tallyFReal = tallyFReal + 1
+
+
+            for clave in clear.keys():
+                tallyFEsperado = tallyFEsperado + clear[clave]
+
+        self.assertEqual(tallyFReal, tallyFEsperado)
+        
 
     #Caso negativo femenino
 
@@ -2810,28 +2845,3 @@ class VotingTestCase(BaseTestCase):
         with self.assertRaises(Exception) as raised:
             Census.objects.get(voter_id=1, voting_id=v1.id)
         self.assertEqual(Census.DoesNotExist, type(raised.exception))
-
-                        pos = dicc.get(str(indice))
-
-                        if pos!=None and pos[1]==q.id:
-                            votesF[pos[0]] = votesF[pos[0]] + 1
-                else:
-                    votesM = 0
-                    votesF = 0
-                    for dicc in tallyM:
-                        indice = opt.number
-                        pos = dicc.get(str(indice))
-                        if pos!=None and pos[1]==q.id:
-                            votesM = votesM + 1
-                    for dicc in tallyF:
-                        indice = opt.number
-                        pos = dicc.get(str(indice))
-                        if pos!=None and pos[1]==q.id:
-                            votesF = votesF + 1
-                opts.append({
-                    'Option:': opt.option,
-                    'has this male votes:': votesM
-                })
-
-        resultadoEsperado="[{'Option:': 'option 1', 'has this male votes:': 0}, {'Option:': 'option 2', 'has this male votes:': 0}, {'Option:': 'option 3', 'has this male votes:': 0}, {'Option:': 'option 4', 'has this male votes:': 1}, {'Option:': 'option 5', 'has this male votes:': 0}]"
-        self.assertNotEqual(str(opts),resultadoEsperado)
