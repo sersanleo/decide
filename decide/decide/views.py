@@ -28,8 +28,6 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        print(UserProfile.styles_verbose)
-
         context['user_styles'] = UserProfile.styles;
         return context
 
@@ -73,7 +71,7 @@ class ModifyProfileDateView(TemplateView):
         if not check_sess:
             return check_sess
 
-        return super(SignInView, self).dispatch(request, *args, **kwargs)
+        return super(ModifyProfileDateView, self).dispatch(request, *args, **kwargs)
       
 class SignInView(TemplateView):
     template_name='decide/sign_in.html'
