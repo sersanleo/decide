@@ -68,6 +68,7 @@ email:''
             this.postData("/gateway/authentication/modify/", data)
                 .then(data => {
                     this.getUser();
+                    alert("Profile data updated successfully.")
                 })
                 .catch(error => {
                     this.showAlert("danger", 'Error: ' + error);
@@ -87,6 +88,7 @@ email:''
             this.postData("/gateway/authentication/modify/", data)
                 .then(data => {
                     this.getUser();
+                    alert("Profile data updated successfully.")
                 })
                 .catch(error => {
                     this.showAlert("danger", 'Error: ' + error);
