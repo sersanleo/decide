@@ -17,6 +17,7 @@ from census.models import Census
 from mixnet.models import Key
 from voting.models import Voting, Question, QuestionOption
 
+from random import SystemRandom
 
 
 class StoreTextCase(BaseTestCase):
@@ -56,13 +57,14 @@ class StoreTextCase(BaseTestCase):
         return user
 
     def gen_votes(self):
-        votings = [random.randint(1, 5000) for i in range(10)]
-        users = [random.randint(3, 5002) for i in range(50)]
+        cryptogen = SystemRandom()
+        votings = [cryptogen.randint(1, 5000) for i in range(10)]
+        users = [cryptogen.randint(3, 5002) for i in range(50)]
         for v in votings:
-            a1 = random.randint(2, 500)
-            b1 = random.randint(2, 500)
-            a2 = random.randint(2, 500)
-            b2 = random.randint(2, 500)
+            a1 = str(random.randint(2, 500))
+            b1 = str(random.randint(2, 500))
+            a2 = str(random.randint(2, 500))
+            b2 = str(random.randint(2, 500))
             votacion = self.gen_voting(v)
             random_user = random.choice(users)
             user = self.get_or_create_user(random_user)
@@ -74,7 +76,7 @@ class StoreTextCase(BaseTestCase):
                 "voting": v,
                 "voter": random_user,
                 "question_id": question[0].id,
-                "vote": [{ "a": 'a1', "b": 'b1' }, {"a":'a2', "b":'b2'}]
+                "vote": [{ "a": a1, "b": b1 }, {"a":a2, "b":b2}]
             }
             response = self.client.post('/store/', data, format='json')
             self.assertEqual(response.status_code, 200)
