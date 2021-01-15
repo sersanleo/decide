@@ -9,10 +9,8 @@ from base import mods
 
 
 class AuthTestCase(APITestCase):
-
-    def setUp(self):
-        self.client = APIClient()
-        mods.mock_query(self.client)
+    @classmethod
+    def setUpTestData(cls):
         u = UserProfile(username='voter1', sex='M', style='N')
         u.set_password('123')
         u.save()
@@ -21,6 +19,10 @@ class AuthTestCase(APITestCase):
         u2.set_password('admin')
         u2.is_superuser = True
         u2.save()
+
+    def setUp(self):
+        self.client = APIClient()
+        mods.mock_query(self.client)
 
     def tearDown(self):
         self.client = None
@@ -48,6 +50,7 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         user = response.json()
+        self.assertEqual(user['id'], 1)
         self.assertEqual(user['username'], 'voter1')
 
     def test_getuser_invented_token(self):

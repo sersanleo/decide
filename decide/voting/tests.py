@@ -1078,6 +1078,6 @@ class VotingTestCase(BaseTestCase):
         past_votings = response.json()['past_votings']
         print(response.json())
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(len(past_votings), 1)
-        #self.assertEqual(past_votings[0]['id'], voting.id)
+        self.assertEqual(len(past_votings), 1)
+        self.assertEqual(past_votings[0]['id'], voting.id)
         self.assertEqual(len(pending_votings), 0)
