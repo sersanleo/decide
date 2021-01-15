@@ -1942,40 +1942,11 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(Question.objects.count(), 2)
 
         q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
-        q2.save()
-
-        self.assertNotEqual(q0, q2)
-        self.assertNotEqual(q1, q2)
-
-        self.assertEqual(Question.objects.count(), 3)
-
         with self.assertRaises(Exception) as raised:
-            q3 = self.create_question()
-        self.assertEqual(AttributeError, type(raised.exception))
-
-        for i in range(5):
-            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
-            opt0.save()
-        for i in range(5):
-            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
-            opt1.save()
-        for i in range(5):
-            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
-            opt2.save()
-
-        v1 = Voting(name="test voting with 3 kind of questions")
-
-        v1.save()
-        v1.question.add(q0)
-        v1.question.add(q1)
-        v1.question.add(q2)
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v1.auths.add(a)
-
-        self.assertEqual(Voting.objects.count(), 1)
+            q2.full_clean()
+            q2.save()
+        self.assertEqual(ValidationError, type(raised.exception))
+    
 
     # Pruebas de modelo Task t063
 
@@ -2043,44 +2014,11 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(Question.objects.count(), 2)
 
         q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
-        q2.save()
-
-        self.assertNotEqual(q0, q2)
-        self.assertNotEqual(q1, q2)
-
-        self.assertEqual(Question.objects.count(), 3)
 
         with self.assertRaises(Exception) as raised:
-            q3 = self.create_question()
-        self.assertEqual(AttributeError, type(raised.exception))
-
-        for i in range(5):
-            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
-            opt0.save()
-        for i in range(5):
-            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
-            opt1.save()
-        for i in range(5):
-            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
-            opt2.save()
-
-        v1 = Voting(name="test voting with 3 kind of questions")
-
-        v1.save()
-        v1.question.add(q0)
-        v1.question.add(q1)
-        v1.question.add(q2)
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v1.auths.add(a)
-
-        self.assertEqual(Voting.objects.count(), 1)
-
-        with self.assertRaises(Exception) as raised:
-            Census.objects.get(voter_id=1, voting_id=v1.id)
-        self.assertEqual(Census.DoesNotExist, type(raised.exception))
+            q2.full_clean()
+            q2.save()
+        self.assertEqual(ValidationError, type(raised.exception))
 
     #-----------------------------------------------------------------------------------------------------------------------
     #TEST DE API
