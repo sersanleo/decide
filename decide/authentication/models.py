@@ -45,12 +45,14 @@ class MyUserManager(BaseUserManager):
 class UserProfile(AbstractUser):
     sex_types = (('M', 'Male'),
                  ('F', 'Female'))
-    sex = models.CharField(max_length=1, choices=sex_types)
+    sex_verbose = "Sex (" + "/".join([x[0] for x in sex_types]) + ")"
+    sex = models.CharField(max_length=1, choices=sex_types, verbose_name=sex_verbose)
     styles = (('N', 'Normal'),
                 ('T', 'Tritanopia'),
                 ('O', 'Night'),
                  ('C', 'Color blind'))
-    style = models.CharField(max_length=1, choices=styles, help_text='Designates which style will be shown to the user across pages; helpful for people with difficulties distinguishing colors.', default=styles[0][0], verbose_name='style')
+    styles_verbose = "Style (" + "/".join([x[0] for x in styles]) + ")"
+    style = models.CharField(max_length=1, choices=styles, help_text='Designates which style will be shown to the user across pages; helpful for people with difficulties distinguishing colors.', default=styles[0][0], verbose_name=styles_verbose)
 
     REQUIRED_FIELDS = ['email', 'sex', 'style']
 
