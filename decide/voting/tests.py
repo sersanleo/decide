@@ -8,6 +8,7 @@ from django.test import TestCase
 from django.db.utils import IntegrityError
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
+from rest_framework import generics, status
 
 from base import mods
 from base.tests import BaseTestCase
@@ -198,7 +199,6 @@ class VotingTestCase(BaseTestCase):
             self.logout()
             voter = voters.pop()
 
-    
     #Pruebas de API Task t050
 
     #Caso positivo
@@ -2408,3 +2408,259 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already stopped')
+
+
+    #Pruebas de modelo Task t060
+
+    #Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+    def test_duplicate_voting_name_positive_model(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v1 = Voting(name="test voting 2")
+        
+        v1.save()
+        v1.question.add(q)
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+        v2 = Voting(name="test voting 3")
+        v2.save()
+        v2.question.add(q)
+        v2.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 2)
+
+        self.assertNotEqual(v1,v2)
+
+    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+    def test_duplicate_voting_name_negative_model(self):
+        q = Question(desc='test question', option_types=1,type=0)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(id=1,name='test voting')
+
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    # Pruebas de modelo Task t061
+
+    # Caso positivo: se crean tres preguntas con tipos de recuento distintos y funciona correctamente
+    def test_type_question_positive_model(self):
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-BORDA', option_types=3, type=1)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+    # Caso negativo: se crean 3 votaciones con configuraciones inválidas y salta la excepción
+    def test_type_question_negative_model(self):
+
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        with self.assertRaises(Exception) as raised:
+            q3 = self.create_question()
+        self.assertEqual(AttributeError, type(raised.exception))
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                        defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v1.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+
+    # Pruebas de modelo Task t063
+
+    # Caso positivo: se crean una nueva votación con autocensus y se valida correctamente
+    def test_voting_autocensus_question_positive_model(self):
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-BORDA', option_types=3, type=1)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        c = Census.objects.get_or_create(voter_id=1, voting_id=v1.id)
+        self.assertTrue(c)
+
+    # Caso negativo: se crea una nueva votación sin autocensus y se valida correctamente
+    def test_voting_autocensus_question_negative_model(self):
+
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        with self.assertRaises(Exception) as raised:
+            q3 = self.create_question()
+        self.assertEqual(AttributeError, type(raised.exception))
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v1.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+        with self.assertRaises(Exception) as raised:
+            Census.objects.get(voter_id=1, voting_id=v1.id)
+        self.assertEqual(Census.DoesNotExist, type(raised.exception))
