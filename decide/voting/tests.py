@@ -1218,7 +1218,1021 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(IntegrityError, type(raised.exception))
 
-    
+    #-----------------------------------------------------------------------------------------------------------------------
+    #TEST DE MODELO
+
+    # Tests de modelo de Task t042
+
+    def test_store_unique_option_question_positive(self):
+        options_type = 1
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_multiple_option_question_positive(self):
+        options_type = 2
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_none_option_question_negative(self):
+        options_type = None
+        q = Question(desc='test question', option_types=options_type)
+
+        with self.assertRaises(Exception) as raised:
+            q.save()
+
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    # Tests de modelo de Task t043
+
+    def test_store_ranked_option_question_positive(self):
+        options_type = 3
+        q = Question(desc='test question', option_types=options_type)
+        q.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(options_type, Question.objects.all()[0].option_types)
+
+    def test_store_voting_points_positive(self):
+        points = 2
+        v = Voting(id=1, name='test voting', points=points)
+        v.save()
+
+        self.assertEqual(Voting.objects.count(), 1)
+        self.assertEqual(points, Voting.objects.all()[0].points)
+
+    def test_store_voting_points_negative(self):
+        points = -2
+        v = Voting(id=1, name='test voting', points=points)
+        with self.assertRaises(Exception) as raised:
+            v.save()
+
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    # Test de modelo de la t045
+
+    # Caso positivo
+
+    def test_store_unique_question_positive(self):
+        options_type = 3
+        q1 = Question(desc='test question desc 1', option_types=options_type)
+        q1.save()
+
+        q2 = Question(desc='test question desc 2', option_types=options_type)
+        q2.save()
+
+        self.assertEqual(Question.objects.count(), 2)
+        self.assertEqual(q1.desc, 'test question desc 1')
+        self.assertEqual(q2.desc, 'test question desc 2')
+
+        # Caso negativo
+
+    def test_store_unique_question_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question desc 1', option_types=options_type)
+        q1.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+        self.assertEqual(q1.desc, 'test question desc 1')
+
+        q2 = Question(desc='test question desc 1', option_types=options_type)
+        with self.assertRaises(Exception) as raised:
+            q2.save()
+
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    # Pruebas de modelo para la t046
+
+    # Caso positivo 1
+
+    def test_store_multi_voting_positive_one(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 1)
+
+    # Caso positivo 2
+
+    def test_store_multi_voting_positive_two(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+        self.assertEqual(Question.objects.count(), 1)
+
+        q2 = Question(desc='test question 2', option_types=options_type)
+        q2.save()
+        self.assertEqual(Question.objects.count(), 2)
+
+        v = Voting(name='test voting multi')
+        v.save()
+        v.question.add(q1)
+        v.question.add(q2)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        q = []
+        for quest in v.question.all():
+            q.append(quest.desc)
+
+        self.assertEqual(len(q), 2)
+
+        # Caso negativo 1
+
+    def test_store_multi_voting_negative(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+
+        with self.assertRaises(Exception) as raised:
+            v = Voting(name='test voting multi', question=q1)
+
+        self.assertEqual(TypeError, type(raised.exception))
+
+    # Test de modelo de Task t044
+
+    # Caso positivo tallyM con votacion de opción única
+
+    def test_tallyM_unique_positive_model(self):
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    # Caso negativo tallyM con votacion de opción única
+
+    def test_tallyM_unique_negative_model(self):
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_negative(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
+
+    # Caso positivo tallyF con votacion de opción única
+
+    def test_tallyF_unique_positive_model(self):
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_fem(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    # Caso negativo tallyF con votacion de opción única
+
+    def test_tallyF_unique_negative_model(self):
+        v = self.create_voting_variable_option_types(1)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_fem_negative(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
+
+    # Caso positivo tallyM con votacion de opción múltiple
+
+    def test_tallyM_multiple_positive_model(self):
+        v = self.create_voting_variable_option_types(2)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    # Caso negativo tallyM con votacion de opción múltiple
+
+    def test_tallyM_multiple_negative_model(self):
+        v = self.create_voting_variable_option_types(2)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_negative(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
+
+    # Caso positivo tallyF con votacion de opción múltiple
+
+    def test_tallyF_multiple_positive_model(self):
+        v = self.create_voting_variable_option_types(2)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_fem(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    # Caso negativo tallyF con votacion de opción múltiple
+
+    def test_tallyF_multiple_negative_model(self):
+        v = self.create_voting_variable_option_types(2)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_aux_fem_negative(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertNotEqual(votes, votes_aux)
+
+    # Caso positivo tallyM con votacion de opción ranked order
+
+    def test_tallyM_ranked_order_positive_model(self):
+        v = self.create_voting_variable_option_types(3)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count = len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range(opt_count):
+                    votes.append(0)
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+                    if pos != None and pos[1] == qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
+
+    # Caso negativo tallyM con votacion de opción ranked order
+
+    def test_tallyM_ranked_order_negative_model(self):
+        v = self.create_voting_variable_option_types(3)
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux_negative(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyM = v.tallyM
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count = len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range(opt_count):
+                    votes.append(0)
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+                    if pos != None and pos[1] == qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertNotEqual(opts, clear)
+
+    # Caso positivo tallyF con votacion de opción ranked order
+
+    def test_tallyF_ranked_order_positive_model(self):
+        v = self.create_voting_variable_option_types(3)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux_fem(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count = len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range(opt_count):
+                    votes.append(0)
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+                    if pos != None and pos[1] == qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
+
+    # Caso negativo tallyF con votacion de opción ranked order
+
+    def test_tallyF_ranked_order_negative_model(self):
+        v = self.create_voting_variable_option_types(3)
+        self.create_voters_fem(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux_fem_negative(v, number_of_voters)
+
+        self.login()
+        v.tally_votes(self.token)
+        tallyF = v.tallyF
+        questions = v.question.all()
+
+        questions = v.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count = len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range(opt_count):
+                    votes.append(0)
+
+                for dicc in tallyF:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+                    if pos != None and pos[1] == qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertNotEqual(opts, clear)
+
+    # Pruebas de modelo Task t060
+
+    # Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
+    def test_duplicate_voting_name_positive_model(self):
+        q = Question(desc='test question 2', option_types=2)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i + 1))
+            opt.save()
+        v1 = Voting(name="test voting 2")
+
+        v1.save()
+        v1.question.add(q)
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+        v2 = Voting(name="test voting 3")
+        v2.save()
+        v2.question.add(q)
+        v2.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 2)
+
+        self.assertNotEqual(v1, v2)
+
+    # Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
+    def test_duplicate_voting_name_negative_model(self):
+        q = Question(desc='test question', option_types=1, type=0)
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i + 1))
+            opt.save()
+        v = Voting(id=1, name='test voting')
+
+        v.save()
+        v.question.add(q)
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+        with self.assertRaises(Exception) as raised:
+            v2 = self.create_voting()
+        self.assertEqual(IntegrityError, type(raised.exception))
+
+    # Pruebas de modelo Task t061
+
+    # Caso positivo: se crean tres preguntas con tipos de recuento distintos y funciona correctamente
+    def test_type_question_positive_model(self):
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-BORDA', option_types=3, type=1)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+    # Caso negativo: se crean 3 votaciones con configuraciones inválidas y salta la excepción
+    def test_type_question_negative_model(self):
+
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        with self.assertRaises(Exception) as raised:
+            q3 = self.create_question()
+        self.assertEqual(AttributeError, type(raised.exception))
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v1.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+    # Pruebas de modelo Task t063
+
+    # Caso positivo: se crean una nueva votación con autocensus y se valida correctamente
+    def test_voting_autocensus_question_positive_model(self):
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-BORDA', option_types=3, type=1)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                           defaults={'me': True, 'name': 'test auth'})
+        a1.save()
+        v1.auths.add(a1)
+        self.assertEqual(Voting.objects.count(), 1)
+
+        c = Census.objects.get_or_create(voter_id=1, voting_id=v1.id)
+        self.assertTrue(c)
+
+    # Caso negativo: se crea una nueva votación sin autocensus y se valida correctamente
+    def test_voting_autocensus_question_negative_model(self):
+
+        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
+        q0.save()
+
+        self.assertEqual(Question.objects.count(), 1)
+
+        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
+        q1.save()
+
+        self.assertNotEqual(q0, q1)
+
+        self.assertEqual(Question.objects.count(), 2)
+
+        q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
+        q2.save()
+
+        self.assertNotEqual(q0, q2)
+        self.assertNotEqual(q1, q2)
+
+        self.assertEqual(Question.objects.count(), 3)
+
+        with self.assertRaises(Exception) as raised:
+            q3 = self.create_question()
+        self.assertEqual(AttributeError, type(raised.exception))
+
+        for i in range(5):
+            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
+            opt0.save()
+        for i in range(5):
+            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
+            opt1.save()
+        for i in range(5):
+            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
+            opt2.save()
+
+        v1 = Voting(name="test voting with 3 kind of questions")
+
+        v1.save()
+        v1.question.add(q0)
+        v1.question.add(q1)
+        v1.question.add(q2)
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v1.auths.add(a)
+
+        self.assertEqual(Voting.objects.count(), 1)
+
+        with self.assertRaises(Exception) as raised:
+            Census.objects.get(voter_id=1, voting_id=v1.id)
+        self.assertEqual(Census.DoesNotExist, type(raised.exception))
+
+    #-----------------------------------------------------------------------------------------------------------------------
+    #TEST DE API
+
+    def test_update_voting(self):
+        voting = self.create_voting_variable_option_types(3)
+        voting2 = self.create_voting_multi()
+        voting3 = self.create_voting_prueba()
+
+        data = {'action': 'start'}
+        response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # STATUS VOTING: not started
+        for action in ['stop', 'tally']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json(), 'Voting is not started')
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not stopped')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting2.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not started')
+
+        # STATUS VOTING: tallied
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting2.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting2.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting3.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not started')
+
+    # Pruebas de API para la t049: votacion con múltiples preguntas
+
+    def test_multi_voting_api(self):
+        options_type = 3
+        q1 = Question(desc='test question 1', option_types=options_type)
+        q1.save()
+
+        q2 = Question(desc='test question 2', option_types=options_type)
+        q2.save()
+
+        voting = Voting(name='test voting multi')
+        voting.save()
+        voting.question.add(q1)
+        voting.question.add(q2)
+
+        data = {'action': 'start'}
+        response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # STATUS VOTING: not started
+        for action in ['stop', 'tally']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json(), 'Voting is not started')
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not stopped')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already stopped')
 
     #Pruebas de API Task t050
 
@@ -1294,12 +2308,6 @@ class VotingTestCase(BaseTestCase):
 
         self.assertNotEqual(mensajeEsperado, mensajeObtenido)
 
-
-
-    
-    
-
-    
     
     #Pruebas de API t056
 
@@ -1604,6 +2612,198 @@ class VotingTestCase(BaseTestCase):
         resultadoEsperado="[{'Option:': 'option 1', 'has this female votes:': 0}, {'Option:': 'option 2', 'has this female votes:': 0}, {'Option:': 'option 3', 'has this female votes:': 0}, {'Option:': 'option 4', 'has this female votes:': 1}, {'Option:': 'option 5', 'has this female votes:': 0}]"
         self.assertNotEqual(str(opts),resultadoEsperado)
 
+    # Tests de api de Task t053
+
+    def test_complete_unique_option_voting_positive_api(self):
+        voting = self.create_voting_variable_option_types(1)
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally = voting.tally_votes(self.token)
+
+        questions = voting.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    def test_complete_multiple_option_voting_positive_api(self):
+        voting = self.create_voting_variable_option_types(2)
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally = voting.tally_votes(self.token)
+
+        questions = voting.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos != None:
+                        votes = votes + 1
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+    # Tests de modelo de Task t054
+    # Rank order
+
+    def test_complete_ranked_option_voting_positive_api(self):
+        voting_type = 3
+        voting = self.create_voting_variable_option_types(voting_type)
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally = voting.tally_votes(self.token)
+
+        questions = voting.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count = len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range(opt_count):
+                    votes.append(0)
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+                    if pos != None and pos[1] == qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
+
+    # Voting points (Recuento proporcional)
+
+    def test_voting_points_positive_api(self):
+        points = 4
+        voting_type = 3
+        voting = self.create_voting_variable_option_types(voting_type, points)
+        voting.points = points
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 4
+        self.store_votes_ranked_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally = voting.tally_votes(self.token)
+
+        postp = voting.postproc
+
+        for dicc in postp:
+            options = dicc["options"]
+            for dicc_aux in options:
+                self.assertEqual(points, dicc_aux["points"])
+
+    #T025 Started by
 
     def test_started_by_positive(self):
         voting = self.create_voting()
@@ -1648,6 +2848,9 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
         self.assertNotEqual(voting.started_by, user.username)
+
+
+
 
 
     # def test_update_voting(self):
@@ -1738,1144 +2941,23 @@ class VotingTestCase(BaseTestCase):
 
 
 
-    # Tests de modelo de Task t042
-
-    def test_store_unique_option_question_positive(self):
-        options_type = 1
-        q = Question(desc='test question', option_types=options_type)
-        q.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-        self.assertEqual(options_type, Question.objects.all()[0].option_types)
-
-    def test_store_multiple_option_question_positive(self):
-        options_type = 2
-        q = Question(desc='test question', option_types=options_type)
-        q.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-        self.assertEqual(options_type, Question.objects.all()[0].option_types)
-
-    def test_store_none_option_question_negative(self):
-        options_type = None      
-        q = Question(desc='test question', option_types=options_type)
-        
-        with self.assertRaises(Exception) as raised:
-            q.save()
-            
-        self.assertEqual(IntegrityError, type(raised.exception))
 
     
-    # Tests de modelo de Task t043  
     
-    def test_store_ranked_option_question_positive(self):
-        options_type = 3
-        q = Question(desc='test question', option_types=options_type)
-        q.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-        self.assertEqual(options_type, Question.objects.all()[0].option_types)
-
-    def test_store_voting_points_positive(self):
-        points = 2
-        v = Voting(id=1,name='test voting', points = points)
-        v.save()
-
-        self.assertEqual(Voting.objects.count(), 1)
-        self.assertEqual(points, Voting.objects.all()[0].points)
-
-    def test_store_voting_points_negative(self):
-        points = -2
-        v = Voting(id=1,name='test voting', points = points)
-        with self.assertRaises(Exception) as raised:
-            v.save()
-
-        self.assertEqual(IntegrityError, type(raised.exception))
-    
-    
-    # Tests de api de Task t053
-
-    def test_complete_unique_option_voting_positive_api(self):
-        voting = self.create_voting_variable_option_types(1)
-        self.create_voters(voting)
-
-        voting.create_pubkey()
-
-        self.login()
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        number_of_voters = 3
-        clear = self.store_votes_aux(voting, number_of_voters)
-
-        data = {'action': 'stop'}
-        self.login()
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-        
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-        tally=voting.tally_votes(self.token)
-
-        questions = voting.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
 
 
-                for dicc in tally:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
 
 
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    def test_complete_multiple_option_voting_positive_api(self):
-        voting = self.create_voting_variable_option_types(2)
-        self.create_voters(voting)
-
-        voting.create_pubkey()
- 
-        self.login()
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        number_of_voters = 3
-        clear = self.store_votes_aux(voting, number_of_voters)
-
-        data = {'action': 'stop'}
-        self.login()
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-        
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-        tally=voting.tally_votes(self.token)
-
-        questions = voting.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tally:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
 
 
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-
-    # Tests de modelo de Task t054
-    # Rank order
-
-    def test_complete_ranked_option_voting_positive_api(self):
-        voting_type = 3
-        voting = self.create_voting_variable_option_types(voting_type)
-        self.create_voters(voting)
-
-        voting.create_pubkey()
-
-        self.login()
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        number_of_voters = 3
-        clear = self.store_votes_ranked_aux(voting, number_of_voters)
-
-        data = {'action': 'stop'}
-        self.login()
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-        
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-        tally=voting.tally_votes(self.token)    
-        
-        questions = voting.question.all()
-        opts = {}
-        for qs in questions:
-            opciones = qs.options.all()
-            opt_count=len(opciones)
-            for opt in opciones:
-                votes = []
-
-                for i in range (opt_count):
-                    votes.append(0)
-
-                for dicc in tally:
-                    indice = opt.number 
-                    pos = dicc.get(str(indice))
-                    if pos!=None and pos[1]==qs.id:
-                        votes[pos[0]] = votes[pos[0]] + 1
-
-                empty = True
-                for element in votes:
-                    if element != 0:
-                        empty = False
-                        break       
-
-                if empty == False:
-                    opts[opt.number] = votes
-
-        self.assertEqual(opts, clear)
-
-    # Voting points (Recuento proporcional)    
-
-    def test_voting_points_positive_api(self):
-        points = 4
-        voting_type = 3
-        voting = self.create_voting_variable_option_types(voting_type, points)
-        voting.points = points
-        self.create_voters(voting)
-
-        voting.create_pubkey()
-        self.login()
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        number_of_voters = 4
-        self.store_votes_ranked_aux(voting, number_of_voters)
-
-        data = {'action': 'stop'}
-        self.login()
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-        
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-        tally=voting.tally_votes(self.token)
-    
-        postp = voting.postproc
-
-        for dicc in postp:
-            options = dicc["options"]
-            for dicc_aux in options:
-                self.assertEqual(points, dicc_aux["points"])
-
-
-    #Pruebas de modelo para la t046
-
-    #Caso positivo 1
-
-    def test_store_multi_voting_positive_one(self):
-        options_type = 3
-        q1 = Question(desc='test question 1', option_types=options_type)
-        q1.save()
-        self.assertEqual(Question.objects.count(), 1)
-   
-        v = Voting(name='test voting multi')
-        v.save()
-        v.question.add(q1)
-        self.assertEqual(Voting.objects.count(), 1)
-
-        q = []
-        for quest in v.question.all():
-            q.append(quest.desc)
-
-        self.assertEqual(len(q), 1)
-
-    #Caso positivo 2
-
-    def test_store_multi_voting_positive_two(self):
-        options_type = 3
-        q1 = Question(desc='test question 1', option_types=options_type)
-        q1.save()
-        self.assertEqual(Question.objects.count(), 1)
-
-        q2 = Question(desc='test question 2', option_types=options_type)
-        q2.save()
-        self.assertEqual(Question.objects.count(), 2)
 
         
-        v = Voting(name='test voting multi')
-        v.save()
-        v.question.add(q1)
-        v.question.add(q2)
-        self.assertEqual(Voting.objects.count(), 1)
 
-        q = []
-        for quest in v.question.all():
-            q.append(quest.desc)
 
-        self.assertEqual(len(q), 2)
-
-        #Caso negativo 1
-
-    def test_store_multi_voting_negative(self):
-        options_type = 3
-        q1 = Question(desc='test question 1', option_types=options_type)
-        q1.save()
-
-        with self.assertRaises(Exception) as raised:
-            v = Voting(name='test voting multi', question=q1)
-
-        self.assertEqual(TypeError, type(raised.exception))
         
 
-    #Test de modelo de la t045
-
-    #Caso positivo
-
-    def test_store_unique_question_positive(self):
-        options_type = 3
-        q1 = Question(desc='test question desc 1', option_types=options_type)
-        q1.save()
-
-        q2 = Question(desc='test question desc 2', option_types=options_type)
-        q2.save()
-
-        self.assertEqual(Question.objects.count(), 2)
-        self.assertEqual(q1.desc, 'test question desc 1')
-        self.assertEqual(q2.desc, 'test question desc 2')
-
-    #Caso negativo
-
-    def test_store_unique_question_negative(self):
-        options_type = 3
-        q1 = Question(desc='test question desc 1', option_types=options_type)
-        q1.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-        self.assertEqual(q1.desc, 'test question desc 1')
-
-        q2 = Question(desc='test question desc 1', option_types=options_type)
-        with self.assertRaises(Exception) as raised:
-            q2.save()
-        
-        self.assertEqual(IntegrityError, type(raised.exception))
-        
-     #Test de modelo de Task t044
-
-    #Caso positivo tallyM con votacion de opción única
-
-    def test_tallyM_unique_positive_model(self):
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyM:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    #Caso negativo tallyM con votacion de opción única
-
-    def test_tallyM_unique_negative_model(self):
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_negative(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyM:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertNotEqual(votes, votes_aux)
-
-    #Caso positivo tallyF con votacion de opción única
-
-    def test_tallyF_unique_positive_model(self):
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_fem(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyF:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    #Caso negativo tallyF con votacion de opción única
-
-    def test_tallyF_unique_negative_model(self):
-        v=self.create_voting_variable_option_types(1)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_fem_negative(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyF:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertNotEqual(votes, votes_aux)
-
-    #Caso positivo tallyM con votacion de opción múltiple
-
-    def test_tallyM_multiple_positive_model(self):
-        v=self.create_voting_variable_option_types(2)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyM:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    #Caso negativo tallyM con votacion de opción múltiple
-
-    def test_tallyM_multiple_negative_model(self):
-        v=self.create_voting_variable_option_types(2)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_negative(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyM:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertNotEqual(votes, votes_aux)
-
-    #Caso positivo tallyF con votacion de opción múltiple
-
-    def test_tallyF_multiple_positive_model(self):
-        v=self.create_voting_variable_option_types(2)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_fem(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyF:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertEqual(votes, votes_aux)
-
-    #Caso negativo tallyF con votacion de opción múltiple
-
-    def test_tallyF_multiple_negative_model(self):
-        v=self.create_voting_variable_option_types(2)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_aux_fem_negative(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        votes = 0
-        votes_aux = 0
-        for qs in questions:
-            for opt in qs.options.all():
-
-                for dicc in tallyF:
-                    indice = opt.number
-                    pos = dicc.get(str(indice))
-
-                    if pos!=None:
-                        votes = votes + 1
-
-
-            for clave in clear.keys():
-                votes_aux = votes_aux + clear[clave]
-
-        self.assertNotEqual(votes, votes_aux)
-
-    #Caso positivo tallyM con votacion de opción ranked order
-
-    def test_tallyM_ranked_order_positive_model(self):
-        v=self.create_voting_variable_option_types(3)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_ranked_aux(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        questions = v.question.all()
-        opts = {}
-        for qs in questions:
-            opciones = qs.options.all()
-            opt_count=len(opciones)
-            for opt in opciones:
-                votes = []
-
-                for i in range (opt_count):
-                    votes.append(0)
-
-                for dicc in tallyM:
-                    indice = opt.number 
-                    pos = dicc.get(str(indice))
-                    if pos!=None and pos[1]==qs.id:
-                        votes[pos[0]] = votes[pos[0]] + 1
-
-                empty = True
-                for element in votes:
-                    if element != 0:
-                        empty = False
-                        break       
-
-                if empty == False:
-                    opts[opt.number] = votes
-
-        self.assertEqual(opts, clear)
-
-    #Caso negativo tallyM con votacion de opción ranked order
-
-    def test_tallyM_ranked_order_negative_model(self):
-        v=self.create_voting_variable_option_types(3)
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_ranked_aux_negative(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyM=v.tallyM
-        questions = v.question.all()
-
-        questions = v.question.all()
-        opts = {}
-        for qs in questions:
-            opciones = qs.options.all()
-            opt_count=len(opciones)
-            for opt in opciones:
-                votes = []
-
-                for i in range (opt_count):
-                    votes.append(0)
-
-                for dicc in tallyM:
-                    indice = opt.number 
-                    pos = dicc.get(str(indice))
-                    if pos!=None and pos[1]==qs.id:
-                        votes[pos[0]] = votes[pos[0]] + 1
-
-                empty = True
-                for element in votes:
-                    if element != 0:
-                        empty = False
-                        break       
-
-                if empty == False:
-                    opts[opt.number] = votes
-
-        self.assertNotEqual(opts, clear)
-
-    #Caso positivo tallyF con votacion de opción ranked order
-
-    def test_tallyF_ranked_order_positive_model(self):
-        v=self.create_voting_variable_option_types(3)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_ranked_aux_fem(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        questions = v.question.all()
-        opts = {}
-        for qs in questions:
-            opciones = qs.options.all()
-            opt_count=len(opciones)
-            for opt in opciones:
-                votes = []
-
-                for i in range (opt_count):
-                    votes.append(0)
-
-                for dicc in tallyF:
-                    indice = opt.number 
-                    pos = dicc.get(str(indice))
-                    if pos!=None and pos[1]==qs.id:
-                        votes[pos[0]] = votes[pos[0]] + 1
-
-                empty = True
-                for element in votes:
-                    if element != 0:
-                        empty = False
-                        break       
-
-                if empty == False:
-                    opts[opt.number] = votes
-
-        self.assertEqual(opts, clear)
-
-    #Caso negativo tallyF con votacion de opción ranked order
-
-    def test_tallyF_ranked_order_negative_model(self):
-        v=self.create_voting_variable_option_types(3)
-        self.create_voters_fem(v)
-
-        v.create_pubkey()
-        v.start_date=timezone.now()
-        v.save()
-
-        number_of_voters=3
-        clear=self.store_votes_ranked_aux_fem_negative(v,number_of_voters)
-
-        self.login()
-        v.tally_votes(self.token)
-        tallyF=v.tallyF
-        questions = v.question.all()
-
-        questions = v.question.all()
-        opts = {}
-        for qs in questions:
-            opciones = qs.options.all()
-            opt_count=len(opciones)
-            for opt in opciones:
-                votes = []
-
-                for i in range (opt_count):
-                    votes.append(0)
-
-                for dicc in tallyF:
-                    indice = opt.number 
-                    pos = dicc.get(str(indice))
-                    if pos!=None and pos[1]==qs.id:
-                        votes[pos[0]] = votes[pos[0]] + 1
-
-                empty = True
-                for element in votes:
-                    if element != 0:
-                        empty = False
-                        break       
-
-                if empty == False:
-                    opts[opt.number] = votes
-
-        self.assertNotEqual(opts, clear)
          
 
-    # Pruebas de API para la t049: votacion con múltiples preguntas
 
-    def test_update_voting(self):
-        options_type = 3
-        q1 = Question(desc='test question 1', option_types=options_type)
-        q1.save()
 
-        q2 = Question(desc='test question 2', option_types=options_type)
-        q2.save()
 
-        voting = Voting(name='test voting multi')
-        voting.save()
-        voting.question.add(q1)
-        voting.question.add(q2)
-
-        data = {'action': 'start'}
-        response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 401)
-
-        # login with user no admin
-        self.login(user='noadmin')
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 403)
-
-         # login with user admin
-        self.login()
-        data = {'action': 'bad'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-
-         # STATUS VOTING: not started
-        for action in ['stop', 'tally']:
-            data = {'action': action}
-            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json(), 'Voting is not started')
-
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        # STATUS VOTING: started
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting is not stopped')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-
-        # STATUS VOTING: stopped
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-
-    #Pruebas de modelo Task t060
-
-    #Caso positivo: se crean dos votaciones con nombres diferentes y se cumple correctamente
-    def test_duplicate_voting_name_positive_model(self):
-        q = Question(desc='test question 2', option_types=2)
-        q.save()
-        for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
-            opt.save()
-        v1 = Voting(name="test voting 2")
-        
-        v1.save()
-        v1.question.add(q)
-        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a1.save()
-        v1.auths.add(a1)
-
-        self.assertEqual(Voting.objects.count(), 1)
-
-        v2 = Voting(name="test voting 3")
-        v2.save()
-        v2.question.add(q)
-        v2.auths.add(a1)
-        self.assertEqual(Voting.objects.count(), 2)
-
-        self.assertNotEqual(v1,v2)
-
-    #Caso negativo: se crean dos votaciones con nombres repetidos y salta la excepción
-    def test_duplicate_voting_name_negative_model(self):
-        q = Question(desc='test question', option_types=1,type=0)
-        q.save()
-        for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
-            opt.save()
-        v = Voting(id=1,name='test voting')
-
-        v.save()
-        v.question.add(q)
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-
-        self.assertEqual(Voting.objects.count(), 1)
-
-
-        with self.assertRaises(Exception) as raised:
-            v2 = self.create_voting()
-        self.assertEqual(IntegrityError, type(raised.exception))
-
-    # Pruebas de modelo Task t061
-
-    # Caso positivo: se crean tres preguntas con tipos de recuento distintos y funciona correctamente
-    def test_type_question_positive_model(self):
-        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
-        q0.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-
-        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
-        q1.save()
-
-        self.assertNotEqual(q0, q1)
-
-        self.assertEqual(Question.objects.count(), 2)
-
-        q2 = Question(desc='Rank order scale-BORDA', option_types=3, type=1)
-        q2.save()
-
-        self.assertNotEqual(q0, q2)
-        self.assertNotEqual(q1, q2)
-
-        self.assertEqual(Question.objects.count(), 3)
-
-        for i in range(5):
-            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
-            opt0.save()
-        for i in range(5):
-            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
-            opt1.save()
-        for i in range(5):
-            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
-            opt2.save()
-
-        v1 = Voting(name="test voting with 3 kind of questions")
-
-        v1.save()
-        v1.question.add(q0)
-        v1.question.add(q1)
-        v1.question.add(q2)
-
-        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                           defaults={'me': True, 'name': 'test auth'})
-        a1.save()
-        v1.auths.add(a1)
-        self.assertEqual(Voting.objects.count(), 1)
-
-    # Caso negativo: se crean 3 votaciones con configuraciones inválidas y salta la excepción
-    def test_type_question_negative_model(self):
-
-        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
-        q0.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-
-        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
-        q1.save()
-
-        self.assertNotEqual(q0, q1)
-
-        self.assertEqual(Question.objects.count(), 2)
-
-        q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
-        q2.save()
-
-        self.assertNotEqual(q0, q2)
-        self.assertNotEqual(q1, q2)
-
-        self.assertEqual(Question.objects.count(), 3)
-
-        with self.assertRaises(Exception) as raised:
-            q3 = self.create_question()
-        self.assertEqual(AttributeError, type(raised.exception))
-
-        for i in range(5):
-            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
-            opt0.save()
-        for i in range(5):
-            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
-            opt1.save()
-        for i in range(5):
-            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
-            opt2.save()
-
-        v1 = Voting(name="test voting with 3 kind of questions")
-
-        v1.save()
-        v1.question.add(q0)
-        v1.question.add(q1)
-        v1.question.add(q2)
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                        defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v1.auths.add(a)
-
-        self.assertEqual(Voting.objects.count(), 1)
-
-
-    # Pruebas de modelo Task t063
-
-    # Caso positivo: se crean una nueva votación con autocensus y se valida correctamente
-    def test_voting_autocensus_question_positive_model(self):
-        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
-        q0.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-
-        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
-        q1.save()
-
-        self.assertNotEqual(q0, q1)
-
-        self.assertEqual(Question.objects.count(), 2)
-
-        q2 = Question(desc='Rank order scale-BORDA', option_types=3, type=1)
-        q2.save()
-
-        self.assertNotEqual(q0, q2)
-        self.assertNotEqual(q1, q2)
-
-        self.assertEqual(Question.objects.count(), 3)
-
-        for i in range(5):
-            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
-            opt0.save()
-        for i in range(5):
-            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
-            opt1.save()
-        for i in range(5):
-            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
-            opt2.save()
-
-        v1 = Voting(name="test voting with 3 kind of questions")
-
-        v1.save()
-        v1.question.add(q0)
-        v1.question.add(q1)
-        v1.question.add(q2)
-
-        a1, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                           defaults={'me': True, 'name': 'test auth'})
-        a1.save()
-        v1.auths.add(a1)
-        self.assertEqual(Voting.objects.count(), 1)
-
-        c = Census.objects.get_or_create(voter_id=1, voting_id=v1.id)
-        self.assertTrue(c)
-
-    # Caso negativo: se crea una nueva votación sin autocensus y se valida correctamente
-    def test_voting_autocensus_question_negative_model(self):
-
-        q0 = Question(desc='Unique option-IDENTITY', option_types=1, type=0)
-        q0.save()
-
-        self.assertEqual(Question.objects.count(), 1)
-
-        q1 = Question(desc='Multiple option-HONDT', option_types=2, type=2)
-        q1.save()
-
-        self.assertNotEqual(q0, q1)
-
-        self.assertEqual(Question.objects.count(), 2)
-
-        q2 = Question(desc='Rank order scale-no-BORDA', option_types=3, type=6)
-        q2.save()
-
-        self.assertNotEqual(q0, q2)
-        self.assertNotEqual(q1, q2)
-
-        self.assertEqual(Question.objects.count(), 3)
-
-        with self.assertRaises(Exception) as raised:
-            q3 = self.create_question()
-        self.assertEqual(AttributeError, type(raised.exception))
-
-        for i in range(5):
-            opt0 = QuestionOption(question=q0, option='option {}'.format(i + 1))
-            opt0.save()
-        for i in range(5):
-            opt1 = QuestionOption(question=q1, option='option {}'.format(i + 1))
-            opt1.save()
-        for i in range(5):
-            opt2 = QuestionOption(question=q2, option='option {}'.format(i + 1))
-            opt2.save()
-
-        v1 = Voting(name="test voting with 3 kind of questions")
-
-        v1.save()
-        v1.question.add(q0)
-        v1.question.add(q1)
-        v1.question.add(q2)
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v1.auths.add(a)
-
-        self.assertEqual(Voting.objects.count(), 1)
-
-        with self.assertRaises(Exception) as raised:
-            Census.objects.get(voter_id=1, voting_id=v1.id)
-        self.assertEqual(Census.DoesNotExist, type(raised.exception))
