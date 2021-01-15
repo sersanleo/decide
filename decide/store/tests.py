@@ -61,12 +61,12 @@ class StoreTextCase(BaseTestCase):
         votings = [cryptogen.randint(1, 5000) for i in range(10)]
         users = [cryptogen.randint(3, 5002) for i in range(50)]
         for v in votings:
-            a1 = str(random.randint(2, 500))
-            b1 = str(random.randint(2, 500))
-            a2 = str(random.randint(2, 500))
-            b2 = str(random.randint(2, 500))
+            a1 = str(cryptogen.randint(2, 500))
+            b1 = str(cryptogen.randint(2, 500))
+            a2 = str(cryptogen.randint(2, 500))
+            b2 = str(cryptogen.randint(2, 500))
             votacion = self.gen_voting(v)
-            random_user = random.choice(users)
+            random_user = cryptogen.choice(users)
             user = self.get_or_create_user(random_user)
             self.login(user=user.username)
             census = Census(voting_id=v, voter_id=random_user)
@@ -131,7 +131,7 @@ class StoreTextCase(BaseTestCase):
         self.assertEqual(len(votes), Vote.objects.filter(voter_id=v).count())
 
     def test_hasvote(self):
-        votings, voters, question_id = self.gen_votes()
+        self.gen_votes()
         vo = Vote.objects.first()
         v = vo.voting_id
         u = vo.voter_id
