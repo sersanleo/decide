@@ -69,6 +69,12 @@
         for (var i=0; i<document.getElementsByClassName("required").length && fontSizeLabel >=0.875 && fontSizeBody <= 1.4; i++){
             document.getElementsByClassName("required")[i].style.fontSize= fontSizeLabel + "em";
         }
+        for (var i=0; i<document.getElementsByClassName("form-control").length && fontSizeLabel >=0.875 && fontSizeBody <= 1.4; i++){
+            document.getElementsByClassName("form-control")[i].style.fontSize= fontSizeLabel + "em";
+        }
+        for (var i=0; i<document.getElementsByClassName("btn").length && fontSizeLabel >=0.875 && fontSizeBody <= 1.4; i++){
+            document.getElementsByClassName("btn")[i].style.fontSize= fontSizeLabel + "em";
+        }
         if(document.getElementById("id_password") != null){
         document.getElementById("id_password").style.fontSize = fontSizeBody + "em";
         document.getElementById("id_username").style.fontSize = fontSizeBody + "em";
@@ -128,6 +134,12 @@
         }
         for (var i=0; i<document.getElementsByClassName("required").length && fontSizeLabel >=0.875 && fontSizeBody <= 1.4; i++){
             document.getElementsByClassName("required")[i].style.fontSize= fontSizeLabel + "em";
+        }
+        for (var i=0; i<document.getElementsByClassName("form-control").length && fontSizeLabel >=0.875 && fontSizeBody <= 1.4; i++){
+            document.getElementsByClassName("form-control")[i].style.fontSize= fontSizeLabel + "em";
+        }
+        for (var i=0; i<document.getElementsByClassName("btn").length && fontSizeLabel >=0.875 && fontSizeBody <= 1.4; i++){
+            document.getElementsByClassName("btn")[i].style.fontSize= fontSizeLabel + "em";
         }
 
         if(document.getElementById("id_password") != null){
