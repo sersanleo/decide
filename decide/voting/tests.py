@@ -1723,7 +1723,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(IntegrityError, type(raised.exception))
     
     
-    # Tests de modelo de Task t053
+    # Tests de api de Task t053
 
     def test_complete_unique_option_voting_positive_api(self):
         voting = self.create_voting_variable_option_types(1)
@@ -1772,6 +1772,151 @@ class VotingTestCase(BaseTestCase):
                 votes_aux = votes_aux + clear[clave]
 
         self.assertEqual(votes, votes_aux)
+
+    def test_complete_multiple_option_voting_positive_api(self):
+        voting = self.create_voting_variable_option_types(2)
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+ 
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 3
+        clear = self.store_votes_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)
+
+        questions = voting.question.all()
+
+        votes = 0
+        votes_aux = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tally:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        votes = votes + 1
+
+
+            for clave in clear.keys():
+                votes_aux = votes_aux + clear[clave]
+
+        self.assertEqual(votes, votes_aux)
+
+
+    # Tests de modelo de Task t054
+    # Rank order
+
+    def test_complete_ranked_option_voting_positive_api(self):
+        voting_type = 3
+        voting = self.create_voting_variable_option_types(voting_type)
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 3
+        clear = self.store_votes_ranked_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)    
+        
+        questions = voting.question.all()
+        opts = {}
+        for qs in questions:
+            opciones = qs.options.all()
+            opt_count=len(opciones)
+            for opt in opciones:
+                votes = []
+
+                for i in range (opt_count):
+                    votes.append(0)
+
+                for dicc in tally:
+                    indice = opt.number 
+                    pos = dicc.get(str(indice))
+                    if pos!=None and pos[1]==qs.id:
+                        votes[pos[0]] = votes[pos[0]] + 1
+
+                empty = True
+                for element in votes:
+                    if element != 0:
+                        empty = False
+                        break       
+
+                if empty == False:
+                    opts[opt.number] = votes
+
+        self.assertEqual(opts, clear)
+
+    # Voting points (Recuento proporcional)    
+
+    def test_voting_points_positive_api(self):
+        points = 4
+        voting_type = 3
+        voting = self.create_voting_variable_option_types(voting_type, points)
+        voting.points = points
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 4
+        self.store_votes_ranked_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)
+    
+        postp = voting.postproc
+
+        for dicc in postp:
+            options = dicc["options"]
+            for dicc_aux in options:
+                self.assertEqual(points, dicc_aux["points"])
 
 
     #Pruebas de modelo para la t046
