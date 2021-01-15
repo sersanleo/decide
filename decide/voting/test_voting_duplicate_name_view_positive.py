@@ -49,7 +49,7 @@ class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
     # Step # | name | target | value
     # 1 | open | http://localhost:8000/admin/ | 
     self.driver.get(f'{self.live_server_url}/admin/')
-    self.driver.find_element_by_id("id_username").send_keys("admin")
+    self.driver.find_element_by_id("id_username").send_keys("adminsuper")
     self.driver.find_element_by_id("id_password").send_keys("qwerty")
     self.driver.find_element_by_css_selector("div .submit-row input").click()
     # 3 | click | css=.model-voting .addlink | 
