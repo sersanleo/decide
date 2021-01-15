@@ -1880,6 +1880,45 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(opts, clear)
 
+    # Voting points (Recuento proporcional)    
+
+    def test_voting_points_positive_api(self):
+        points = 4
+        voting_type = 3
+        voting = self.create_voting_variable_option_types(voting_type, points)
+        voting.points = points
+        self.create_voters(voting)
+
+        voting.create_pubkey()
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        number_of_voters = 4
+        self.store_votes_ranked_aux(voting, number_of_voters)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+        
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)
+    
+        postp = voting.postproc
+
+        for dicc in postp:
+            options = dicc["options"]
+            for dicc_aux in options:
+                self.assertEqual(points, dicc_aux["points"])
+
+
     #Pruebas de modelo para la t046
 
     #Caso positivo 1
