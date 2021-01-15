@@ -325,7 +325,7 @@ class VotingTestCase(BaseTestCase):
     #Caso positivo masculino
 
     def test_tally_masc_positive_unit(self):
-        tallyMesperado=[{'1': [0, 1]}, {'1': [0, 1]}, {'1': [0, 1]}]
+
         v=self.create_voting_variable_option_types(1)
         self.create_voters(v)
 
@@ -341,7 +341,25 @@ class VotingTestCase(BaseTestCase):
         tallyM=v.tallyM
         questions = v.question.all()
 
-        self.assertEqual(tallyM,tallyMesperado)
+
+        tallyMReal = 0
+        tallyMEsperado = 0
+        for qs in questions:
+            for opt in qs.options.all():
+
+                for dicc in tallyM:
+                    indice = opt.number
+                    pos = dicc.get(str(indice))
+
+                    if pos!=None:
+                        tallyMReal = tallyMReal + 1
+
+
+            for clave in clear.keys():
+                tallyMEsperado = tallyMEsperado + clear[clave]
+
+        self.assertEqual(tallyMReal, tallyMEsperado)
+
     
     #Caso negativo masculino
 
