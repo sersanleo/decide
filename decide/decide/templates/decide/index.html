@@ -18,12 +18,12 @@
       <b-list-group-item variant="secondary" v-if="pending_votings.length <= 0">
         {% trans "No pending votings" %}
       </b-list-group-item>
-      <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id + '/1/'">[[ voting.name ]]
+      <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id + '/' + voting.question[0].id + '/'">[[ voting.name ]]
       </b-list-group-item>
     </b-list-group>
   </b-col>
   <b-col sm="12" md="6">
-    <h1 class="lang" id="resultsId">{% trans "My votings results" %}</h1>
+    <h1 class="lang" id="resultsId">{% trans "Past votings results" %}</h1>
     <b-list-group>
       <b-list-group-item variant="secondary" v-if="past_votings.length <= 0">
         {% trans "No results" %}
@@ -44,8 +44,8 @@
 
 
 {% block vue_data %}
-pending_votings: null,
-past_votings: null
+pending_votings: {},
+past_votings: {}
 {% endblock %}
 
 {% block vue_methods %}

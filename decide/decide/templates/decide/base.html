@@ -26,16 +26,16 @@
     <script>
         function openPopUp() {
             overlay = document.getElementById('overlay');
-            popup = document.getElementById('popup');
+            popupadmin = document.getElementById('popupadmin');
             overlay.classList.add('active');
-            popup.classList.add('active');
+            popupadmin.classList.add('active');
 
             document.getElementById('username').value = "";
             document.getElementById('password').value = "";
         }
         function closePopUp() {
             overlay.classList.remove('active');
-            popup.classList.remove('active');
+            popupadmin.classList.remove('active');
         }
     </script>
     <!-- Vue -->
@@ -99,7 +99,8 @@
                             :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
                         {% endfor %}
                     </b-nav-item-dropdown>
-                    <b-button variant="danger" v-on:click="decideLogout">
+                    <b-button href="{% url 'modifyProfileData' %}" v-if="user != null && !user.is_staff">Modify</b-button>
+                    <b-button variant="danger" href="{% url 'indexlogout' %}">
                         {% trans "Logout" %}
                     </b-button>
                 </b-navbar-nav>
@@ -107,7 +108,7 @@
                 <!-- Non authenticated user -->
                 <b-navbar-nav class="ml-auto" v-if="user == null">
                     <b-button onclick="openPopUp();" variant="light" id="btn-abrir-popup">{% trans "Login" %}</b-button>
-                    <b-button variant="secondary" onclick="location.href='/sign-in/'" id="signIn" class="signIn">Sign up</b-button>
+                    <b-button variant="secondary" onclick="location.href='{% url 'signIn' %}'" id="signIn" class="signIn">Sign up</b-button>
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
@@ -119,29 +120,30 @@
 
         <!-- Login -->
         <div class="overlay" id="overlay">
-            <div class="popup" id="popup">
+            <div class="popupadmin" id="popupadmin">
                 <b-button variant="danger" onclick="closePopUp();" id="closePopUp" class="closePopUp">X</b-button>
                 <h4>Login</h4>
                 <b-row v-if="user == null" align-h="center">
                     <b-col cols="4" class="text-center">
-                        <b-form @submit="onSubmitLogin">
+                        <b-form action="{% url 'indexlogin' %}" method="post">
+                            {% csrf_token %}
                             <b-form-group class="text-justify" label-for="username">
                                 <b class="text-justify lang" id="user">Username</b>
-                                <b-form-input id="username" type="text" v-model="form.username" autocomplete="username"
+                                <b-form-input id="username" type="text" v-model="form.username" autocomplete="username" name="username"
                                     required />
                             </b-form-group>
                             <b-form-group class="text-justify" label-for="password">
                                 <b class="text-justify lang" id="pass">Password</b>
-                                <b-form-input id="password" type="password" autocomplete="current-password"
+                                <b-form-input id="password" type="password" autocomplete="current-password" name="password"
                                     v-model="form.password" required />
                             </b-form-group>
-                            <b-button onclick="closePopUp();" class="mt-3 " type="submit" variant="primary" size="lg">
+                            <b-button class="mt-3 " type="submit" variant="primary" size="lg">
                                 {% trans "Login" %}</b-button>
                         </b-form>
                     </b-col>
                 </b-row>
                 <div id="signInDiv">
-                    <b-button variant="secondary" onclick="location.href='/sign-in/'" id="signIn" class="signIn">Sign up</b-button>
+                    <b-button variant="secondary" onclick="location.href='{% url 'signIn' %}'" id="signIn" class="signIn">Sign up</b-button>
                 </div>
             </div>
         </div>
@@ -187,6 +189,9 @@
                             this.getUser();
                         }
                     });
+                    if(window.location.search == '?failedlogin') {
+                        this.showAlert("danger", 'Wrong credentials');
+                    }
                     {% block vue_after_init %}{% endblock %}
                 },
                 postData(url, data) {
@@ -211,33 +216,12 @@
                             }
                         });
                 },
-                onSubmitLogin(evt) {
-                    evt.preventDefault();
-                    this.postData("/gateway/authentication/page-login/", this.form)
-                        .then(data => {
-                            document.cookie = 'decide=' + data.token + '; path=/; max-age=7200;';
-                            this.token = data.token;
-                            this.getUser();
-                        })
-                        .catch(error => {
-                            this.showAlert("danger", 'Error: ' + error);
-                        });
-                },
                 getUser(evt) {
                     var data = { token: this.token };
-                    console.log(this.token);
-                    this.postData("/gateway/authentication/getuser/", data)
+                    this.postData("{% url 'gateway' 'authentication' '/getuser/' %}", data)
                         .then(data => {
                             this.user = data;
-                            if (this.user.style == 'C')
-                                setUserStyle("{% static 'styles/C.css' %}");
-                            else if (this.user.style == 'T')
-                                setUserStyle("{% static 'styles/T.css' %}");
-                            else if (this.user.style == 'O')
-                                setUserStyle("{% static 'styles/O.css' %}");
-                            else
-                                setUserStyle("{% static 'styles/N.css' %}");
-
+                            setUserStyle("{% static 'styles/' %}"+this.user.style+".css");
                             {% block vue_after_getuser %}{% endblock %}
                         })
                         .catch(error => {
@@ -246,27 +230,13 @@
                 },
                 onChangeStyle(newstyle) {
                     var data = { token: this.token, style: newstyle };
-                    this.postData("/gateway/authentication/changestyle/", data)
+                    this.postData("{% url 'gateway' 'authentication' '/changestyle/' %}", data)
                         .then(data => {
                             this.getUser();
                         })
                         .catch(error => {
                             this.showAlert("danger", '{% trans "Error: " %}' + error);
                         });
-                },
-                decideLogout(evt) {
-                    var opcion = confirm("Are you sure you want to log out?");
-                    if (opcion == true) {
-                        evt.preventDefault();
-                        var data = { token: this.token };
-                        this.postData("/gateway/authentication/logout/", data);
-                        this.token = null;
-                        this.user = null;
-                        document.cookie = 'decide=; path=/;';
-                        return true;
-                    } else {
-                        return false;
-                    }
                 },
                 showAlert(lvl, msg) {
                     this.alertLvl = lvl;
@@ -276,11 +246,6 @@
                 {% block vue_methods %}{% endblock %}
             },
         })
-        
     </script>
-   
-   
 </body>
-
-
 </html>

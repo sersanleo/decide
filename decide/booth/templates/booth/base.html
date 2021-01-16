@@ -18,7 +18,10 @@
             <div class="pb-5 body" v-bind:class="{dp: csspd, trit: csstrit}">
                 <!-- Navbar -->
                 <b-navbar v-bind:class="{dp: csspd, trit: csstrit}" type="dark" variant="primary" toggleable="lg">
-                    <b-navbar-brand v-bind:class="{dp: csspd, trit: csstrit}" tag="h1">Decide</b-navbar-brand>
+                    <b-navbar-brand href="{% url 'index' %}">
+                        <img src="{% static 'img/LOGODecide.png' %}" />
+                        Decide
+                    </b-navbar-brand>
                     <b-navbar-toggle aria-describedby="optionMenu" target="nav-collapse"></b-navbar-toggle>
                     <div id="optionMenu" style="display: none">Menú de opciones. Pulsando aparece el desplegable con los tipos de visualización para daltónicos y el botón de cierre de sesión</div>
                     <b-collapse id="nav-collapse" is-nav>

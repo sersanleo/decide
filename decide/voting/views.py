@@ -73,6 +73,7 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
                 st = status.HTTP_400_BAD_REQUEST
             else:
                 voting.start_date = timezone.now()
+                voting.started_by = request.user.username
                 voting.save()
                 msg = 'Voting started'
         elif action == 'stop':
@@ -125,7 +126,7 @@ class GetUserVotingsView(APIView):
                 
                 if votes == 0 and voting.start_date != None and voting.end_date == None:
                     pending_votings.append(voting)
-                elif votes > 0 and voting.start_date != None and voting.end_date != None and voting.tally != None:
+                elif voting.tally != None:
                     past_votings.append(voting)
             except:
                 pass
