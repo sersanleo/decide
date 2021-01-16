@@ -53,7 +53,6 @@ class VotingView(generics.ListCreateAPIView):
         voting.auths.add(auth)
         return Response({}, status=status.HTTP_201_CREATED)
 
-
 class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
     queryset = Voting.objects.all()
     serializer_class = VotingSerializer
@@ -123,10 +122,10 @@ class GetUserVotingsView(APIView):
             try:
                 voting = Voting.objects.get(id=vid)
                 votes = Vote.objects.filter(voter_id=user_id, voting_id=vid).count()
-                print(voting.tally)
+                
                 if votes == 0 and voting.start_date != None and voting.end_date == None:
                     pending_votings.append(voting)
-                elif votes > 0 and voting.start_date != None and voting.end_date != None and voting.tally != None:
+                elif voting.tally != None:
                     past_votings.append(voting)
             except:
                 pass
