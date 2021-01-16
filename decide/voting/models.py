@@ -259,8 +259,7 @@ class Voting(models.Model):
                     for dicc in tally:
                         indice = opt.number
                         pos = dicc.get(str(indice))
-
-                        if pos!=None:
+                        if pos!=None and pos[1]==q.id:
                             votes[pos[0]] = votes[pos[0]] + 1
 
                 else:
@@ -269,13 +268,13 @@ class Voting(models.Model):
                     for dicc in tally:
                         indice = opt.number
                         pos = dicc.get(str(indice))
-
-                        if pos!=None:
+                        if pos!=None and pos[1]==q.id:
                             votes = votes + 1
                 opts.append({
                     'option': opt.option,
                     'number': opt.number,
                     'votes': votes,
+                    'question_id': opt.question_id,
                 })
             data.append({'pregunta': q.desc, 'opciones':opts})
         return data
@@ -351,7 +350,6 @@ class Voting(models.Model):
                     'points': points
                 })
             data.append( { 'type': tallies[q.type],'options': opts})
-        print(data)
         postp = mods.post('postproc', json=data)
         self.postproc = postp
         self.save()
