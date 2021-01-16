@@ -239,7 +239,7 @@ class BoothTests(TestCase):
         v.auths.add(a)
         Voting.create_pubkey(v)
         #Add user to census
-        census = Census(voting_id=v.id, voter_id=self.u.id)
+        census = Census(voting_id=v.id, voter_id=u.id)
         census.save()
 
     def tearDown(self):
