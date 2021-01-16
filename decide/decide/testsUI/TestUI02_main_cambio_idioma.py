@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -7,7 +10,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest, time, re
 
-class AppDynamicsJob(unittest.TestCase):
+class TestUI03MainVCambioIdioma(StaticLiveServerTestCase):
     def setUp(self):
         # AppDynamics will automatically override this web driver
         # as documented in https://docs.appdynamics.com/display/PRO44/Write+Your+First+Script
@@ -16,7 +19,6 @@ class AppDynamicsJob(unittest.TestCase):
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
         self.accept_next_alert = True
-        options.headless = True
     
     def test_app_dynamics_job(self):
         driver = self.driver
