@@ -16,10 +16,11 @@ class AppDynamicsJob(unittest.TestCase):
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
         self.accept_next_alert = True
+        options.headless = True
     
     def test_app_dynamics_job(self):
         driver = self.driver
-        driver.get("http://127.0.0.1:8000/")
+        driver.get(f'{self.live_server_url}/')
         driver.find_element_by_id("welcome").click()
         self.assertEqual("Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account and press booth to vote or press visualizer to see the results.", driver.find_element_by_id("welcome").text)
         driver.find_element_by_xpath("//div[@id='app-decide']/nav/button/span").click()

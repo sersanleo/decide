@@ -16,10 +16,11 @@ class AppDynamicsJob(unittest.TestCase):
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
         self.accept_next_alert = True
+        options.headless = True
     
     def test_app_dynamics_job(self):
         driver = self.driver
-        driver.get("http://127.0.0.1:8000/")
+        driver.get(f'{self.live_server_url}/')
         driver.find_element_by_xpath("(//button[@type='button'])[6]").click()
         driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div/h2").click()
         self.assertEqual("Help with voice assistants", driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div/h2").text)

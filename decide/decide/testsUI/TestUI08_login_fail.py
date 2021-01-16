@@ -16,10 +16,11 @@ class AppDynamicsJob(unittest.TestCase):
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
         self.accept_next_alert = True
+        options.headless = True
     
     def test_app_dynamics_job(self):
         driver = self.driver
-        driver.get("http://localhost:8000/")
+        driver.get(f'{self.live_server_url}/')
         driver.find_element_by_id("btn-abrir-popup").click()
         driver.find_element_by_id("username").clear()
         driver.find_element_by_id("username").send_keys("UserLoginFailed")
