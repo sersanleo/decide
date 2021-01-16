@@ -198,9 +198,9 @@ class BoothTests(TestCase):
         # Create user
         self.client = APIClient()
         mods.mock_query(self.client)
-        self.u = UserProfile(id=1, username='voter1', sex='M')
-        self.u.set_password('123')
-        self.u.save()
+        u = UserProfile(id=1, username='voter1', sex='M')
+        u.set_password('123')
+        u.save()
         token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
         # Add session token
         session = self.client.session
