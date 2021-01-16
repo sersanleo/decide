@@ -1,30 +1,48 @@
 dist: xenial
 services:
-- postgresql
+  - postgresql
+  - xvfb
 addons:
-  postgresql: '9.4'
+  postgresql: "9.4"
+  chrome: stable
+  firefox: latest
 before_script:
-- psql -U postgres -c "create user decide password 'decide'"
-- psql -U postgres -c "create database test_decide owner decide"
-- psql -U postgres -c "ALTER USER decide CREATEDB"
-- cp decide/travis_local_settings.py decide/local_settings.py
-- python decide/manage.py migrate
+  - psql -U postgres -c "create user decide password 'decide'"
+  - psql -U postgres -c "create database test_decide owner decide"
+  - psql -U postgres -c "ALTER USER decide CREATEDB"
+  - cp decide/local_settings.travis.py decide/local_settings.py
+  - "export DISPLAY=:99.0"
+  - sleep 3
 language: python
 python:
 - '3.6'
 install:
-- pip install -r requirements.txt
-- pip install codacy-coverage
+  - pip install -r requirements.txt
+  - pip install codacy-coverage
+  - pip install selenium
+  - sudo apt-get install chromium-browser
+  - sudo apt-get install -y firefox
+  - wget -N https://chromedriver.storage.googleapis.com/87.0.4280.88/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip 
+  - rm chromedriver_linux64.zip
+  - sudo mv -f chromedriver /usr/bin
+  - sudo chmod +x /usr/bin/chromedriver
+  - wget "https://github.com/mozilla/geckodriver/releases/download/v0.27.0/geckodriver-v0.27.0-linux64.tar.gz"
+  - tar xfz geckodriver-v0.27.0-linux64.tar.gz
+  - sudo mv -f geckodriver /usr/bin
+  - sudo chmod +x /usr/bin/geckodriver
 script:
-- cd decide
-- coverage run --branch --source=. ./manage.py test postproc --keepdb
-- coverage xml
-- python-codacy-coverage -r coverage.xml
-deploy:
-  provider: heroku
-  app: egc-guadalentin-postprocesado
-  strategy: git
-  api_key:
-    secure: DdZNqdJgZKDMG5CYniwOdOSbtqT9p9R1NCejmHw+0iLR6p1KwMDOTXS7yGu89b7qf6H0SSMJzj/RQwgixwuKMkubbGUIrFTPhL14I+sVKHGXSCIl4TyqfW+QcM3GtulswqzG19FRnLI2GmGD4GP8seGOXwMexpVEYgFF8f74zTCroOq5m0+TWjYGcyoNsyWdZ73GjZn/aZkcTXWPzWX807F/wsbsHWH9XBA+Qnp9r4qLe9YC4HEAKsZhRp7s2a6RKfV6zHffkx0fOcQnSx08BxnEcm8UE3bUhV9JSEsByqOgltUb5dE+97jp18895I7sgDQkZf4Kh6mMfaBJuoJz/0qa5xL1fOzyRFx2k75U/16pSWbsygI8OF+wvmiDEsk0BFcEaFp7yOwVpmVDw2voWz0fPcKGsLjaXncA+P552fa6Q5jfhKXIt6GSQng+Eo0SLAeAvKfRSzpNqcdgnxxaTXwWm7PwWT1GFl/nu+mnpcj4R22+26geQmx/mWT13Fj+81HnnexjmV+pshxo4P61cQC/lLmVNt3BVJBFnAlXOu3+H/UKLHW8sOOWWsY5zg2FMm1B3r5vlUoZ5yFL4KpkeO17lfT+CLK1RX1qw4A/63Yi9ZYhcnG8ozQXD4UYfhl2/DgE7YbeeIJF5Uye7iuejQOmgUOKpI46W1cRH3Z+3Ng=
-  on:
-    branch: postprocesado
+  - cd decide
+  - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
+notifications:
+  email:
+    recipients:
+      - carsantir@alum.us.es
+      - marmarser5@alum.us.es
+      - marmolpen3@alum.us.es
+      - josvilgar1@alum.us.es
+      - ramonfernandez1999@gmail.com
+    on_success: never 
+    on_failure: always

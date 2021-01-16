@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^##ydkswfu0+=ofw0l#$kv^8n)0$i(qd&d&ol#p9!b$8*5%j1+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -70,7 +70,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://egc-guadalentin-postprocesado.herokuapp.com'
+BASEURL = 'https://egc-guadalentin-usabilidad.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -185,18 +185,4 @@ AUTH_USER_MODEL = 'authentication.UserProfile'
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
-
-APIS = {
-    'authentication': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'base': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'booth': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'census': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'mixnet': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'postproc': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'store': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'visualizer': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'voting': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-}
-
-import django_heroku
-django_heroku.settings(locals())
+APIS = {}
