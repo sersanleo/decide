@@ -14,6 +14,43 @@ from locust import (
 HOST = "http://localhost:8000"
 VOTING = 1
 
+class DefLogin(TaskSet):
+
+    def on_start(self):
+        with open('voters.json') as f:
+            self.voters = json.loads(f.read())
+        self.voter = choice(list(self.voters.items()))
+        
+    @task
+    def index(self):
+        self.client.get("/")
+    @task
+    def login(self):
+        username, pwd = self.voter
+        self.token = self.client.post("/authentication/login/", {
+            "username": username,
+            "password": pwd,
+        }).json()
+
+    @task
+    def getuser(self):
+        self.usr= self.client.post("/authentication/getuser/", self.token).json()
+        print( str(self.user))
+
+    def on_quit(self):
+        self.voter = None
+
+class DefHelpVoiceAssistant(TaskSet):
+
+    @task
+    def index(self):
+        self.client.get("/")
+
+    @task
+    def HVA(self):
+        self.client.get("/helpvoiceassistant/")
+
+
 
 class DefVisualizer(TaskSet):
 
@@ -62,12 +99,20 @@ class DefVoters(SequentialTaskSet):
     def on_quit(self):
         self.voter = None
 
+class Login(HttpUser):
+    host = HOST
+    tasks = [DefLogin]
+    wait_time = between(3,5)
+
 class Visualizer(HttpUser):
     host = HOST
     tasks = [DefVisualizer]
     wait_time = between(3,5)
 
-
+class HelpVoiceAssistant(HttpUser):
+    host = HOST
+    tasks = [DefHelpVoiceAssistant]
+    wait_time= between(3,5)   
 
 class Voters(HttpUser):
     host = HOST
