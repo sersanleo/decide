@@ -1,6 +1,6 @@
 import json
 
-from random import choice
+from random import choice, randint
 
 from locust import (
     HttpUser,
@@ -118,3 +118,69 @@ class Voters(HttpUser):
     host = HOST
     tasks = [DefVoters]
     wait_time= between(3,5)
+
+class Register(HttpUser):
+    USER_PREFIX = randint(0, 10000)
+
+    wait_time= between(3,5)
+
+    def on_start(self):
+        self.user_to_register = {
+            'username': '{}usuario{}'.format(Register.USER_PREFIX, randint(0, 10000)),
+            'sex': 'M',
+            'style': 'N',
+            'password': 'password1234',
+        }
+
+    @task
+    def register(self):
+        self.usr= self.client.post("/authentication/register/", self.user_to_register)
+
+    def on_quit(self):
+        self.user_to_register = None
+
+class ModifyUser(HttpUser):
+    USER_MODIFIED = 'admin'
+    PASS_MODIFIED = 'admin1234'
+
+    with open('modifiableOptions.json') as f:
+        MODIFIABLE_OPTIONS = json.loads(f.read())
+
+    wait_time= between(3,5)
+
+    @task
+    def login(self):
+        self.token = self.client.post("/authentication/login/", {
+            "username": ModifyUser.USER_MODIFIED,
+            "password": ModifyUser.PASS_MODIFIED,
+        }).json()['token']
+
+    @task
+    def getuser(self):
+        self.client.post("/authentication/getuser/", {'token': self.token })
+
+    @task
+    def changestyle(self):
+        newStyle = choice(ModifyUser.MODIFIABLE_OPTIONS.get('styles'))
+        self.client.post("/authentication/changestyle/", {'token': self.token, 'style': newStyle })
+
+    @task
+    def changesex(self):
+        newSex = choice(ModifyUser.MODIFIABLE_OPTIONS.get('sex_types'))
+        self.client.post("/authentication/changesex/", {'token': self.token, 'sex': newSex })
+
+    @task
+    def changeemail(self):
+        newEmail = choice(ModifyUser.MODIFIABLE_OPTIONS.get('emails'))
+        self.client.post("/authentication/changeemail/", {'token': self.token, 'email': newEmail })
+
+    @task
+    def changeusername(self):
+        newUsername = 'usuario{}'.format(randint(0, 10000))
+        response = self.client.post("/authentication/modify/", {'token': self.token, 'username': newUsername })
+        if response.status_code == 200:
+            ModifyUser.USER_MODIFIED = newUsername
+            print('New username is %s', ModifyUser.USER_MODIFIED)
+
+    def on_quit(self):
+        self.token = None
