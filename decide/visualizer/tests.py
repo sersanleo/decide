@@ -325,7 +325,7 @@ class Charts_With_Points_Tests(APITestCase):
 
         try:
             voting_type = response.context["type"]
-        except FooException:
+        except Exception:
             pass
     # date = datetime.datetime.now()
     # voting = Voting(name='test 1', desc='r')
