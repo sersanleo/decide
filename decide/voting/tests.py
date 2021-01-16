@@ -1,4 +1,3 @@
-
 import random
 import itertools
 from django.utils import timezone
@@ -2786,4 +2785,3 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting started')
         self.assertNotEqual(voting.started_by, user.username)
-
