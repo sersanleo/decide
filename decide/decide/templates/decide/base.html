@@ -26,16 +26,16 @@
     <script>
         function openPopUp() {
             overlay = document.getElementById('overlay');
-            popup = document.getElementById('popup');
+            popupadmin = document.getElementById('popupadmin');
             overlay.classList.add('active');
-            popup.classList.add('active');
+            popupadmin.classList.add('active');
 
             document.getElementById('username').value = "";
             document.getElementById('password').value = "";
         }
         function closePopUp() {
             overlay.classList.remove('active');
-            popup.classList.remove('active');
+            popupadmin.classList.remove('active');
         }
     </script>
     <!-- Vue -->
@@ -120,7 +120,7 @@
 
         <!-- Login -->
         <div class="overlay" id="overlay">
-            <div class="popup" id="popup">
+            <div class="popupadmin" id="popupadmin">
                 <b-button variant="danger" onclick="closePopUp();" id="closePopUp" class="closePopUp">X</b-button>
                 <h4>Login</h4>
                 <b-row v-if="user == null" align-h="center">
