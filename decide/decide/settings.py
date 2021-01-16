@@ -71,19 +71,9 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://guadalentin-visualizacion.herokuapp.com/'
+BASEURL = 'https://guadalentin-visualizacion.herokuapp.com'
 
-APIS = {
-    'authentication': BASEURL,
-    'base': BASEURL,
-    'booth': BASEURL,
-    'census': BASEURL,
-    'mixnet': BASEURL,
-    'postproc': BASEURL,
-    'store': BASEURL,
-    'visualizer': BASEURL,
-    'voting': BASEURL,
-}
+APIS = {}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
