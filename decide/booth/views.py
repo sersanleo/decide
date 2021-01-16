@@ -124,20 +124,18 @@ def dashboard_details(voter_id):
     approved_suggestions = []
     recent_suggestions = []
 
-    context['no_censo'], context['no_vot_dis'] = False, False
+    context['no_vot_dis'] = False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
-    if census_by_user.count() == 0 :
-        context['no_censo'] = True
-    else:
-        list_vid=[]
-        for c in census_by_user:
-            vid = c.voting_id
-            list_vid.append(vid)
 
-        available_votings = available_votings_user(list_vid, voter_id)
-        votings_by_month, months = last_12_months_votings_user(list_vid)
-        votings_by_type = votings_user_by_type(list_vid)
+    list_vid=[]
+    for c in census_by_user:
+        vid = c.voting_id
+        list_vid.append(vid)
+
+    available_votings = available_votings_user(list_vid, voter_id)
+    votings_by_month, months = last_12_months_votings_user(list_vid)
+    votings_by_type = votings_user_by_type(list_vid)
 
     approved_suggestions = suggestions_approved(voter_id)
     recent_suggestions = suggestions_recent(voter_id)
