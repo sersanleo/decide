@@ -431,7 +431,7 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 3', 'number': 3, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 160000, 'postproc': 0},
                 {'option': 'Option 4', 'number': 4, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 60000, 'postproc': 0},
                 {'option': 'Option 5', 'number': 5, 'points': 0, 'votes_masc': 0, 'votes_fem': 0, 'votes': 15000, 'postproc': 0},
-                ]
+            ]
         }]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -469,7 +469,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-     def test_hondt_without_option_attribute(self):
+    def test_hondt_without_option_attribute(self):
         with self.assertRaises(KeyError):
             data = [{
                 'type': 'HONDT'
