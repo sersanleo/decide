@@ -58,7 +58,7 @@ class LoginInterfaceTests(StaticLiveServerTestCase):
 #---------------------------------------------------------------------------------------------
 
 class SuggestingInterfaceTests(StaticLiveServerTestCase):
-    
+
     def setUp(self):
         self.booth = BoothTests()
         self.booth.setUp()
@@ -98,7 +98,7 @@ class SuggestingInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "username").send_keys("voter1")
         self.driver.find_element(By.ID, "password").send_keys("123")
         self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
-        
+
         self.driver.find_element(By.ID, "sugBtn").click()
         self.driver.find_element_by_id("suggestingTitle").send_keys("test1")
         self.driver.find_element_by_id("suggestingDate").click()
@@ -186,9 +186,9 @@ class AccesibilityInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "username").send_keys("voter1")
         self.driver.find_element(By.ID, "password").send_keys("123")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        
+
         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-        
+
         form_radios_uniq = self.driver.find_elements_by_tag_name("label")
         self.assertEquals(form_radios_uniq[0].value_of_css_property('background-color'),'rgba(82, 172, 255, 1)')
 
@@ -200,9 +200,9 @@ class AccesibilityInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "username").send_keys("voter1")
         self.driver.find_element(By.ID, "password").send_keys("123")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        
+
         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-        
+
         form_radios_uniq = self.driver.find_elements_by_tag_name("label")
         self.assertEquals(form_radios_uniq[0].value_of_css_property('background-color'),'rgba(255, 102, 102, 1)')
 
@@ -214,9 +214,9 @@ class AccesibilityInterfaceTests(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "username").send_keys("voter1")
         self.driver.find_element(By.ID, "password").send_keys("123")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        
+
         self.driver.find_element(By.LINK_TEXT, "Single question voting").click()
-        
+
         form_radios_uniq = self.driver.find_elements_by_tag_name("label")
         self.assertEquals(form_radios_uniq[0].value_of_css_property('background-color'),'rgba(108, 117, 125, 1)')
 

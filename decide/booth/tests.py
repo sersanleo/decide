@@ -21,6 +21,7 @@ from census.models import Census
 from .views import check_unresolved_post_data, is_future_date
 from voting.tests import VotingTestCase
 from mixnet.models import Auth
+from store.models import Vote
 
 import time
 
@@ -66,7 +67,7 @@ class SuggestingFormTests(TestCase):
         past_suggesting_form = SuggestingForm(send_date=past_date, suggesting_date=now)
         self.assertIs(past_suggesting_form.was_published_recently(), True)
 
-    def test_get_suggesting_detail_success(self):
+    def test_get_suggesting_detail_success_pending(self):
         SuggestingForm.objects.create(id=1, user_id=1, title="Suggesting title", suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE)
         response = self.client.get(reverse('suggesting-detail', args=(1,)), follow=True)
         self.assertEqual(response.status_code, 200)
@@ -77,6 +78,45 @@ class SuggestingFormTests(TestCase):
         self.assertEqual(response.context['suggesting'].content, "Suggesting content...")
         self.assertEqual(response.context['suggesting'].send_date, NOW_DATE)
         self.assertEqual(response.context['suggesting'].is_approved, None)
+
+    def test_get_suggesting_detail_success_approved(self):
+        SuggestingForm.objects.create(id=1, user_id=1, title="Suggesting title", is_approved=True, suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE)
+        response = self.client.get(reverse('suggesting-detail', args=(1,)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['suggesting'].id, 1)
+        self.assertEqual(response.context['suggesting'].user_id, 1)
+        self.assertEqual(response.context['suggesting'].title, "Suggesting title")
+        self.assertEqual(response.context['suggesting'].suggesting_date, S_DATE)
+        self.assertEqual(response.context['suggesting'].content, "Suggesting content...")
+        self.assertEqual(response.context['suggesting'].send_date, NOW_DATE)
+        self.assertEqual(response.context['suggesting'].is_approved, True)
+
+    def test_get_suggesting_detail_success_rejected(self):
+        SuggestingForm.objects.create(id=1, user_id=1, title="Suggesting title", is_approved=False, suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE)
+        response = self.client.get(reverse('suggesting-detail', args=(1,)), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['suggesting'].id, 1)
+        self.assertEqual(response.context['suggesting'].user_id, 1)
+        self.assertEqual(response.context['suggesting'].title, "Suggesting title")
+        self.assertEqual(response.context['suggesting'].suggesting_date, S_DATE)
+        self.assertEqual(response.context['suggesting'].content, "Suggesting content...")
+        self.assertEqual(response.context['suggesting'].send_date, NOW_DATE)
+        self.assertEqual(response.context['suggesting'].is_approved, False)
+
+    # def test_get_suggesting_detail_access_blocked(self):
+    #     session = self.client.session
+    #     session['voter_id'] = 2
+    #     session.save()
+    #     SuggestingForm.objects.create(id=1, user_id=1, title="Suggesting title", suggesting_date=S_DATE, content="Suggesting content...", send_date=NOW_DATE)
+    #     response = self.client.get(reverse('suggesting-detail', args=(1,)), follow=True)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.context['suggesting'].id, 1)
+    #     self.assertEqual(response.context['suggesting'].user_id, 1)
+    #     self.assertEqual(response.context['suggesting'].title, "Suggesting title")
+    #     self.assertEqual(response.context['suggesting'].suggesting_date, S_DATE)
+    #     self.assertEqual(response.context['suggesting'].content, "Suggesting content...")
+    #     self.assertEqual(response.context['suggesting'].send_date, NOW_DATE)
+    #     self.assertEqual(response.context['suggesting'].is_approved, None)
 
     def test_get_suggesting_detail_not_found(self):
         response = self.client.get(reverse('suggesting-detail', args=(2,)), follow=True)
@@ -105,6 +145,10 @@ class SuggestingFormTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(afterpost_suggesting_counter, initital_suggesting_counter)
+
+    def test_send_suggesting_form_not_post_method(self):
+        response = self.client.get('/booth/suggesting/send/')
+        self.assertEqual(response.status_code, 302)
 
     def test_check_unresolved_post_data(self):
         context = {}
@@ -154,15 +198,15 @@ class BoothTests(TestCase):
         # Create user
         self.client = APIClient()
         mods.mock_query(self.client)
-        u = UserProfile(id=1, username='voter1', sex='M')
-        u.set_password('123')
-        u.save()
+        self.u = UserProfile(id=1, username='voter1', sex='M')
+        self.u.set_password('123')
+        self.u.save()
         token= mods.post('authentication', entry_point='/login/', json={'username':'voter1', 'password': '123'})
         # Add session token
         session = self.client.session
         session['user_token'] = token
         session.save()
-        
+
         #Create voting
 
         #Create question 1
@@ -190,12 +234,12 @@ class BoothTests(TestCase):
         v.save()
         v.question.add(q1), v.question.add(q2), v.question.add(q3)
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'base'})    
+                                          defaults={'me': True, 'name': 'base'})
         a.save()
         v.auths.add(a)
         Voting.create_pubkey(v)
         #Add user to census
-        census = Census(voting_id=v.id, voter_id=u.id)
+        census = Census(voting_id=v.id, voter_id=self.u.id)
         census.save()
 
     def tearDown(self):
@@ -216,6 +260,14 @@ class BoothTests(TestCase):
     def test_get_multiple_question_voting_not_found(self):
         response = self.client.get(reverse('voting', args=(2,2,)), follow=True)
         self.assertEqual(response.status_code, 404)
+
+    def test_user_has_already_voted(self):
+        vote = Vote.objects.create(voting_id=1, voter_id=1, question_id=1, sex="M", a="96", b="184")
+        vote.save()
+        number_of_votes = Vote.objects.filter(voting_id=1, question_id=1, voter_id=1).count()
+        self.assertEqual(number_of_votes, 1)
+        response = self.client.get(reverse('voting', args=(1,1,)), follow=True)
+        self.assertEqual(response.status_code, 200)
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
@@ -254,6 +306,7 @@ class LoginTest(TestCase):
 #---------------------------------TEST DASHBOARD----------------------------------------------
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------
+
 class DashboardTest(TestCase):
     def setUp(self):
         #Create user
@@ -290,7 +343,7 @@ class DashboardTest(TestCase):
         for i in range(5):
             opt = QuestionOption(question=q3, option='option {}'.format(i+1))
             opt.save()
-        
+
         v1 = Voting(id=1, name='Single question voting',desc='Single question voting...', points=1, start_date=timezone.now())
         v1.save()
         v1.question.add(q1), v1.question.add(q2), v1.question.add(q3)
@@ -315,7 +368,7 @@ class DashboardTest(TestCase):
         for i in range(4):
             opt = QuestionOption(question=q5, option='option {}'.format(i+1))
             opt.save()
-        
+
         #Create question 6
         q6 = Question(id=6, desc='Rank order scale question 2', option_types=3)
         q6.save()
@@ -346,6 +399,22 @@ class DashboardTest(TestCase):
         response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['vot_dis']), 1)
+        self.assertEquals(sumalista(response.context['votaciones_por_meses']), 1)
+        self.assertEquals(len(response.context['months']), 12)
+        self.assertEqual(response.context['tipo_votaciones'][0], 1)
+        self.assertEqual(response.context['tipo_votaciones'][1], 1)
+        self.assertEqual(response.context['tipo_votaciones'][2], 1)
+        self.assertEqual(len(response.context['approved_suggestions']), 1)
+        self.assertEqual(len(response.context['recent_suggestions']), 1)
+
+    def test_dashboard_details_no_votings_available(self):
+        vote1 = Vote.objects.create(voting_id=1, voter_id=1, question_id=1, sex="M", a="96", b="184")
+        vote1.save()
+        vote2 = Vote.objects.create(voting_id=2, voter_id=1, question_id=2, sex="M", a="58", b="196")
+        vote2.save()
+        response = self.client.get(reverse('dashboard'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['no_vot_dis'], True)
         self.assertEquals(sumalista(response.context['votaciones_por_meses']), 1)
         self.assertEquals(len(response.context['months']), 12)
         self.assertEqual(response.context['tipo_votaciones'][0], 1)
