@@ -469,6 +469,22 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+     def test_hondt_without_option_attribute(self):
+        with self.assertRaises(KeyError):
+            data = [{
+                'type': 'HONDT'
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
+
+    def test_hondt_without_options(self):
+        with self.assertRaises(Exception):
+            data = [{
+                'type': 'HONDT',
+                'options': []
+            }]
+
+            response = self.client.post('/postproc/', data, format='json')
 
     def test_droop(self):
         data = [{
