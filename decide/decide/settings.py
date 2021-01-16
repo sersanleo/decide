@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -70,7 +71,19 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'http://localhost:8000'
+BASEURL = 'https://guadalentin-visualizacion.herokuapp.com/'
+
+APIS = {
+    'authentication': BASEURL,
+    'base': BASEURL,
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -112,10 +125,10 @@ WSGI_APPLICATION = 'decide.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'decide',
-        'USER': 'decide',
-        'PASSWORD': 'decide',
-        'HOST': 'localhost',
+        'NAME': 'd3vluoj2jnujlr',
+        'USER': 'tqczpqfauhtxas',
+        'PASSWORD': 'ad28c32b4d7354de54de17a3d4ba141961fb7e7b65895fdfa9f2c351754fad58',
+        'HOST': 'ec2-34-254-24-116.eu-west-1.compute.amazonaws.com',
         'PORT': '5432',
     }
 }
@@ -184,3 +197,4 @@ if os.path.exists("config.jsonnet"):
 AUTH_USER_MODEL = 'authentication.UserProfile'
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
+django_heroku.settings(locals())
