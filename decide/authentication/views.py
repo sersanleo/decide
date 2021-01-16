@@ -105,43 +105,6 @@ class ChangeEmailView(APIView):
         return Response({})
 
 
-class PageLoginView(APIView):
-    def post(self, request):
-        username = request.data.get('username', '')
-        password = request.data.get('password', '')
-        token = mods.post('authentication', entry_point='/login/',
-                          json={'username': username, 'password': password})
-        voter = mods.post('authentication',
-                          entry_point='/getuser/', json=token)
-
-        voter_id = voter.get('id', None)
-        if voter_id == None:
-            return Response({}, status=HTTP_400_BAD_REQUEST)
-
-        request.session['user_token'] = token
-        request.session['voter_id'] = voter_id
-        request.session['username'] = voter.get('username', '')
-        request.session.modified = True
-        for key, value in self.request.session.items():
-            print('{} => {}'.format(key, value))
-
-        return Response(token)
-
-
-class PageLogoutView(APIView):
-    def post(self, request):
-        token = self.request.session.get('user_token')
-
-        if token:
-            mods.post('authentication', entry_point='/logout/',
-                      json={'token': token})
-            del self.request.session['user_token']
-            del self.request.session['voter_id']
-            del self.request.session['username']
-
-        return Response({})
-
-
 class RegisterView(APIView):
     def post(self, request):
 
@@ -162,7 +125,8 @@ class RegisterView(APIView):
             user.set_password(pwd)
             user.save()
             token, _ = Token.objects.get_or_create(user=user)
-        except IntegrityError:
+        except IntegrityError as e:
+            print(e)
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({})
 
@@ -184,5 +148,7 @@ class ModifyView(APIView):
         u.username = newusername
 
         u.save(update_fields=['username'])
+
+        print(newusername)
 
         return Response({})
