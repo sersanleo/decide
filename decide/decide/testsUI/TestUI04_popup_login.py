@@ -16,10 +16,11 @@ class AppDynamicsJob(unittest.TestCase):
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
         self.accept_next_alert = True
+        options.headless = True
     
     def test_app_dynamics_job(self):
         driver = self.driver
-        driver.get("http://localhost:8000/")
+        driver.get(f'{self.live_server_url}/')
         driver.find_element_by_id("btn-abrir-popup").click()
         self.assertTrue(driver.find_element_by_xpath("//div[@id='popup']/h4").is_displayed())
         self.assertTrue(driver.find_element_by_id("username").is_displayed())

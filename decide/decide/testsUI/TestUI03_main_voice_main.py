@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -7,7 +10,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest, time, re
 
-class AppDynamicsJob(unittest.TestCase):
+class TestUI03MainVoiceMain(StaticLiveServerTestCase):
     def setUp(self):
         # AppDynamics will automatically override this web driver
         # as documented in https://docs.appdynamics.com/display/PRO44/Write+Your+First+Script
@@ -19,7 +22,7 @@ class AppDynamicsJob(unittest.TestCase):
     
     def test_app_dynamics_job(self):
         driver = self.driver
-        driver.get("http://127.0.0.1:8000/")
+        driver.get(f'{self.live_server_url}/')
         driver.find_element_by_xpath("(//button[@type='button'])[6]").click()
         driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div/h2").click()
         self.assertEqual("Help with voice assistants", driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div/h2").text)
