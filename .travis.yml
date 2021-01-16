@@ -20,3 +20,8 @@ script:
   - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
   - coverage xml
   - python-codacy-coverage -r coverage.xml
+deploy:
+  provider: heroku
+  app: guadalentin-visualizacion
+  strategy: git
+  api_key: 6fb58218-d019-415b-b8e8-e081d2476386
