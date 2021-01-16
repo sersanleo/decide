@@ -3,6 +3,41 @@ body,h3,a{
     font-size:1em;
 }
 
+body {
+    background-color:#f8b679;
+}
+
+#app-decide {
+    background-color:#f8b679;
+}
+
+#changelist {
+    display: flex;
+    flex-direction: column;
+    background-color:#f8b679;
+}
+
+.aligned .form-row, .aligned .form-row > div {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100vw;
+    background-color:#f8b679;
+}
+
+.aligned label {
+    width: 100%;
+    padding: 0 0 10px;
+    background-color:#f8b679;
+}
+
+.submit-row {
+    padding: 10px 10px 0;
+    margin: 0 0 15px;
+    display: flex;
+    flex-direction: column;
+    background-color:#f8b679;
+}
+
 h1{
     font-size:1.4285em;
 }
@@ -13,13 +48,23 @@ font-size:1.1428em;
  p,td,span{
      font-size:0.9285em;
  }
+
 #zoomIn,#zoomOut{
     border-radius: .3rem;
-    background-color:deepskyblue;
-    border-color: deepskyblue;
+    background-color:#e7901f;
+    border-color: #f8b679;
     color:white;
 
 }
+
+.translate{
+    margin:auto;
+    border-radius: .3rem;
+    background-color:#e7901f;
+    border-color: #f8b679;
+    color:white;
+}
+
 .colMS {
     background-color:#f8b679 !important;
 }
@@ -78,6 +123,70 @@ footer{
 #username,#password{
     font-size:1em;
 }
+
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
+}
+
+#asistente_movil {
+    width: 400px;
+}
+
+.btn-abrir-popup{
+    padding: 0 20px;
+	margin-bottom: 20px;
+	height: 40px;
+	line-height: 40px;
+	border: none;
+	color: black;
+	background: #e7901f;
+	border-radius: 3px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: .3s ease all;
+    cursor: pointer;
+    margin-left: 100 px;
+}
+
+/* POPUP */
+.overlay {
+	background: rgba(0,0,0,.3);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+    right: 0;
+    align-items: center;
+	justify-content: center;
+    display: flex;
+    visibility: hidden;
+    z-index: 2;
+}
+.overlay.active{
+    visibility: visible;
+}
+
+.popup {
+	background: #F8F8F8;
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	border-radius: 3px;
+	padding: 20px;
+	text-align: center;
+    width: 600px;
+}
+
+.popup .btn-cerrar-popup{
+    font-size: 16px;
+	line-height: 16px;
+	display: block;
+	text-align: right;
+	transition: .3s ease all;
+	color: #BBBBBB;
+}
+
+.popup .btn-cerrar-popup:hover {
+	color: #000;
+}
 .closePopUp {
     float: right;
 }
@@ -87,4 +196,22 @@ footer{
     font-size: 36px;
     font-weight: 600;
     margin-bottom: 10px;
+}
+
+#footer {
+    display: block;
+    margin: auto;
+}
+
+#text-voice-assistants {
+    margin: 40px;
+}
+
+#signInDiv {
+    float:right;
+}
+#formSignUpDiv, #formModifyDiv {
+    align-content: center;
+    border-radius: 10px;
+    margin: 0 auto;
 }

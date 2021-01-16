@@ -1023,5 +1023,50 @@ class VotingTestCase(BaseTestCase):
 
         self.assertEqual(votes, votes_aux)
 
+    def test_getuservotings(self):
+        # Se crea una votación, se censa al usuario y se comienza
+        voting = self.create_voting()
+        voting.create_pubkey()
 
+        self.login()
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
 
+        user, _ = User.objects.get_or_create(username='allowedvoter')
+        user.set_password('qwerty')
+        user.save()
+        c = Census(voter_id=user.id, voting_id=voting.id)
+        c.save()
+        
+        self.login(user=user.username)
+        response = self.client.post('/voting/getuser/', {}, format='json')
+        pending_votings = response.json()['pending_votings']
+        past_votings = response.json()['past_votings']
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(pending_votings), 1)
+        self.assertEqual(pending_votings[0]['id'], voting.id)
+        self.assertEqual(len(past_votings), 0)
+
+        data = {'action': 'stop'}
+        self.login()
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+        tally=voting.tally_votes(self.token)
+
+        self.login(user=user.username)
+        response = self.client.post('/voting/getuser/', {}, format='json')
+        pending_votings = response.json()['pending_votings']
+        past_votings = response.json()['past_votings']
+        print(response.json())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(past_votings), 1)
+        self.assertEqual(past_votings[0]['id'], voting.id)
+        self.assertEqual(len(pending_votings), 0)

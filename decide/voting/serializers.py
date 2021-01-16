@@ -36,6 +36,8 @@ class SimpleVotingSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('name', 'desc', 'question', 'start_date', 'end_date')
 
 class MinimalVotingSerializer(serializers.HyperlinkedModelSerializer):
+    question = QuestionSerializer(many=True)
+    
     class Meta:
         model = Voting
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'question')
