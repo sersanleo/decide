@@ -1049,17 +1049,6 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(pending_votings[0]['id'], voting.id)
         self.assertEqual(len(past_votings), 0)
 
-        # Se vota, se para y se recuenta
-        data = {
-            "voting": voting.id,
-            "voter": user.id,
-            "question_id": 1,
-            "vote": [{ "a": '96', "b": '184' }]
-        }
-
-        response = self.client.post('/store/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-
         data = {'action': 'stop'}
         self.login()
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')

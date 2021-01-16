@@ -71,7 +71,7 @@ class ModifyProfileDateView(TemplateView):
         if not check_sess:
             return check_sess
 
-        return super(SignInView, self).dispatch(request, *args, **kwargs)
+        return super(ModifyProfileDateView, self).dispatch(request, *args, **kwargs)
       
 class SignInView(TemplateView):
     template_name='decide/sign_in.html'

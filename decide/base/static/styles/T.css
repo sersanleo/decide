@@ -25,6 +25,7 @@ font-size:1.1428em;
  p,td,span{
      font-size:0.9285em;
  }
+
 #zoomIn,#zoomOut{
     border-radius: .3rem;
     background-color:#F8DFE9;
@@ -33,6 +34,13 @@ font-size:1.1428em;
 
 }
 
+.translate{
+    margin:auto;
+    border-radius: .3rem;
+    background-color:#F8DFE9;
+    border-color: #BB688A;
+    color:black;
+}
 
 .colMS {
     background-color:#F8DFE9 !important;
@@ -280,13 +288,14 @@ h1{
 	justify-content: center;
     display: flex;
     visibility: hidden;
+    z-index: 2;
     
 }
 .overlay.active{
     visibility: visible;
 }
 
-.popup {
+.popupadmin {
 	background: #F8DFE9;
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	border-radius: 3px;
@@ -295,7 +304,7 @@ h1{
     width: 600px;
 }
 
-.popup .btn-cerrar-popup{
+.popupadmin .btn-cerrar-popup{
     font-size: 16px;
 	line-height: 16px;
 	display: block;
@@ -304,14 +313,14 @@ h1{
 	color: #116D72;
 }
 
-.popup .btn-cerrar-popup:hover {
+.popupadmin .btn-cerrar-popup:hover {
 	color: #000;
 }
 
 .closePopUp {
     float: right;
 }
-.popup h4 {
+.popupadmin h4 {
     color: #F8DFE9 !important;
     font-family: serif !important;
     font-size: 36px;

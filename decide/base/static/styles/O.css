@@ -28,6 +28,7 @@ font-size:1.1428em;
  p,td,span{
      font-size:0.9285em;
  }
+
 #zoomIn,#zoomOut{
     border-radius: .3rem;
     background-color:#0E2742;
@@ -36,6 +37,13 @@ font-size:1.1428em;
 
 }
 
+.translate{
+    margin:auto;
+    border-radius: .3rem;
+    background-color:#0E2742;
+    border-color: #90A7C0;
+    color:white;
+}
 
 .colMS {
     background-color:#5D6D7E !important;
@@ -316,13 +324,14 @@ h1{
 	justify-content: center;
     display: flex;
     visibility: hidden;
+    z-index: 2;
     
 }
 .overlay.active{
     visibility: visible;
 }
 
-.popup {
+.popupadmin {
 	background: #90A7C0;
 	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
 	border-radius: 3px;
@@ -332,7 +341,7 @@ h1{
     color: #17202A;
 }
 
-.popup .btn-cerrar-popup{
+.popupadmin .btn-cerrar-popup{
     font-size: 16px;
 	line-height: 16px;
 	display: block;
@@ -341,14 +350,14 @@ h1{
 	color: #17202A;
 }
 
-.popup .btn-cerrar-popup:hover {
+.popupadmin .btn-cerrar-popup:hover {
 	color: #000;
 }
 
 .closePopUp {
     float: right;
 }
-.popup h4 {
+.popupadmin h4 {
     color: #17202A !important;
     font-family: serif !important;
     font-size: 36px;
