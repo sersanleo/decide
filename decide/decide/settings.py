@@ -186,5 +186,3 @@ AUTH_USER_MODEL = 'authentication.UserProfile'
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
 APIS = {}
-
-
