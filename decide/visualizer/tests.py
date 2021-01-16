@@ -19,6 +19,9 @@ from base import mods
 
 from voting.models import Voting
 
+from decide.voting.models import Question, QuestionOption
+
+
 class AdminTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
@@ -275,3 +278,46 @@ class Statistics_View_Tests_Selenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys("practica1234")
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
         self.driver.get(f'{self.live_server_url}/visualizer/1/statistics')
+
+class Identity_Graph_Test(BaseTestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+    
+    def setUp(self):
+        super().setUp()
+        user_admin = UserProfile(username='admin1', sex='F', style='C', is_staff=True, is_superuser=True,
+                                 is_active=True)
+        user_admin.set_password('qwerty')
+        user_admin.save()
+        self.client.force_login(user_admin)
+
+    def tearDown(self):
+        self.client.logout()
+        super().tearDown()
+
+    def test_positive_view_identity_graph(self):
+        response = self.client.get('/visualizer/23/')
+        voting_type = response.context["type"]
+        labels = response.context["labels"]
+        data = response.context["data"]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(voting_type, "IDENTITY")
+        self.assertEqual(labels, "['Rojo', 'Azul', 'Amarillo', 'Verde']")
+        self.assertEqual(data, "[9, 8, 4, 4]")
+
+    def test_negative_view_identity_graph(self):
+        response = self.client.get('/visualizer/23/')
+        voting_type = response.context["type"]
+        options = response.context['options']
+        votes_men = response.context['votes_men']
+        votes_women = response.context['votes_women']
+        gender_census = response.context['gender_census']
+        results = response.context['results']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(voting_type, "IDENTITY")
+        self.assertEqual(options, None)
+        self.assertEqual(votes_men, None)
+        self.assertEqual(votes_women, None)
+        self.assertEqual(gender_census, None)
+        self.assertEqual(results, None)
