@@ -26,6 +26,7 @@ install:
   - sudo chmod +x /usr/bin/chromedriver
 script:
   - cd decide
+  - ./manage.py collectstatic
   - ./manage.py makemigrations #Se realiza para solucionar un error del proyecto
   - ./manage.py migrate
   - coverage run --branch --source=. ./manage.py test --keepdb
