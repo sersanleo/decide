@@ -275,3 +275,87 @@ class Statistics_View_Tests_Selenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys("practica1234")
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
         self.driver.get(f'{self.live_server_url}/visualizer/1/statistics')
+
+
+class Charts_Equality_Tests(APITestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+
+    def setUp(self):
+        user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True, is_active=True)
+        user_admin.set_password('qwerty')
+        user_admin.save()
+        self.client.force_login(user_admin)
+
+    def tearDown(self):
+        self.client.logout()
+        super().tearDown()
+
+    def test_view_voting_equality_positive(self):
+        response = self.client.get('/visualizer/?id=24/')
+        self.assertEqual(response.status_code, 200)
+    
+    
+
+class Charts_Equality_Selenium_Tests(StaticLiveServerTestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+
+    def setUp(self):
+        self.client = APIClient()
+        self.token = None
+        mods.mock_query(self.client)
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+        user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True)
+        user_admin.set_password('qwerty')
+        user_admin.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.driver.quit()
+
+    def test_show_equality_results_chart(self):
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").click()
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/')
+        self.driver.find_element(By.XPATH, "//a[contains(@href, \'24\')]").click()
+        elements = self.driver.find_elements(By.ID, "resultsChart")
+        assert len(elements) > 0
+    
+    def test_show_equality_gender_chart(self):
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").click()
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/')
+        self.driver.find_element(By.XPATH, "//a[contains(@href, \'24\')]").click()
+        elements = self.driver.find_elements(By.ID, "genderChart")
+        assert len(elements) > 0
+    
+    def test_show_equality_gender_chart(self):
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").click()
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/')
+        self.driver.find_element(By.XPATH, "//a[contains(@href, \'24\')]").click()
+        elements = self.driver.find_elements(By.ID, "genderCensusChart")
+        assert len(elements) > 0
+
+
+
+
+
+       
+
+
+
