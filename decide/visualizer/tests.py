@@ -14,12 +14,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 from base import mods
-
 from voting.models import Voting
 
-from decide.voting.models import Question, QuestionOption
+from voting.models import Question, QuestionOption
 
 
 class AdminTestCase(StaticLiveServerTestCase):
@@ -342,7 +340,7 @@ class Identity_chart_view_test_selenium(StaticLiveServerTestCase):
         self.token = None
         mods.mock_query(self.client)
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
         user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True)
         user_admin.set_password('qwerty')
