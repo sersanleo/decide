@@ -5,9 +5,9 @@
 		if(document.getElementById("btn-abrir-popup")!=null){
 			var btnAbrirPopup = document.getElementById("btn-abrir-popup");
 			var overlay = document.getElementById("overlay");
-			var popup = document.getElementById("popup");
+			var popupadmin = document.getElementById("popupadmin");
 			overlay.classList.add("active");
-			popup.classList.add("active");
+			popupadmin.classList.add("active");
 		}
 		
 	}
@@ -16,9 +16,9 @@
 		if(document.getElementById("btn-cerrar-popup")!= null){
 			var btnCerrarPopup = document.getElementById("btn-cerrar-popup");
 			var overlay = document.getElementById("overlay");
-			var popup = document.getElementById("popup");
+			var popupadmin = document.getElementById("popupadmin");
 			overlay.classList.remove("active");
-			popup.classList.remove("active");
+			popupadmin.classList.remove("active");
 			
 		}
 	}

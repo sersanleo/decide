@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,7 +25,6 @@ SECRET_KEY = '^##ydkswfu0+=ofw0l#$kv^8n)0$i(qd&d&ol#p9!b$8*5%j1+'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -70,7 +68,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://egc-guadalentin-postprocesado.herokuapp.com'
+BASEURL = 'https://localhost:8000'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,8 +85,8 @@ ROOT_URLCONF = 'decide.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ 
-            os.path.join(BASE_DIR, 'admin/templates'), 
+        'DIRS': [
+            os.path.join(BASE_DIR, 'admin/templates'),
             os.path.join(BASE_DIR, 'decide/templates'),
             ],
         'APP_DIRS': True,
@@ -185,18 +183,4 @@ AUTH_USER_MODEL = 'authentication.UserProfile'
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
-
-APIS = {
-    'authentication': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'base': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'booth': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'census': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'mixnet': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'postproc': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'store': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'visualizer': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'voting': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-}
-
-import django_heroku
-django_heroku.settings(locals())
+APIS = {}
