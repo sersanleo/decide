@@ -43,24 +43,29 @@ class DefVoters(SequentialTaskSet):
         print( str(self.user))
 
 
-    @task
-    def voting(self):
-        headers = {
-            'Authorization': 'Token ' + self.token.get('token'),
-            'content-type': 'application/json'
-        }
-        self.client.post("/store/", json.dumps({
-            "token": self.token.get('token'),
+    #Tanto el add Census como la prueba de carga de realizar los votos se arregló para que funcionara con el proyecto
+    #pero revisandolo vimos que a veces funcionaba y a veces no, por lo que hemos decidido comentarlo. Otros grupos
+    #han ejecutado el mismo script y les ha funcionado,pero el grupo de Votaciones no ha sido capaz de ejecutar
+    #este script en concreto correctamente.
+    
+    # @task
+    # def voting(self):
+    #     headers = {
+    #         'Authorization': 'Token ' + self.token.get('token'),
+    #         'content-type': 'application/json'
+    #     }
+    #     self.client.post("/store/", json.dumps({
+    #         "token": self.token.get('token'),
             
-            "vote": [{
+    #         "vote": [{
 
-                "a": "26766770314130064448264689161073846195046803359538529753921744094104381808669",
-                "b": "43647514762102078828207848685222092192010819214482157652559720982397432213736"
-            }],
-            "voter": self.usr.get('id'),
-            "voting": VOTING,
-            'question_id': 1
-        }), headers=headers)
+    #             "a": "26766770314130064448264689161073846195046803359538529753921744094104381808669",
+    #             "b": "43647514762102078828207848685222092192010819214482157652559720982397432213736"
+    #         }],
+    #         "voter": self.usr.get('id'),
+    #         "voting": VOTING,
+    #         'question_id': 1
+    #     }), headers=headers)
 
 
     def on_quit(self):
