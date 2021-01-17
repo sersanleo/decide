@@ -14,12 +14,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-
 from base import mods
-
 from voting.models import Voting
 
-from decide.voting.models import Question, QuestionOption
+from voting.models import Question, QuestionOption
 
 
 class AdminTestCase(StaticLiveServerTestCase):
@@ -296,30 +294,30 @@ class Identity_chart_test(BaseTestCase):
         super().tearDown()
 
     def test_positive_view_identity_chart(self):
-        response = self.client.get('/visualizer/23/')
-        voting_type = response.context["type"]
+        response = self.client.get('/visualizer/100/')
+        postproc_type = response.context["postproc_type"]
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(voting_type, "IDENTITY")
+        self.assertEqual(postproc_type, "IDENTITY")
 
     def test_negative_view_identity_chart(self):
         response = self.client.get('/visualizer/999999')
         self.assertEqual(response.status_code, 301)
 
     def test_positive_view_identity_chart_data(self):
-        response = self.client.get('/visualizer/23/')
-        voting_type = response.context["type"]
+        response = self.client.get('/visualizer/100/')
+        postproc_type = response.context["postproc_type"]
         labels = response.context["labels"]
         data = response.context["data"]
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(voting_type, "IDENTITY")
-        self.assertEqual(labels, "['Rojo', 'Azul', 'Amarillo', 'Verde']")
+        self.assertEqual(postproc_type, "postproc_type")
+        self.assertEqual(labels, "['TestOp1', 'TestOp2', 'TestOp3', 'TestOp4']")
         self.assertEqual(data, "[9, 8, 4, 4]")
 
     def test_negative_view_identity_chart_data(self):
-        response = self.client.get('/visualizer/23/')
-        voting_type = response.context["type"]
+        response = self.client.get('/visualizer/100/')
+        postproc_type = response.context["postproc_type"]
         options = response.context['options']
         votes_men = response.context['votes_men']
         votes_women = response.context['votes_women']
@@ -327,7 +325,7 @@ class Identity_chart_test(BaseTestCase):
         results = response.context['results']
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(voting_type, "IDENTITY")
+        self.assertEqual(postproc_type, "IDENTITY")
         self.assertEqual(options, None)
         self.assertEqual(votes_men, None)
         self.assertEqual(votes_women, None)
@@ -342,7 +340,7 @@ class Identity_chart_view_test_selenium(StaticLiveServerTestCase):
         self.token = None
         mods.mock_query(self.client)
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
         user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True)
         user_admin.set_password('qwerty')
@@ -362,7 +360,7 @@ class Identity_chart_view_test_selenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_username").send_keys("admin")
         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
-        self.driver.get(f'{self.live_server_url}/visualizer/23/')
+        self.driver.get(f'{self.live_server_url}/visualizer/100/')
 
     def test_identity_chart_view(self):
         voting = Voting(name='test 1', desc='r')
@@ -373,5 +371,5 @@ class Identity_chart_view_test_selenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_username").send_keys("admin")
         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
-        self.driver.get(f'{self.live_server_url}/visualizer/23/')
+        self.driver.get(f'{self.live_server_url}/visualizer/100/')
         self.driver.find_element(By.CSS_SELECTOR, "canvas.identityChart").is_displayed()
