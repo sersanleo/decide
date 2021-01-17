@@ -281,21 +281,40 @@ class Charts_Equality_Tests(APITestCase):
     fixtures = ['visualizer/migrations/populate.json', ]
 
     def setUp(self):
-        user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True, is_active=True)
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        user_admin = UserProfile(username='decide_admin', sex='F', style='N', is_staff=True, is_superuser=True, is_active=True)
         user_admin.set_password('qwerty')
         user_admin.save()
-        self.client.force_login(user_admin)
+        self.base.login(user='decide_admin', password='qwerty')
 
     def tearDown(self):
         self.client.logout()
         super().tearDown()
 
-    def test_view_voting_equality_positive(self):
-        response = self.client.get('/visualizer/?id=24/')
+    def test_voting_equality_positive(self):
+        response = self.client.get('/visualizer/24/')
         self.assertEqual(response.status_code, 200)
     
+    def test_voting_equality_negative(self):
+        response = self.client.get('/visualizer/5000/')
+        self.assertEqual(response.status_code, 404)
     
 
+    def test_context_is_correct(self):
+        response = self.client.get('/visualizer/24/')
+        options = response.context["options"]
+        self.assertTrue(options)
+        votes_men = response.context["votes_men"]
+        self.assertTrue(votes_men)
+        votes_women = response.context["votes_women"]
+        self.assertTrue(votes_women)
+        gender_census = response.context["gender_census"]
+        self.assertTrue(gender_census)
+        results = response.context["results"]
+        self.assertTrue(results)
+        
 class Charts_Equality_Selenium_Tests(StaticLiveServerTestCase):
     fixtures = ['visualizer/migrations/populate.json', ]
 
