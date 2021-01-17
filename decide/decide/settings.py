@@ -68,7 +68,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'http://localhost:8000'
+BASEURL = 'https://localhost:8000'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -85,8 +85,8 @@ ROOT_URLCONF = 'decide.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ 
-            os.path.join(BASE_DIR, 'admin/templates'), 
+        'DIRS': [
+            os.path.join(BASE_DIR, 'admin/templates'),
             os.path.join(BASE_DIR, 'decide/templates'),
             ],
         'APP_DIRS': True,
@@ -182,3 +182,5 @@ if os.path.exists("config.jsonnet"):
 AUTH_USER_MODEL = 'authentication.UserProfile'
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
+
+APIS = {}
