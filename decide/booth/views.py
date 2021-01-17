@@ -32,6 +32,11 @@ class LogoutView(TemplateView):
             del self.request.session['username']
 
         return context
+    
+    def render_to_response(self, context, **response_kwargs):
+        response = super(LogoutView, self).render_to_response(context, **response_kwargs)
+        response.delete_cookie('decide')
+        return response
 
 def autenticacion(request, username, password):
     token= mods.post('authentication', entry_point='/login/', json={'username':username, 'password':password})
@@ -173,7 +178,9 @@ def authentication_login(request):
         else:
             context = dashboard_details(voter_id)
             context['username'] = username
-            return render(request, 'booth/dashboard.html', context)
+            response = render(request, 'booth/dashboard.html', context)
+            response.set_cookie('decide', request.session['user_token'].get('token', ''), path='/', max_age=1800)
+            return response
     else:
         token = request.session.get('user_token', None)
         if token == None:
