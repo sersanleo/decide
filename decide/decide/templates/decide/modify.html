@@ -4,7 +4,12 @@
 {% block content %}
 <b-row v-if="user != null">
     <div class="formModifyDiv" id="formModifyDiv">
-
+        <div id="textOnlyForVoiceAssistant">
+            Information about the style.
+            Normal style and night: For people without any vision problem.
+            Tritanopia style: For people with a lack of sensitivity to blue.
+            Color blind: For people with a slight degree of difficulty discriminating shades of red and green.
+        </div>
         <b-form @submit="onSubmitModify">
 
             <b-form-group class="text-justify" label="Username" label-for="input-1">

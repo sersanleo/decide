@@ -1,56 +1,44 @@
-# -*- coding: utf-8 -*-
+from authentication.models import UserProfile
+from django.contrib import auth
+from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from base.tests import BaseTestCase
+from rest_framework.test import APIClient, APITestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoAlertPresentException
-import unittest, time, re
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-class AppDynamicsJob(unittest.TestCase):
+from base import mods
+
+class AppDynamicsJob(StaticLiveServerTestCase):
     def setUp(self):
-        # AppDynamics will automatically override this web driver
-        # as documented in https://docs.appdynamics.com/display/PRO44/Write+Your+First+Script
-        self.driver = webdriver.Firefox()
-        self.driver.implicitly_wait(30)
-        self.base_url = "https://www.google.com/"
-        self.verificationErrors = []
-        self.accept_next_alert = True
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        super().setUp()
     
     def test_app_dynamics_job(self):
         driver = self.driver
-        driver.get("http://127.0.0.1:8000/")
+        driver.get(f'{self.live_server_url}/')
+        driver.set_window_size(1386, 692)
         driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div").click()
         self.assertEqual("Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account and press booth to vote or press visualizer to see the results.", driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div").text)
         driver.find_element_by_link_text("Decide").click()
         driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div").click()
+        
         self.assertEqual("Welcome to Decide, an online voting platform. This is the main page. Here, you can login to your account and press booth to vote or press visualizer to see the results.", driver.find_element_by_xpath("//div[@id='app-decide']/div[2]/div/div").text)
-    
-    def is_element_present(self, how, what):
-        try: self.driver.find_element(by=how, value=what)
-        except NoSuchElementException as e: return False
-        return True
-    
-    def is_alert_present(self):
-        try: self.driver.switch_to_alert()
-        except NoAlertPresentException as e: return False
-        return True
-    
-    def close_alert_and_get_its_text(self):
-        try:
-            alert = self.driver.switch_to_alert()
-            alert_text = alert.text
-            if self.accept_next_alert:
-                alert.accept()
-            else:
-                alert.dismiss()
-            return alert_text
-        finally: self.accept_next_alert = True
-    
-    def tearDown(self):
-        # To know more about the difference between verify and assert,
-        # visit https://www.seleniumhq.org/docs/06_test_design_considerations.jsp#validating-results
-        self.assertEqual([], self.verificationErrors)
+        driver.close()
 
-if __name__ == "__main__":
-    unittest.main()
+    def tearDown(self):
+        super().tearDown()
+        self.driver.quit()
+
+        self.base.tearDown()
