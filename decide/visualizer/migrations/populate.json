@@ -708,6 +708,42 @@
   },
   {
     "model": "voting.question",
+    "pk": 15,
+    "fields": {
+      "option_types": 1,
+      "type": 2,
+      "desc": "Voting Question Desc"
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 26,
+    "fields": {
+      "number": 1,
+      "option": "Opcion 1",
+      "question": 15
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 27,
+    "fields": {
+      "number": 2,
+      "option": "Opcion 2",
+      "question": 15
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 28,
+    "fields": {
+      "number": 3,
+      "option": "Opcion 3",
+      "question": 15
+    }
+  },
+  {
+     "model": "voting.question",
     "pk": 100,
     "fields": {
       "option_types": 1,
@@ -985,7 +1021,7 @@
     "fields": {
       "name": "[popultate]Votacion colores finalizada Hondt again",
       "desc": "desc de prueba",
-      "question": [13],
+      "question": [15],
       "start_date": "2020-11-11T22:00:00Z",
       "started_by": "decide",
       "end_date": "2020-11-15T22:00:00Z",
