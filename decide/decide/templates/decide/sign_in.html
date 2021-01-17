@@ -26,7 +26,11 @@
     <br>
     <b-button id ="infoStylesButtonClose" variant="info" onclick="ocultarInfo();" style="display: none;">Close info</b-button>
     </b-col>
-
+    <div id="textOnlyForVoiceAssistant">
+        Normal style and night: For people without any vision problem.
+        Tritanopia style: For people with a lack of sensitivity to blue.
+        Color blind: For people with a slight degree of difficulty discriminating shades of red and green.
+    </div>
 </b-row>
 <b-row v-if="user == null">
     <div class="formSignUpDiv" id="formSignUpDiv"> 
