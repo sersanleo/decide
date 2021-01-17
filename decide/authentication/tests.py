@@ -125,15 +125,13 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)    
 
     def test_register_bad_request_bad_sex(self):
-        with self.assertRaises(DataError):
+        data = {'username': 'admin', 'password': 'admin' }
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json()
 
-            data = {'username': 'admin', 'password': 'admin' }
-            response = self.client.post('/authentication/login/', data, format='json')
-            self.assertEqual(response.status_code, 200)
-            token = response.json()
-
-            token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'NB', 'style': 'N'})
-            response = self.client.post('/authentication/register/', token, format='json')
+        token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'NB', 'style': 'N'})
+        response = self.client.post('/authentication/register/', token, format='json')
 
     def test_changestyle_inexistent_style(self):
         data = {'username': 'voter1', 'password': '123'}

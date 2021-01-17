@@ -21,11 +21,13 @@ class AppDynamicsJob(StaticLiveServerTestCase):
         self.base = BaseTestCase()
         self.base.setUp()
 
-        self.driver = webdriver.Firefox()
+        options = webdriver.FirefoxOptions()
+        options.headless = True
+        self.driver = webdriver.Firefox(options=options)
         self.driver.implicitly_wait(30)
         self.base_url = "https://www.google.com/"
         self.verificationErrors = []
-        self.accept_next_alert = True
+        self.accept_next_alert = False
         user = UserProfile(username='test', sex='M', style='N', is_staff=False, is_superuser=False, is_active=True)
         user.set_password('test')
         user.save()
