@@ -50,6 +50,35 @@ class DefHelpVoiceAssistant(TaskSet):
     def HVA(self):
         self.client.get("/helpvoiceassistant/")
 
+class DefLogOut(TaskSet):
+
+    def on_start(self):
+        with open('voters.json') as f:
+            self.voters = json.loads(f.read())
+        self.voter = choice(list(self.voters.items()))
+        
+    @task
+    def index(self):
+        self.client.get("/")
+    @task
+    def login(self):
+        username, pwd = self.voter
+        self.token = self.client.post("/authentication/login/", {
+            "username": username,
+            "password": pwd,
+        }).json()
+
+    @task
+    def getuser(self):
+        self.usr= self.client.post("/authentication/getuser/", self.token).json()
+        print( str(self.user))
+
+    @task
+    def getLogout(self):
+        self.token= self.client.post("/authentication/logout/", self.token).json()
+
+    def on_quit(self):
+        self.voter = None
 
 
 class DefVisualizer(TaskSet):
@@ -57,6 +86,7 @@ class DefVisualizer(TaskSet):
     @task
     def index(self):
         self.client.get("/visualizer/{0}/".format(VOTING))
+
 
 
 class DefVoters(SequentialTaskSet):
@@ -99,6 +129,23 @@ class DefVoters(SequentialTaskSet):
     def on_quit(self):
         self.voter = None
 
+
+class DefPostproc(SequentialTaskSet):
+
+    def on_start(self):
+        with open('votings.json') as f:
+            self.votings = json.loads(f.read())
+            self.voting = choice(list(self.votings.items()))
+
+    @task
+    def do_postproc(self):
+        voting, json = self.voting
+        self.client.post('/postproc/', json=json)
+
+    def on_quit(self):
+        self.voting = None
+
+
 class Login(HttpUser):
     host = HOST
     tasks = [DefLogin]
@@ -118,6 +165,18 @@ class Voters(HttpUser):
     host = HOST
     tasks = [DefVoters]
     wait_time= between(3,5)
+
+class Logout(HttpUser):
+    host = HOST
+    tasks = [DefLogOut]
+    wait_time= between(3,5)
+
+
+class Postproc(HttpUser):
+    host = HOST
+    tasks = [DefPostproc]
+    wait_time = between(3,5)
+    
 
 class Register(HttpUser):
     USER_PREFIX = randint(0, 10000)

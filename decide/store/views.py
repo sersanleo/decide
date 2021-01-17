@@ -28,7 +28,7 @@ class StoreView(generics.ListAPIView):
          * voting: id
          * voter: id
          * question_id: id
-         * vote: [{ "a": int, "b": int }, { "a": int, "b": int }, ...]
+         * vote: [{ "a": 'number', "b": 'number' }, { "a": 'number', "b": 'number' }, ...]
         """
 
         vid = request.data.get('voting')
@@ -46,7 +46,7 @@ class StoreView(generics.ListAPIView):
         vote = request.data.get('vote')
         question_id = request.data.get('question_id')
 
-        if not vid or not uid or not vote:
+        if not vid or not uid or not vote or not question_id:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
         # validating voter

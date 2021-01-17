@@ -24,11 +24,6 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             voting = r[0]
-            
-            # Obtenemos el censo de la votación en la que el usuario está registrado.
-            print(self.request.user.id)
-            #census = mods.get('census', params={'voting_id': vid, 'voter_id': self.request.user.id})[0]
-            #census = Census.objects.filter(voting_id=vid, voter_id=self.request.user.id)
 
             # Se verifica que el usuario es un superuser o pertenece al algún censo de la votación. 
             if self.request.user.is_superuser is False: 
