@@ -68,7 +68,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://localhost:8000'
+BASEURL = 'https://egc-guadalentin-postprocesado.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -183,4 +183,17 @@ AUTH_USER_MODEL = 'authentication.UserProfile'
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
-APIS = {}
+APIS = {
+    'authentication': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'base': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'booth': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'census': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'mixnet': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'postproc': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'store': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'visualizer': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'voting': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+}
+
+import django_heroku
+django_heroku.settings(locals())
