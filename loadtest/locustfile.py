@@ -129,6 +129,23 @@ class DefVoters(SequentialTaskSet):
     def on_quit(self):
         self.voter = None
 
+
+class DefPostproc(SequentialTaskSet):
+
+    def on_start(self):
+        with open('votings.json') as f:
+            self.votings = json.loads(f.read())
+            self.voting = choice(list(self.votings.items()))
+
+    @task
+    def do_postproc(self):
+        voting, json = self.voting
+        self.client.post('/postproc/', json=json)
+
+    def on_quit(self):
+        self.voting = None
+
+
 class Login(HttpUser):
     host = HOST
     tasks = [DefLogin]
@@ -154,6 +171,11 @@ class Logout(HttpUser):
     tasks = [DefLogOut]
     wait_time= between(3,5)
 
+
+class Postproc(HttpUser):
+    host = HOST
+    tasks = [DefPostproc]
+    wait_time = between(3,5)
     
 
 class Register(HttpUser):
