@@ -205,7 +205,10 @@ html, body{
     margin: 0 auto;
 }
 
-
+#textOnlyForVoiceAssistant {
+    position: absolute;
+    font-size: 0;
+}
 
 /*
 ESTO FUE LO K AÑADIO MOISES AL ESTILO DE CABINA SIN QUERER. POR SI HACE FALTA
