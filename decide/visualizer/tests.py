@@ -335,7 +335,7 @@ class Charts_With_Points_Selenium_Tests(StaticLiveServerTestCase):
             self.token = None
             mods.mock_query(self.client)
             options = webdriver.ChromeOptions()
-            options.headless = False
+            options.headless = True
             self.driver = webdriver.Chrome(options=options)
             user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True)
             user_admin.set_password('qwerty')
