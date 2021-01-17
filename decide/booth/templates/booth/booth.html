@@ -30,7 +30,7 @@
                     [[ opt.option ]]
                 </b-form-checkbox>
             </b-form-group>
-            <b-button :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button id="envButtonMult" :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% elif rank_order_scale %}
@@ -81,7 +81,7 @@
                     [[ opt.option ]]
                 </b-form-radio>
             </b-form-group>
-            <b-button :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
+            <b-button id="envButton" :disabled="voteSuccess" class="mb-5 col-6 offset-3 col-sm-4 offset-sm-4 col-xl-2 offset-xl-5 btn-white" v-bind:class="{dp: csspd, trit: csstrit}" block type="button" variant="primary" size="lg" href="#" v-on:click="decideSend">
                 {% trans "Enviar" %}
             </b-button>
         {% endif %}
@@ -219,6 +219,9 @@
             showAlert(lvl, msg) {
                 this.alertLvl = lvl;
                 this.alertMsg = msg;
+                if (msg.includes('Forbidden')) {
+                    this.alertMsg = 'No puedes realizar la votación.'
+                }
                 this.alertShow = true;
             }
         },

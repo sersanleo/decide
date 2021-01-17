@@ -215,3 +215,8 @@ footer{
     border-radius: 10px;
     margin: 0 auto;
 }
+
+#textOnlyForVoiceAssistant {
+    position: absolute;
+    font-size: 0;
+}
