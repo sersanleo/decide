@@ -311,9 +311,9 @@ class Identity_chart_test(BaseTestCase):
         data = response.context["data"]
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(postproc_type, "postproc_type")
-        self.assertEqual(labels, "['TestOp1', 'TestOp2', 'TestOp3', 'TestOp4']")
-        self.assertEqual(data, "[9, 8, 4, 4]")
+        self.assertEqual(postproc_type, "IDENTITY")
+        self.assertEqual(labels, ['TestOp1', 'TestOp2', 'TestOp3', 'TestOp4'])
+        self.assertEqual(data, [9, 8, 4, 4])
 
     def test_negative_view_identity_chart_data(self):
         response = self.client.get('/visualizer/100/')
@@ -323,7 +323,7 @@ class Identity_chart_test(BaseTestCase):
         votes_women = response.context['votes_women']
         gender_census = response.context['gender_census']
         results = response.context['results']
-
+    
         self.assertEqual(response.status_code, 200)
         self.assertEqual(postproc_type, "IDENTITY")
         self.assertEqual(options, None)
