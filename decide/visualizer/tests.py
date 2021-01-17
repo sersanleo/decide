@@ -279,22 +279,34 @@ class Statistics_View_Tests_Selenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
         self.driver.get(f'{self.live_server_url}/visualizer/1/statistics')
 
-class Identity_Graph_Test(BaseTestCase):
+class Identity_chart_test(BaseTestCase):
     fixtures = ['visualizer/migrations/populate.json', ]
     
     def setUp(self):
-        super().setUp()
         user_admin = UserProfile(username='admin1', sex='F', style='C', is_staff=True, is_superuser=True,
                                  is_active=True)
         user_admin.set_password('qwerty')
         user_admin.save()
         self.client.force_login(user_admin)
 
+        super().setUp()
+
     def tearDown(self):
         self.client.logout()
         super().tearDown()
 
-    def test_positive_view_identity_graph(self):
+    def test_positive_view_identity_chart(self):
+        response = self.client.get('/visualizer/23/')
+        voting_type = response.context["type"]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(voting_type, "IDENTITY")
+
+    def test_negative_view_identity_chart(self):
+        response = self.client.get('/visualizer/999999')
+        self.assertEqual(response.status_code, 301)
+
+    def test_positive_view_identity_chart_data(self):
         response = self.client.get('/visualizer/23/')
         voting_type = response.context["type"]
         labels = response.context["labels"]
@@ -305,7 +317,7 @@ class Identity_Graph_Test(BaseTestCase):
         self.assertEqual(labels, "['Rojo', 'Azul', 'Amarillo', 'Verde']")
         self.assertEqual(data, "[9, 8, 4, 4]")
 
-    def test_negative_view_identity_graph(self):
+    def test_negative_view_identity_chart_data(self):
         response = self.client.get('/visualizer/23/')
         voting_type = response.context["type"]
         options = response.context['options']
@@ -321,3 +333,45 @@ class Identity_Graph_Test(BaseTestCase):
         self.assertEqual(votes_women, None)
         self.assertEqual(gender_census, None)
         self.assertEqual(results, None)
+
+class Identity_chart_view_test_selenium(StaticLiveServerTestCase):
+    fixtures = ['visualizer/migrations/populate.json', ]
+
+    def setUp(self):
+        self.client = APIClient()
+        self.token = None
+        mods.mock_query(self.client)
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+        user_admin = UserProfile(username='admin', sex='F', style='N', is_staff=True, is_superuser=True)
+        user_admin.set_password('qwerty')
+        user_admin.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.driver.quit()
+
+    def test_identity_view(self):
+        voting = Voting(name='test 1', desc='r')
+        voting.save()
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.set_window_size(1920, 1000)
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/23/')
+
+    def test_identity_chart_view(self):
+        voting = Voting(name='test 1', desc='r')
+        voting.save()
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.set_window_size(1920, 1000)
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/23/')
+        self.driver.find_element(By.CSS_SELECTOR, "canvas.identityChart").is_displayed()
