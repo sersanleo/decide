@@ -26,7 +26,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
-    path('helpvoiceassistant/', views.helpvoiceassistant),
+    path('helpvoiceassistant/', views.HelpVoiceAssistantView.as_view(), name="helpVoiceAssistant"),
+    path('modifyProfileData/', views.ModifyProfileDateView.as_view(), name="modifyProfileData"),
+    path('sign-in/', views.SignInView.as_view(), name="signIn"),
+    path('login/', views.login, name="indexlogin"),
+    path('logout/', views.logout, name="indexlogout"),
     path('', views.IndexView.as_view(), name="index")
 ]
 
