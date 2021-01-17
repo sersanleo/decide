@@ -32,59 +32,23 @@ install:
   - sudo mv -f geckodriver /usr/bin
   - sudo chmod +x /usr/bin/geckodriver
 jobs:
-  include:
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test authentication/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test base/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test booth/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test census/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test mixnet/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test postproc/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test store/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test visualizer/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test voting/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
+  - script:
+    - cd decide
+    - coverage run --branch --source=. ./manage.py test booth/tests.py --keepdb --with-xunit
+    - coverage xml
+    - python-codacy-coverage -r coverage.xml
+deploy:
+  provider: heroku
+    app: decide-full-guadalentin-cabina
+    strategy: git
+    api_key: 
+      secure: cgrIewldGbY/DA9YfFgoaZD+ZbhYuSunUqkxZJpv24dclzXVnfDo37xBBA/U8pDboQGdEuwG9i805UjDewl+PjCnDyFvSWZPLmfGQi0O+P9P+zSRKfgKNyH4ISeJbdh6xnAQOdWgbpR4Ymei9ZYoy887MVB7BzuRTpSq8SUh6/85nCyHJ42NaPP4XxTEQ4xzCTblOJsKbA23LT24yd2/TXwfjYM08Hzidqm5mi6aoESjJ4b9jt88N59ZEvDY1PAAncJf5cPbScB3N94jO9xN35R1TE1tan1NeFV9eZcT9NunLyFnMYhdrYZxF4eelA54rfW2IYwb0pspKZk4GMAO1U/pTuvpIOGbqTFT94aqm4oE85x82FghJGLXlO49W91K2ZgcHOfZm5tUU2itD8y923Y5xR8TmX7gRntlquX17s/3+gjpjOgpLuktajYclFD+xzu+p2TnqUq7NJCw57uVHUG+IzzVpDPDMKF0BB/gjrQHx7xVGNZdE7c7hlunlfOcx4MwKd4/IunlurSsz40wUGcJ/Qqhr4Ak9mRQidGYTRGiVnFtGAr/yID6wrBCiahJC/ibgnRcgBoowLVzqWeYB4WY5aTUPu9gAQf4eC5y7mPX1dQ+/MTjBTOsSXHTPS9VtOIxF0PsogFqg32fRGPW0l3t6IHAK4kTU8fa88tUScg=
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^cabina.*
 notifications:
   email:
     recipients:
-      - carsantir@alum.us.es
-      - marmarser5@alum.us.es
       - marmolpen3@alum.us.es
-      - josvilgar1@alum.us.es
-      - ramonfernandez1999@gmail.com
     on_success: never 
     on_failure: always
