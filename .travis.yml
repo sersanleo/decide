@@ -31,12 +31,11 @@ install:
   - tar xfz geckodriver-v0.27.0-linux64.tar.gz
   - sudo mv -f geckodriver /usr/bin
   - sudo chmod +x /usr/bin/geckodriver
-jobs:
-  - script:
-    - cd decide
-    - coverage run --branch --source=. ./manage.py test booth/tests.py --keepdb --with-xunit
-    - coverage xml
-    - python-codacy-coverage -r coverage.xml
+script:
+  - cd decide
+  - coverage run --branch --source=. ./manage.py test booth/tests.py --keepdb --with-xunit
+  - coverage xml
+  - python-codacy-coverage -r coverage.xml
 deploy:
   provider: heroku
     app: decide-full-guadalentin-cabina
