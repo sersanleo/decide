@@ -15,7 +15,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from base.tests import BaseTestCase
 from authentication.models import UserProfile
 
-class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
+class TestStartedByViewPositive(StaticLiveServerTestCase):
   def setUp(self):
     self.base = BaseTestCase()
     self.base.setUp()
@@ -24,7 +24,9 @@ class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
     user_admin_superuser.save()
     self.base.user_admin = user_admin_superuser
 
-    self.driver = webdriver.Firefox()
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    self.driver = webdriver.Firefox(options=options)
     self.vars = {}
     self.driver.maximize_window() #For maximizing window
     self.driver.implicitly_wait(20) #gives an implicit wait for 20 seconds
@@ -44,8 +46,8 @@ class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
     if len(wh_now) > len(wh_then):
       return set(wh_now).difference(set(wh_then)).pop()
   
-  def test_create_voting_autocensus_view_negative(self):
-    # Test name: test_create_voting_autocensus_view_positive
+  def test_started_by_view_positive(self):
+    # Test name: started_by_view_positive
     # Step # | name | target | value
     # 1 | open | http://localhost:8000/admin/ | 
     self.driver.get(f'{self.live_server_url}/admin/')
@@ -55,9 +57,9 @@ class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
     # 3 | click | css=.model-voting .addlink | 
     self.driver.find_element(By.CSS_SELECTOR, ".model-voting .addlink").click()
     # 4 | type | id=id_name | prueba
-    self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebastarted2")
     # 5 | type | id=id_desc | prueba
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebastarted2")
     # 6 | click | css=#add_id_question > img | 
     self.vars["window_handles"] = self.driver.window_handles
     # 7 | storeWindowHandle | root | 
@@ -71,7 +73,7 @@ class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
     # 11 | click | id=id_options-0-number | 
     self.driver.find_element(By.ID, "id_desc").click()
     # 12 | type | id=id_options-0-number | 1
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebastarted2")
     # 13 | click | id=id_options-0-option | 
     self.driver.find_element(By.ID, "id_options-0-number").click()
     # 14 | type | id=id_options-0-option | 1
@@ -101,7 +103,7 @@ class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
     # 26 | close |  | 
     self.driver.switch_to.window(self.vars["win245"])
     # 27 | selectWindow | handle=${root} | 
-    self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebastarted2")
     # 28 | click | name=_save | 
     self.driver.find_element(By.ID, "id_url").send_keys("http://localhost:8000")
     # 29 | click | linkText=Home | 
@@ -111,7 +113,14 @@ class TestCreateVotingAutocensusViewNegative(StaticLiveServerTestCase):
     self.driver.switch_to.window(self.vars["root"])
     # 32 | assertText | css=.row1:nth-child(1) > .field-voter_id | 1
     self.driver.find_element(By.NAME, "_save").click()
-    self.driver.find_element(By.LINK_TEXT, "Home").click()
-    self.driver.find_element(By.LINK_TEXT, "Censuss").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, ".paginator").text == "0 censuss"
+    # 32 | click | name=index | 
+    self.driver.find_element(By.NAME, "_selected_action").click()
+    # 33 | assertText | css=.row1:nth-child(1) > .field-started_by | decide
+    self.driver.find_element(By.NAME, "action").click()
+    dropdown = self.driver.find_element(By.NAME, "action")
+    dropdown.find_element(By.XPATH, "//option[. = 'Start']").click()
+    self.driver.find_element(By.CSS_SELECTOR, "option:nth-child(3)").click()
+    self.driver.find_element(By.NAME, "index").click()
+    WebDriverWait(self.driver, 30000).until(expected_conditions.text_to_be_present_in_element((By.CSS_SELECTOR, ".row1:nth-child(1) > .field-started_by"), "adminsuper"))
+    assert self.driver.find_element(By.CSS_SELECTOR, ".row1:nth-child(1) > .field-started_by").text == "adminsuper"
   

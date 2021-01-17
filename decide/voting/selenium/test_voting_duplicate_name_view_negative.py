@@ -24,7 +24,9 @@ class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
     user_admin_superuser.save()
     self.base.user_admin = user_admin_superuser
 
-    self.driver = webdriver.Firefox()
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    self.driver = webdriver.Firefox(options=options)
     self.vars = {}
     self.driver.maximize_window() #For maximizing window
     self.driver.implicitly_wait(20) #gives an implicit wait for 20 seconds
@@ -49,15 +51,15 @@ class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
     # Step # | name | target | value
     # 1 | open | http://localhost:8000/admin/ | 
     self.driver.get(f'{self.live_server_url}/admin/')
-    self.driver.find_element_by_id("id_username").send_keys("admin")
+    self.driver.find_element_by_id("id_username").send_keys("adminsuper")
     self.driver.find_element_by_id("id_password").send_keys("qwerty")
     self.driver.find_element_by_css_selector("div .submit-row input").click()
     # 3 | click | css=.model-voting .addlink | 
     self.driver.find_element(By.CSS_SELECTOR, ".model-voting .addlink").click()
     # 4 | type | id=id_name | name1
-    self.driver.find_element(By.ID, "id_name").send_keys("name1")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebaduplicate")
     # 5 | type | id=id_desc | name1
-    self.driver.find_element(By.ID, "id_desc").send_keys("name1")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebaduplicate")
     # 6 | click | css=#add_id_question > img | 
     self.vars["window_handles"] = self.driver.window_handles
     # 7 | storeWindowHandle | root | 
@@ -75,7 +77,7 @@ class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
     # 13 | click | id=id_options-0-option | 
     self.driver.find_element(By.ID, "id_options-0-number").click()
     # 14 | type | id=id_options-1-number | 1
-    self.driver.find_element(By.ID, "id_desc").send_keys("name1")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebaduplicate")
     # 15 | click | id=id_options-1-number | 
     self.driver.find_element(By.ID, "id_options-0-option").click()
     # 16 | type | id=id_options-1-number | 2
@@ -105,7 +107,7 @@ class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
     # 29 | click | id=id_url | 
     self.driver.switch_to.window(self.vars["win5557"])
     # 30 | type | id=id_url | http://localhost:8000
-    self.driver.find_element(By.ID, "id_name").send_keys("name1")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebaduplicate")
     # 31 | click | name=_save | 
     self.driver.find_element(By.ID, "id_url").click()
     # 32 | close |  | 
@@ -122,7 +124,7 @@ class TestVotingDuplicateNameViewNegative(StaticLiveServerTestCase):
     # 38 | assertText | css=.field-name li | Voting with this Name already exists.
     self.driver.find_element(By.NAME, "_save").click()
     self.driver.find_element(By.CSS_SELECTOR, ".addlink").click()
-    self.driver.find_element(By.ID, "id_name").send_keys("name1")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebaduplicate")
     self.driver.find_element(By.NAME, "_save").click()
     assert self.driver.find_element(By.CSS_SELECTOR, ".field-name li").text == "Voting with this Name already exists."
   

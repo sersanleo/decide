@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from voting.models import Voting
 
 from base.tests import BaseTestCase
 from authentication.models import UserProfile
@@ -24,7 +25,9 @@ class TestCreateVotingAutocensusViewPositive(StaticLiveServerTestCase):
     user_admin_superuser.save()
     self.base.user_admin = user_admin_superuser
 
-    self.driver = webdriver.Firefox()
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    self.driver = webdriver.Firefox(options=options)
     self.vars = {}
     self.driver.maximize_window() #For maximizing window
     self.driver.implicitly_wait(20) #gives an implicit wait for 20 seconds
@@ -52,12 +55,13 @@ class TestCreateVotingAutocensusViewPositive(StaticLiveServerTestCase):
     self.driver.find_element_by_id("id_username").send_keys("adminsuper")
     self.driver.find_element_by_id("id_password").send_keys("qwerty")
     self.driver.find_element_by_css_selector("div .submit-row input").click()
+    self.vars["idUser"] = self.base.user_admin.id
     # 3 | click | css=.model-voting .addlink | 
     self.driver.find_element(By.CSS_SELECTOR, ".model-voting .addlink").click()
     # 4 | type | id=id_name | prueba
-    self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebacenso2")
     # 5 | type | id=id_desc | prueba
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebacenso2")
     # 6 | click | css=#add_id_question > img | 
     self.vars["window_handles"] = self.driver.window_handles
     # 7 | storeWindowHandle | root | 
@@ -71,7 +75,7 @@ class TestCreateVotingAutocensusViewPositive(StaticLiveServerTestCase):
     # 11 | click | id=id_options-0-number | 
     self.driver.find_element(By.ID, "id_desc").click()
     # 12 | type | id=id_options-0-number | 1
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebacenso2")
     # 13 | click | id=id_options-0-option | 
     self.driver.find_element(By.ID, "id_options-0-number").click()
     # 14 | type | id=id_options-0-option | 1
@@ -101,7 +105,7 @@ class TestCreateVotingAutocensusViewPositive(StaticLiveServerTestCase):
     # 26 | close |  | 
     self.driver.switch_to.window(self.vars["win245"])
     # 27 | selectWindow | handle=${root} | 
-    self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebacenso2")
     # 28 | click | name=_save | 
     self.driver.find_element(By.ID, "id_url").send_keys("http://localhost:8000")
     # 29 | click | linkText=Home | 
@@ -112,13 +116,14 @@ class TestCreateVotingAutocensusViewPositive(StaticLiveServerTestCase):
     self.driver.find_element(By.ID, "id_autocenso").click()
     # 32 | assertText | css=.row1:nth-child(1) > .field-voter_id | 1
     self.driver.find_element(By.NAME, "_save").click()
+    self.vars["idVoting"] = Voting.objects.get(name="pruebacenso2").id
     self.driver.find_element(By.LINK_TEXT, "Home").click()
     self.driver.find_element(By.LINK_TEXT, "Censuss").click()
     self.driver.find_element(By.CSS_SELECTOR, ".row1:nth-child(1) a").click()
     # 16 | assertValue | id=id_voting_id | 8
     value = self.driver.find_element(By.ID, "id_voting_id").get_attribute("value")
-    assert value == "1"
+    assert value == str(self.vars["idVoting"])
     # 17 | assertValue | id=id_voter_id | 1
     value = self.driver.find_element(By.ID, "id_voter_id").get_attribute("value")
-    assert value == "3"
+    assert value == str(self.vars["idUser"])
   

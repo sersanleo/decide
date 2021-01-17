@@ -24,7 +24,9 @@ class TestStartedByViewNegative(StaticLiveServerTestCase):
     user_admin_superuser.save()
     self.base.user_admin = user_admin_superuser
 
-    self.driver = webdriver.Firefox()
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    self.driver = webdriver.Firefox(options=options)
     self.vars = {}
     self.driver.maximize_window() #For maximizing window
     self.driver.implicitly_wait(20) #gives an implicit wait for 20 seconds
@@ -55,9 +57,9 @@ class TestStartedByViewNegative(StaticLiveServerTestCase):
     # 3 | click | css=.model-voting .addlink | 
     self.driver.find_element(By.CSS_SELECTOR, ".model-voting .addlink").click()
     # 4 | type | id=id_name | prueba
-    self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebastarted")
     # 5 | type | id=id_desc | prueba
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebastarted")
     # 6 | click | css=#add_id_question > img | 
     self.vars["window_handles"] = self.driver.window_handles
     # 7 | storeWindowHandle | root | 
@@ -71,7 +73,7 @@ class TestStartedByViewNegative(StaticLiveServerTestCase):
     # 11 | click | id=id_options-0-number | 
     self.driver.find_element(By.ID, "id_desc").click()
     # 12 | type | id=id_options-0-number | 1
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebastarted")
     # 13 | click | id=id_options-0-option | 
     self.driver.find_element(By.ID, "id_options-0-number").click()
     # 14 | type | id=id_options-0-option | 1
@@ -101,7 +103,7 @@ class TestStartedByViewNegative(StaticLiveServerTestCase):
     # 26 | close |  | 
     self.driver.switch_to.window(self.vars["win245"])
     # 27 | selectWindow | handle=${root} | 
-    self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_name").send_keys("pruebastarted")
     # 28 | click | name=_save | 
     self.driver.find_element(By.ID, "id_url").send_keys("http://localhost:8000")
     # 29 | click | linkText=Home | 
@@ -109,7 +111,6 @@ class TestStartedByViewNegative(StaticLiveServerTestCase):
     # 30 | click | linkText=Censuss | 
     # 31 | assertText | css=.row1:nth-child(1) a | 1
     self.driver.switch_to.window(self.vars["root"])
-    self.driver.find_element(By.ID, "id_autocenso").click()
     # 32 | assertText | css=.row1:nth-child(1) > .field-voter_id | 1
     self.driver.find_element(By.NAME, "_save").click()
     # 32 | click | name=index | 

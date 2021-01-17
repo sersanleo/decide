@@ -24,7 +24,9 @@ class TestQuestionUniqueViewPositive(StaticLiveServerTestCase):
     user_admin_superuser.save()
     self.base.user_admin = user_admin_superuser
 
-    self.driver = webdriver.Firefox()
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    self.driver = webdriver.Firefox(options=options)
     self.vars = {}
     self.driver.maximize_window() #For maximizing window
     self.driver.implicitly_wait(20) #gives an implicit wait for 20 seconds
@@ -64,7 +66,7 @@ class TestQuestionUniqueViewPositive(StaticLiveServerTestCase):
     # 7 | click | id=id_desc | 
     self.driver.find_element(By.ID, "id_desc").click()
     # 8 | type | id=id_desc | prueba31
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebaunique1")
     # 9 | click | id=id_options-0-number | 
     self.driver.find_element(By.ID, "id_options-0-number").click()
     # 10 | type | id=id_options-0-number | 1
@@ -95,7 +97,7 @@ class TestQuestionUniqueViewPositive(StaticLiveServerTestCase):
     # 22 | click | id=id_desc | 
     self.driver.find_element(By.ID, "id_desc").click()
     # 23 | type | id=id_desc | prueba31
-    self.driver.find_element(By.ID, "id_desc").send_keys("prueba2")
+    self.driver.find_element(By.ID, "id_desc").send_keys("pruebaunique2")
     # 24 | click | id=id_options-0-number | 
     self.driver.find_element(By.ID, "id_options-0-number").click()
     # 25 | type | id=id_options-0-number | 1
@@ -122,6 +124,6 @@ class TestQuestionUniqueViewPositive(StaticLiveServerTestCase):
     # 35 | click | name=_save | 
     self.driver.find_element(By.NAME, "_save").click()
     # 36 | assertText | css=li | Question with this Desc already exists.
-    assert self.driver.find_element(By.LINK_TEXT, "prueba").text == "prueba"
-    assert self.driver.find_element(By.LINK_TEXT, "prueba2").text == "prueba2"
+    assert self.driver.find_element(By.LINK_TEXT, "pruebaunique1").text == "pruebaunique1"
+    assert self.driver.find_element(By.LINK_TEXT, "pruebaunique2").text == "pruebaunique2"
   
