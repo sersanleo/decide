@@ -743,6 +743,51 @@
     }
   },
   {
+     "model": "voting.question",
+    "pk": 100,
+    "fields": {
+      "option_types": 1,
+      "type": 0,
+      "desc": "1233567899"
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 101,
+    "fields": {
+      "number": 1,
+      "option": "TestOp1",
+      "question": 100
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 102,
+    "fields": {
+      "number": 2,
+      "option": "TestOp2",
+      "question": 100
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 103,
+    "fields": {
+      "number": 3,
+      "option": "TestOp3",
+      "question": 100
+    }
+  },
+  {
+    "model": "voting.questionOption",
+    "pk": 104,
+    "fields": {
+      "number": 4,
+      "option": "TestOp4",
+      "question": 100
+    }
+  },
+  {
     "model": "base.auth",
     "pk": 10,
     "fields": {
@@ -804,6 +849,16 @@
   {
     "model": "base.key",
     "pk": 15,
+    "fields": {
+      "p": 2539,
+      "g": 2,
+      "y": 403,
+      "x": 51
+    }
+  },
+  {
+    "model": "base.key",
+    "pk": 100,
     "fields": {
       "p": 2539,
       "g": 2,
@@ -1078,6 +1133,74 @@
         "votes_fem": 2,
         "votes_masc": 5,
         "question_id": 14
+      }
+    ]
+  }
+],
+      "auths": [10]
+    }
+  },
+  {
+    "model": "voting.voting",
+    "pk": 100,
+    "fields": {
+      "name": "[popultate]Votacion test finalizada Identity",
+      "desc": "desc de prueba",
+      "question": [100],
+      "start_date": "2020-11-11T22:00:00Z",
+      "started_by": "decide",
+      "end_date": "2020-11-15T22:00:00Z",
+      "pub_key": 100,
+      "tally": [{"2": [0, 100]}, {"4": [0, 100]}, {"4": [0, 100]}, {"4": [0, 100]}, {"1": [0, 100]}, {"3": [0, 100]}, {"1": [0, 100]}, {"1": [0, 100]}, {"1": [0, 100]}, {"4": [0, 100]}, {"4": [0, 100]}, {"4": [0, 100]}, {"1": [0, 100]}, {"2": [0, 100]}, {"1": [0, 100]}, {"3": [0, 100]}, {"1": [0, 100]}, {"2": [0, 100]}, {"3": [0, 100]}, {"1": [0, 100]}, {"2": [0, 100]}, {"4": [0, 100]}, {"4": [0, 100]}, {"1": [0, 100]}, {"3": [0, 100]}],
+      "tallyM": [],
+      "tallyF": [],
+      "postproc": [
+        {
+    "type": "IDENTITY",
+    "options": [
+      {
+        "votes": 9,
+        "number": 1,
+        "option": "TestOp1",
+        "points": 1,
+        "postproc": 9,
+        "question": "1233567899",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 100
+      },
+      {
+        "votes": 8,
+        "number": 4,
+        "option": "TestOp2",
+        "points": 1,
+        "postproc": 8,
+        "question": "1233567899",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 100
+      },
+      {
+        "votes": 4,
+        "number": 3,
+        "option": "TestOp3",
+        "points": 1,
+        "postproc": 4,
+        "question": "1233567899",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 100
+      },
+      {
+        "votes": 4,
+        "number": 2,
+        "option": "TestOp4",
+        "points": 1,
+        "postproc": 4,
+        "question": "1233567899",
+        "votes_fem": 0,
+        "votes_masc": 0,
+        "question_id": 100
       }
     ]
   }
