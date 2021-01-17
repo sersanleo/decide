@@ -33,7 +33,7 @@ class IndexView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         check_sess = check_session(request)
-        if not check_sess:
+        if check_sess != True:
             return check_sess
 
         return super(IndexView, self).dispatch(request, *args, **kwargs)

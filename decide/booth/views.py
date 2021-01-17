@@ -32,6 +32,11 @@ class LogoutView(TemplateView):
             del self.request.session['username']
 
         return context
+    
+    def render_to_response(self, context, **response_kwargs):
+        response = super(LogoutView, self).render_to_response(context, **response_kwargs)
+        response.delete_cookie('decide')
+        return response
 
 def autenticacion(request, username, password):
     token= mods.post('authentication', entry_point='/login/', json={'username':username, 'password':password})
@@ -47,34 +52,28 @@ def autenticacion(request, username, password):
 
 def available_votings_user(list_vid, voter_id):
     available_votings=[]
-    try:
-        votings = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=True).exclude(start_date__isnull=True)
-        for v in votings:
-            if Vote.objects.filter(voting_id=v.id, voter_id=voter_id).count()==0:
-                available_votings.append(v)
-    except Exception:
-        error='No se encuentra la votación'
+    votings = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=True).exclude(start_date__isnull=True)
+    for v in votings:
+        if Vote.objects.filter(voting_id=v.id, voter_id=voter_id).count()==0:
+            available_votings.append(v)
+
     return available_votings
 
 def last_12_months_votings_user(list_vid):
     months = [0]*12
     str_months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
-    try:
-        today = datetime.datetime.now()
-        last_month = today.month - 1
-        if last_month == 0: last_month = 12
+    today = datetime.datetime.now()
+    last_month = today.month - 1
+    if last_month == 0: last_month = 12
 
-        start = today.replace(minute=0, hour=0, second=0, microsecond=0, year=today.year-1, day=1)
-        end = today.replace(minute=0, hour=0, second=0, microsecond=0, day=1)
+    start = today.replace(minute=0, hour=0, second=0, microsecond=0, year=today.year-1, day=1)
+    end = today.replace(minute=0, hour=0, second=0, microsecond=0, day=1)
 
-        votaciones_meses = Voting.objects.filter(id__in=list_vid).exclude(start_date__isnull=True).filter(start_date__range=(start, end)).annotate(month=ExtractMonth('start_date')).values('month').annotate(votaciones=Count('id'))
+    votaciones_meses = Voting.objects.filter(id__in=list_vid).exclude(start_date__isnull=True).filter(start_date__range=(start, end)).annotate(month=ExtractMonth('start_date')).values('month').annotate(votaciones=Count('id'))
 
-        for v in votaciones_meses:
-            months[v['month']-1] = v['votaciones']
-
-    except Exception:
-        error='No se encuentra la votación'
+    for v in votaciones_meses:
+        months[v['month']-1] = v['votaciones']
 
     second_counter_months = months[:last_month]
     first_counter_months = months[last_month:12]
@@ -92,17 +91,16 @@ def votings_user_by_type(list_vid):
     mult = 0
     rank = 0
 
-    try:
-        votings = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=False)
-        for v in votings:
-            if v.question.option_types == 1:
+    votings = Voting.objects.filter(id__in=list_vid).filter(end_date__isnull=False)
+    for v in votings:
+        questions = v.question.all()
+        for q in questions:
+            if q.option_types == 1:
                 unique+=1
-            elif v.question.option_types == 2:
+            elif q.option_types == 2:
                 mult+=1
-            elif v.question.option_types == 3:
+            elif q.option_types == 3:
                 rank+=1
-    except Exception:
-        error='No se encuentra la votación'
 
     votings_by_type.append(unique)
     votings_by_type.append(mult)
@@ -131,22 +129,21 @@ def dashboard_details(voter_id):
     approved_suggestions = []
     recent_suggestions = []
 
-    context['no_censo'], context['no_vot_dis'] = False, False
+    context['no_vot_dis'] = False
 
     census_by_user = Census.objects.filter(voter_id=voter_id)
-    if census_by_user.count() == 0 :
-        context['no_censo'] = True
-    else:
-        list_vid=[]
-        for c in census_by_user:
-            vid = c.voting_id
-            list_vid.append(vid)
 
-        available_votings = available_votings_user(list_vid, voter_id)
-        votings_by_month, months = last_12_months_votings_user(list_vid)
-        votings_by_type = votings_user_by_type(list_vid)
-        approved_suggestions = suggestions_approved(voter_id)
-        recent_suggestions = suggestions_recent(voter_id)
+    list_vid=[]
+    for c in census_by_user:
+        vid = c.voting_id
+        list_vid.append(vid)
+
+    available_votings = available_votings_user(list_vid, voter_id)
+    votings_by_month, months = last_12_months_votings_user(list_vid)
+    votings_by_type = votings_user_by_type(list_vid)
+
+    approved_suggestions = suggestions_approved(voter_id)
+    recent_suggestions = suggestions_recent(voter_id)
 
     context['vot_dis'] = available_votings
     context['votaciones_por_meses'] = votings_by_month
@@ -181,7 +178,9 @@ def authentication_login(request):
         else:
             context = dashboard_details(voter_id)
             context['username'] = username
-            return render(request, 'booth/dashboard.html', context)
+            response = render(request, 'booth/dashboard.html', context)
+            response.set_cookie('decide', request.session['user_token'].get('token', ''), path='/', max_age=1800)
+            return response
     else:
         token = request.session.get('user_token', None)
         if token == None:
