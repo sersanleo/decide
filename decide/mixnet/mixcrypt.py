@@ -157,7 +157,7 @@ class MixCrypt:
             if last:
                 msg = {clear:[j,qid]}
             else:
-                msg = (a, clear, j)
+                msg = (a, clear, j, qid)
             msgs3.append(msg)
         return msgs3
 
