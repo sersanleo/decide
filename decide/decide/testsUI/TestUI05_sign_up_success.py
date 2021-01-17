@@ -1,19 +1,15 @@
+import time
+
 from authentication.models import UserProfile
-from django.contrib import auth
-from django.test import TestCase
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from base import mods
 from base.tests import BaseTestCase
-from rest_framework.test import APIClient, APITestCase
+from django.contrib import auth
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from base import mods
-import time
 
 class TestSuccess(StaticLiveServerTestCase):
     def setUp(self):
