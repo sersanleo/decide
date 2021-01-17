@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
-from authentication.models import UserProfile
-from django.contrib import auth
-from django.test import TestCase
-from base.tests import BaseTestCase
-from rest_framework.test import APIClient, APITestCase
-from selenium import webdriver
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import Select
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import NoAlertPresentException
-import unittest
-import time
 import re
+import time
+import unittest
+
+from authentication.models import UserProfile
+from base.tests import BaseTestCase
+from django.contrib import auth
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import TestCase
+from selenium import webdriver
+from selenium.common.exceptions import (NoAlertPresentException,
+                                        NoSuchElementException)
 
 
 class AppDynamicsJob(StaticLiveServerTestCase):
