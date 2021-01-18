@@ -10,7 +10,7 @@ RUN pip install ipython
 
 WORKDIR /app
 
-RUN git clone --branch cabina-docker https://github.com/egc-guadalentin/decide.git .
+RUN git clone --branch cabina-dev https://github.com/egc-guadalentin/decide.git .
 RUN pip install -r requirements.txt
 
 WORKDIR /app/decide
