@@ -192,7 +192,7 @@ APIS = {
     'postproc': BASEURL,
     'store': BASEURL,
     'visualizer': BASEURL,
-    'voting': BASEURL,c
+    'voting': BASEURL,
 }
 
 import django_heroku
