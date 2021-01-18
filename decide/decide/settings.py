@@ -184,15 +184,15 @@ AUTH_USER_MODEL = 'authentication.UserProfile'
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
 APIS = {
-    'authentication': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'base': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'booth': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'census': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'mixnet': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'postproc': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'store': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'visualizer': 'http://egc-guadalentin-postprocesado.herokuapp.com',
-    'voting': 'http://egc-guadalentin-postprocesado.herokuapp.com',
+    'authentication': BASEURL,
+    'base': BASEURL,
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,
 }
 
 import django_heroku
