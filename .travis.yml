@@ -35,47 +35,8 @@ jobs:
   include:
     - script:
       - cd decide
-      - coverage run --branch --source=. ./manage.py test authentication/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test base/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test booth/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test census/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test mixnet/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test postproc/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test store/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test visualizer/ --keepdb --with-xunit
-      - coverage xml
-      - python-codacy-coverage -r coverage.xml
-    - script:
-      - cd decide
-      - coverage run --branch --source=. ./manage.py test voting/ --keepdb --with-xunit
+      - ./manage.py collectstatic
+      - coverage run --branch --source=. ./manage.py test booth/ --keepdb
       - coverage xml
       - python-codacy-coverage -r coverage.xml
 deploy:
