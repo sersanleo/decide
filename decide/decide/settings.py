@@ -184,15 +184,15 @@ AUTH_USER_MODEL = 'authentication.UserProfile'
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
 APIS = {
-    'authentication': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'base': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'booth': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'census': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'mixnet': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'postproc': 'https://decide-full-guadalentin-cabina.herokuapp.com,'
-    'store': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'visualizer': 'https://decide-full-guadalentin-cabina.herokuapp.com',
-    'voting': 'https://decide-full-guadalentin-cabina.herokuapp.com',
+    'authentication': BASEURL,
+    'base': BASEURL,
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,c
 }
 
 import django_heroku
