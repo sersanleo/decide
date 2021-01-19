@@ -73,7 +73,7 @@ class VotingModel(forms.ModelForm):
 
 class VotingAdmin(admin.ModelAdmin):
         
-    list_display = ('name', 'start_date', 'end_date', 'started_by')
+    list_display = ('name', 'start_date', 'end_date', 'started_by', 'desc')
     readonly_fields = ('start_date', 'end_date', 'pub_key',
                        'tally', 'tallyM', 'tallyF', 'postproc', 'started_by')
     list_filter = (StartedFilter, ('start_date', DateRangeFilter), ('end_date', DateRangeFilter),)

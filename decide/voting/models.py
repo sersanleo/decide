@@ -51,7 +51,7 @@ class QuestionOption(models.Model):
 
 class Voting(models.Model):
     name = models.CharField(max_length=200, unique = True)
-    desc = models.TextField(blank=True, null=True)
+    desc = models.TextField(blank=True, null=True, unique=True)
     question =  models.ManyToManyField(Question, related_name='voting')
     points = models.PositiveIntegerField(default="1")
 
