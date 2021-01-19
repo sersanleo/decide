@@ -60,6 +60,7 @@
             <div class="navbar-collapse collapse show">
                 <b-navbar-nav>
                     <b-nav-item href="{% url 'dashboard' %}" v-if="user != null">Booth</b-nav-item>
+                    <b-nav-item href="/visualizer" v-if="user != null">Visualizer</b-nav-item>
                     <b-nav-item href="{% url 'admin:index' %}" v-if="user != null && user.is_staff">Admin</b-nav-item>
                     <b-nav-item href="/admin/voting/voting" v-if="user != null && user.is_staff">Votings</b-nav-item>
                 </b-navbar-nav>
